@@ -2,7 +2,7 @@
 - hosts: kube-master
   roles:
      #- nginx-ingress
+     #- storage
+     - cassandra
+     - cortex
 
-- hosts: kube-master
-  roles:
-     - storage

@@ -1,0 +1,33 @@
+---
+
+- name: Creates /etc/kubernetes/kubeadm directory
+  file: path=/etc/kubernetes/kubeadm/cortex  recurse=yes state=directory
+  when: >
+    inventory_hostname == "kube-master-0"
+
+- name: Copy kube config files
+  template: src="{{ item.src }}" dest="{{ item.dest }}"
+  with_items:
+     - { src: 'step.1.table-manager.yaml.j2', dest: '/etc/kubernetes/kubeadm/cortex/step.1.table-manager.yaml'  }  
+  when: >
+    inventory_hostname == "kube-master-0"
+  register: result
+
+- name:  label and storage cortex  box
+  shell: sh /etc/kubernetes/kubeadm/cortex/taint.sh;
+  when: >
+    inventory_hostname == "kube-master-0" 
+  ignore_errors: yes
+
+- name:  create cortex namespace
+  shell: kubectl create ns cortex;
+  when: >
+    inventory_hostname == "kube-master-0" 
+  ignore_errors: yes
+
+
+- name: create cortex 
+  shell: kubectl apply -n cortex -f /etc/kubernetes/kubeadm/cortex/;
+  when: >
+    inventory_hostname == "kube-master-0" 
+  ignore_errors: yes

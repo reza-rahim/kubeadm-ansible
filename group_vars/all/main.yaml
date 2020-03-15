@@ -14,3 +14,14 @@ nginx_ingress_https: 30443
 nginx_ingress_http_mgmt: 18080
 kube_master_lb: 10.20.0.13
 kube_master_lb: 10.20.0.13
+
+
+###### cassandra #######
+cassandra_replicas: 3
+cassandra_taint: cassandra 
+cassandra_version: v13
+
+####### cortex #####
+cortex_version: v0.4.0
+cortex_date: 2017-03-01
+cortex_taint: storage
