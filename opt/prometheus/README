@@ -9,3 +9,8 @@ helm  template -name monitoring --namespace=monitoring prometheus --set server.g
 ssh kube-master-0 "mkdir -p ~/prom"
 scp  prometheus.yaml  kube-master-0:~/prom
 ssh kube-master-0 "kubectl apply -f ~/prom"
+
+
+# port forewarding
+kubectl port-forward -n monitoring $( kubectl get pod -n monitoring  -l app=prometheus -l component=server -o jsonpath={.items..metadata.name} ) 9090
+

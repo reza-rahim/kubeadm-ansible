@@ -10,3 +10,10 @@ ssh kube-master-0 "kubectl apply -f ~/ceph/operator.yaml"
 ssh kube-master-0 "kubectl apply -f ~/ceph/cluster.yaml"
 ssh kube-master-0 "kubectl apply -f ~/ceph/StorageClass.yaml"
 ssh kube-master-0 "kubectl apply -f ~/ceph/StorageClassEC.yaml"
+
+
+#PORT forwarding
+kubectl port-forward -n rook-ceph $(kubectl get pod -n rook-ceph   -l app=rook-ceph-mgr   -o jsonpath={.items..metadata.name} ) 8443:8443
+
+# get dashboard password for User "admin"
+kubectl -n rook-ceph get secret rook-ceph-dashboard-password -o jsonpath="{['data']['password']}" | base64 --decode && echo
