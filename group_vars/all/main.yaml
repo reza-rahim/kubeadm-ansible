@@ -25,3 +25,5 @@ cassandra_version: v13
 cortex_version: v0.4.0
 cortex_date: 2017-03-01
 cortex_taint: storage
+cortex_cassandra: cassandra.cassandra.svc.cluster.local
+cortex_ingester: 3

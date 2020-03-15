@@ -9,6 +9,9 @@
   template: src="{{ item.src }}" dest="{{ item.dest }}"
   with_items:
      - { src: 'step.1.table-manager.yaml.j2', dest: '/etc/kubernetes/kubeadm/cortex/step.1.table-manager.yaml'  }  
+     - { src: 'step.2.consul.yaml.j2', dest: '/etc/kubernetes/kubeadm/cortex/step.2.consul.yaml'  }  
+     - { src: 'step.3.memcached.yaml.j2', dest: '/etc/kubernetes/kubeadm/cortex/step.3.memcached.yaml'  }  
+     - { src: 'step.4.ingester.yaml.j2', dest: '/etc/kubernetes/kubeadm/cortex/step.4.ingester.yaml'  }  
   when: >
     inventory_hostname == "kube-master-0"
   register: result

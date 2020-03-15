@@ -67,7 +67,7 @@ spec:
         args:
         - "-target=table-manager"
         - "-server.http-listen-port=80"
-        - "-cassandra.addresses=cassandra.cassandra.svc.cluster.local"
+        - "-cassandra.addresses={{ cortex_cassandra }}"
         - "-cassandra.keyspace=cortex"
         - "-cassandra.timeout=1000ms"
         - "-cassandra.replication-factor=2"
