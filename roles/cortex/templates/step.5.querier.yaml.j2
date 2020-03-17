@@ -1,79 +1,58 @@
 ---
-# Source: cortex/templates/ingester-svc.yaml
+# Source: cortex/templates/querier-svc.yaml
 apiVersion: v1
 kind: Service
 metadata:
-  name: cortex-ingester
+  name: cortex-querier
   labels:
     chart: cortex-0.0.1
     release: cortex
     heritage: Helm
-    cortex: ingester
+    cortex: querier
 spec:
   ports:
     - port: 80
       name: http
       targetPort: http
   selector:
-    app: cortex-ingester
+    app: cortex-querier
     release: cortex
 ---
-
----
-# Source: cortex/templates/ingester-dep.yaml
+# Source: cortex/templates/querier-dep.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: cortex-ingester
+  name: cortex-querier
   labels:
     chart: cortex-0.0.1
     release: cortex
     heritage: Helm
-    cortex: ingester
+    cortex: querier
 spec:
-  replicas: {{ cortex_ingester }}
-
-  # Ingesters are not ready for at least 1 min
-  # after creation.  This has to be in sync with
-  # the ring timeout value, as this will stop a
-  # stampede of new ingesters if we should loose
-  # some.
-  minReadySeconds: 60
-
-  # Having maxSurge 0 and maxUnavailable 1 means
-  # the deployment will update one ingester at a time
-  # as it will have to stop one (making one unavailable)
-  # before it can start one (surge of zero)
+  replicas: {{ cortex_querier }}
   strategy:
     rollingUpdate:
-      maxSurge: 0
       maxUnavailable: 1
-
   selector:
     matchLabels:
-      app: cortex-ingester
+      app: cortex-querier
       release: cortex
   template:
     metadata:
       labels:
-        app: cortex-ingester
+        app: cortex-querier
         release: cortex
-        cortex: ingester
+        cortex: querier
       annotations:
         prometheus.io/port: "80"
         prometheus.io/scrape: "true"
         sidecar.istio.io/inject: "false"
     spec:
-      # Give ingesters 80 minutes grace to flush chunks and exit cleanly.
-      # Service is available during this time, as long as we don't stop
-      # too many ingesters at once.
-      terminationGracePeriodSeconds: 4800
-
       tolerations:
         - effect: NoSchedule
           key: dedicated
           operator: Equal
-          value: {{ cortex_taint }}
+          value: {{ cortex_taint }} 
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -83,18 +62,17 @@ spec:
                 operator: In
                 values:
                 - {{ cortex_taint }}
-
       containers:
-      - name: ingester
-        #image: "quay.io/cortexproject/ingester:master-79bba2f9"
+      - name: querier
+        #image: "quay.io/cortexproject/querier:master-79bba2f9"
         image: quay.io/cortexproject/cortex:v0.4.0
         imagePullPolicy: IfNotPresent
         args:
-        - -target=ingester
-        - -ingester.join-after=30s
-        - -ingester.claim-on-rollout=true
-        #- -ingester.search-pending-for=5m
+        - -target=querier
+        - -server.http-listen-port=80
         - -consul.hostname=cortex-consul.cortex.svc.cluster.local:8500
+        - -querier.frontend-address=cortex-query-frontend:9095
+        - -querier.query-ingesters-within=0
         - -cassandra.addresses={{ cortex_cassandra }}
         - "-cassandra.auth=true"
         - "-cassandra.password={{ cassandra_password }}"
@@ -111,9 +89,7 @@ spec:
         - -dynamodb.periodic-table.tag=cortex=periodic-table
         - -dynamodb.periodic-table.from={{ cortex_date }}
         - -dynamodb.periodic-table.period=168h
-        #- -dynamodb.v6-schema-from=2020-02-01
         - -dynamodb.v9-schema-from={{ cortex_date }}
-        - -dynamodb.use-periodic-tables
         - -memcached.hostname=cortex-memcached.cortex.svc.cluster.local
         - -memcached.timeout=100ms
         - -memcached.service=memcache # Service port name
@@ -122,20 +98,19 @@ spec:
         - -store.index-cache-write.memcached.service=memcache # Service port name
         - -store.index-cache-write.memcached.timeout=500ms
         - -store.index-cache-read.memcached.hostname=cortex-memcached-index-read.cortex.svc.cluster.local
+
         - -store.index-cache-read.memcached.service=memcache # Service port name
         - -store.index-cache-read.memcached.timeout=500ms
+        - -distributor.replication-factor=3
+        - -querier.batch-iterators
+        - -querier.ingester-streaming
+        - -querier.max-concurrent=5
         ports:
         - containerPort: 80
           name: http
-        readinessProbe:
-          httpGet:
-            path: /ready
-            port: 80
-          initialDelaySeconds: 15
-          timeoutSeconds: 1
         #resources:
         # limits:
-        #   cpu: 4
+        #   cpu: 1
         # requests:
-        #   cpu: 4
-        #   memory: 4Gi
+        #   cpu: 1
+        #   memory: 1Gi

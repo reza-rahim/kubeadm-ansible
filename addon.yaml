@@ -3,6 +3,7 @@
   roles:
      #- nginx-ingress
      #- storage
-     - cassandra
-     - cortex
+     - monitoring
+     #- cassandra
+     #- cortex
 

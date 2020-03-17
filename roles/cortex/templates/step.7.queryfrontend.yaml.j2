@@ -1,0 +1,87 @@
+---
+# Source: cortex/templates/query-frontend-svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: cortex-query-frontend
+  labels:
+    chart: cortex-0.0.1
+    release: cortex
+    heritage: Helm
+    app: cortex-query-frontend
+    cortex: query-frontend
+spec:
+  # clusterIP: None gives a "headless" service so DNS returns all endpoints.
+  clusterIP: None
+  ports:
+    - port: 9095
+      name: grpc
+      targetPort: grpc
+    - port: 80
+      name: http
+      targetPort: http
+  selector:
+    app: cortex-query-frontend
+    release: cortex
+---
+# Source: cortex/templates/query-frontend-dep.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cortex-query-frontend
+  labels:
+    chart: cortex-0.0.1
+    release: cortex
+    heritage: Helm
+    cortex: query-frontend
+spec:
+  replicas: {{ cortex_queryfrontend }}
+  selector:
+    matchLabels:
+      cortex: query-frontend 
+  template:
+    metadata:
+      labels:
+        app: cortex-query-frontend
+        release: cortex
+        cortex: query-frontend
+      annotations:
+        prometheus.io/port: "80"
+        prometheus.io/scrape: "true"
+        sidecar.istio.io/inject: "false"
+    spec:
+      tolerations:
+        - effect: NoSchedule
+          key: dedicated
+          operator: Equal
+          value: {{ cortex_taint }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: dedicated
+                operator: In
+                values:
+                - {{ cortex_taint }}
+      containers:
+      - name: query-frontend
+        #image: "quay.io/cortexproject/query-frontend:master-79bba2f9"
+        image: quay.io/cortexproject/cortex:v0.4.0
+        imagePullPolicy: IfNotPresent
+        args:
+        - -target=query-frontend
+        - -log.level=debug
+        - -server.http-listen-port=80
+        - -server.grpc-listen-port=9095
+        ports:
+        - containerPort: 9095
+          name: grpc
+        - containerPort: 80
+          name: http
+        #resources:
+        # limits:
+        #   cpu: 1
+        # requests:
+        #   cpu: 1
+        #   memory: 1Gi

@@ -12,6 +12,11 @@
      - { src: 'step.2.consul.yaml.j2', dest: '/etc/kubernetes/kubeadm/cortex/step.2.consul.yaml'  }  
      - { src: 'step.3.memcached.yaml.j2', dest: '/etc/kubernetes/kubeadm/cortex/step.3.memcached.yaml'  }  
      - { src: 'step.4.ingester.yaml.j2', dest: '/etc/kubernetes/kubeadm/cortex/step.4.ingester.yaml'  }  
+     - { src: 'step.5.querier.yaml.j2', dest: '/etc/kubernetes/kubeadm/cortex/step.5.querier.yaml'  }  
+     - { src: 'step.6.distributor.yaml.j2', dest: '/etc/kubernetes/kubeadm/cortex/step.6.distributor.yaml'  }  
+     - { src: 'step.7.queryfrontend.yaml.j2', dest: '/etc/kubernetes/kubeadm/cortex/step.7.queryfrontend.yaml'  }  
+     - { src: 'step.8.nginx.yaml.j2', dest: '/etc/kubernetes/kubeadm/cortex/step.8.nginx.yaml'  }  
+     - { src: 'step.9.grafana-dep.yaml.j2', dest: '/etc/kubernetes/kubeadm/cortex/step.9.grafana-dep.yaml'  }  
   when: >
     inventory_hostname == "kube-master-0"
   register: result

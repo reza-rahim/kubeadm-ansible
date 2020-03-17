@@ -6,7 +6,10 @@ https://www.infracloud.io/cortex-prometheus-ha/
 
 #helm  template -name monitoring --namespace=monitoring prometheus --set server.global.external_labels.cluster=one --set serverFiles."prometheus\.yml".remote_write[0].url=http://cortex-nginx.cortex.svc.cluster.local:80/api/prom/push prometheus > prometheus.yaml
 
-helm  template -name my-release --set server.global.external_labels.cluster=one --set serverFiles."prometheus\.yml".remote_write[0].url=cortex_endpoint prometheus > prometheus.yaml
+helm  template -name monitoring --namespace=monitoring prometheus --set server.global.external_labels.cluster=one --set serverFiles."prometheus\.yml".remote_write[0].url=cortex_endpoint > prometheus.yaml
+
+rm -rf prometheus
+
 sed -i 's/cortex_endpoint/{{ cortex_endpoint }}/' prometheus.yaml 
 
 ssh kube-master-0 "mkdir -p ~/prom"
