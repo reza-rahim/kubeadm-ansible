@@ -1,9 +1,11 @@
 ---
 - hosts: kube-master
   roles:
-     #- nginx-ingress
+     - nginx-ingress
      #- storage
-     - monitoring
+     #- monitoring
      #- cassandra
      #- cortex
+     #- loki
+     #- klovercloud
 

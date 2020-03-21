@@ -88,28 +88,6 @@ subjects:
   namespace: ${POD_NAMESPACE}
 
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: nginx-ingress
-spec:
-  type: NodePort
-  ports:
-    - port: 80
-      name: http
-      nodePort: 30080
-    - port: 443
-      name: https
-      nodePort: 30443
-    - port: 18080
-      name: http-mgmt
-    - port: 10254
-      name: health
-      nodePort: 30254
-  selector:
-    app: nginx-ingress-lb
-
----
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -122,6 +100,7 @@ spec:
       labels:
         app: nginx-ingress-lb
     spec:
+      hostNetwork: true
       terminationGracePeriodSeconds: 60
       serviceAccount: nginx
       tolerations:
@@ -175,4 +154,3 @@ spec:
             - containerPort: 443
             - containerPort: 18080
             - containerPort: 10254
-

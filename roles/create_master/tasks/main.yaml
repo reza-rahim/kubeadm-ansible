@@ -18,7 +18,7 @@
      - { src: 'kubeadm-config.yaml.j2', dest: '/etc/kubernetes/kubeadm/kubeadm-config.yaml'  }  
      - { src: 'calico.yaml.j2', dest: '/etc/kubernetes/kubeadm/calico.yaml'  }  
      - { src: 'dashboard.yaml.j2', dest: '/etc/kubernetes/kubeadm/dashboard.yaml'  }  
-     - { src: 'kube-flannel.yml.j2', dest: '/etc/kubernetes/kubeadm/kube-flannel.yaml'  }  
+     #- { src: 'kube-flannel.yml.j2', dest: '/etc/kubernetes/kubeadm/kube-flannel.yaml'  }  
   when: >
     inventory_hostname in groups['kube-master'] and
     inventory_hostname == "kube-master-0" and
