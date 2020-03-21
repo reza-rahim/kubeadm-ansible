@@ -1,0 +1,11 @@
+https://cert-manager.io/docs/tutorials/acme/ingress/
+
+ssh kube-master-0 "mkdir -p ~/cert"
+scp  *.yaml kube-master-0:~/cert/ 
+ssh kube-master-0 "kubectl apply -f ~/cert/"
+
+
+https://cert-manager.io/docs/installation/kubernetes/
+# kubectl create namespace cert-manager
+# kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v0.14.0/cert-manager.yaml
+
