@@ -1,0 +1,15 @@
+kubectl exec -it -n cassandra cassandra-0 bash
+cqlsh -u cassandra  -p admin1234
+
+https://www.tutorialspoint.com/cassandra/cassandra_shell_commands.htm
+
+
+CAPTURE '/home/hadoop/CassandraProgs/Outputfile'
+select * from emp;
+capture off;
+
+describe keyspaces;
+describe tables;
+
+DESCRIBE cortex;
+
