@@ -1,0 +1,32 @@
+NAMESPACE: tekton
+HARBOR_SECRET: regcred-harbor
+HARBOR_USERNAME: klover-dev
+HARBOR_PASSWORD: Dev@Klover2019!
+HARBOR_EMAIL: shihab.hasan@klovercloud.com
+
+KLOVERCLOUD_CI_IMAGE: container-registry.klovercloud.com/klovercloud/klovercloud-ci:1.1.0
+
+DATABASE_CONNECTION_STR: mongodb://mongoAdmin:abc123@mongodb-internal-kc:27017
+DATABASE_NAME: klovercloud_ci
+
+WEBSOCKET_SERVER_URL: klovercloud-facade-internal-kc/web-socket-ns
+WEBSOCKET_SERVER_ACCESS_TOKEN: 925a05d796362ba0617d241a72c977844f72cc768c491d74410cecb496ae2615TEFyBAkAw6
+
+
+PIPELINE_SERVICE_BASE_URL: http://klovercloud-pipeline-internal-kc
+
+NEXUS_TOKEN: YWRtaW46YWRtaW4=
+NEXUS_USER: admin
+NEXUS_PASSWORD: admin
+
+NEXUS_MAVEN_PUBLIC_URL: http://nexus.klovercloud.com/repository/maven-public/
+NEXUS_MAVEN_RELEASES_URL: http://nexus.klovercloud.com/repository/maven-releases/
+NEXUS_MAVEN_SNAPSHOTS_URL: http://nexus.klovercloud.com/repository/maven-snapshot/
+
+NEXUS_NPM_GROUP_URL: http://nexus.klovercloud.com/repository/npm-group/
+
+
+SERVICE_NAME: klovercloud-ci
+APP_LABEL: klovercloud-ci
+DEPLOYMENT_NAME: klovercloud-ci
+SERVICE_ACCOUNT_NAME: klovercloud-ci

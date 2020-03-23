@@ -1,0 +1,158 @@
+---
+# ------------------- klovercloud-ci service ------------------- # 
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ SERVICE_NAME }}
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: {{ APP_LABEL }}
+spec:
+  ports:
+    - name: http-rest
+      port: 80
+      protocol: TCP
+      targetPort: 8084
+  selector:
+    app: {{ APP_LABEL }}
+
+---
+# ------------------- klovercloud-ci deployment ------------------- #
+ 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ DEPLOYMENT_NAME }}
+  namespace: {{ NAMESPACE }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ APP_LABEL }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0
+  minReadySeconds: 25
+  template:
+    metadata:
+      labels:
+        app: {{ APP_LABEL }}
+    spec:
+      terminationGracePeriodSeconds: 60
+      containers:
+      - name: klovercloud-ci
+        imagePullPolicy: Always
+        image: {{ KLOVERCLOUD_CI_IMAGE }}
+        resources:
+          requests:
+            cpu: 500m
+            memory: 1024Mi
+          limits:
+            cpu: 1000m
+            memory: 1536Mi
+        env:
+        - name: RUN_MODE
+          value: "PRODUCTION"
+        - name: IS_K8
+          value: "True"
+        - name: DATABASE_CONNECTION_STR
+          value: {{ DATABASE_CONNECTION_STR }}
+        - name: DATABASE_NAME
+          value: {{ DATABASE_NAME }}
+        - name: WEBSOCKET_SERVER_URL
+          value: {{ WEBSOCKET_SERVER_URL }}
+        - name: WEBSOCKET_SERVER_ACCESS_TOKEN
+          value: {{ WEBSOCKET_SERVER_ACCESS_TOKEN }}
+        - name: PIPELINE_SERVICE_BASE_URL
+          value: {{ PIPELINE_SERVICE_BASE_URL }}
+        - name: NEXUS_TOKEN
+          value: {{ NEXUS_TOKEN }}
+        - name: NEXUS_USER
+          value: {{ NEXUS_USER }}
+        - name: NEXUS_PASSWORD
+          value: {{ NEXUS_PASSWORD }}
+        - name: NEXUS_MAVEN_PUBLIC_URL
+          value: {{ NEXUS_MAVEN_PUBLIC_URL }}
+        - name: NEXUS_MAVEN_RELEASES_URL
+          value: {{ NEXUS_MAVEN_RELEASES_URL }}
+        - name: NEXUS_MAVEN_SNAPSHOTS_URL
+          value: {{ NEXUS_MAVEN_SNAPSHOTS_URL }}
+        - name: NEXUS_NPM_GROUP_URL
+          value: {{ NEXUS_NPM_GROUP_URL }}
+        - name: GENERATOR_IMAGE_PULL_SECRET
+          value: {{ HARBOR_SECRET }}
+        ports:
+        - containerPort: 8084
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8084
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8084
+          initialDelaySeconds: 30
+          periodSeconds: 10
+      serviceAccount: {{ SERVICE_ACCOUNT_NAME }}
+      imagePullSecrets:
+      - name: {{ HARBOR_SECRET }}
+
+---
+# ------------------- CI Service Account ------------------- #
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    k8s-app: {{ APP_LABEL }}
+  name: {{ SERVICE_ACCOUNT_NAME }}
+  namespace: {{ NAMESPACE }}
+
+
+---
+# ------------------- Role Binding ------------------- #
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: klovercloud-ci-rolebinding
+  namespace: {{ NAMESPACE }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: {{ SERVICE_ACCOUNT_NAME }}
+    namespace: {{ NAMESPACE }}
+
+---
+# ------------------- Pipeline service ------------------- #
+kind: Service
+apiVersion: v1
+metadata:
+  name: klovercloud-pipeline
+  namespace:  {{ NAMESPACE }}
+spec:
+  type: ExternalName
+  externalName: klovercloud-pipeline.klovercloud.svc.cluster.local
+  ports:
+  - port: 80
+
+---
+# ------------------- Websocket service ------------------- #
+kind: Service
+apiVersion: v1
+metadata:
+  name: klovercloud-facade
+  namespace: {{ NAMESPACE }}
+spec:
+  type: ExternalName
+  externalName: klovercloud-facade.klovercloud.svc.cluster.local
+  ports:
+  - port: 80
