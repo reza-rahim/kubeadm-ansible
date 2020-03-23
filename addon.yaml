@@ -2,7 +2,7 @@
 - hosts: kube-master
   roles:
      - nginx-ingress
-     - tekton
+     - klovercloud
      #- storage
      #- monitoring
      #- cassandra

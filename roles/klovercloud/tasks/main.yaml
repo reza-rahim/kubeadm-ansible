@@ -1,0 +1,56 @@
+---
+
+- name: Install Tekton Pipelines and its dependencies
+  shell: kubectl apply --filename https://storage.googleapis.com/tekton-releases/pipeline/latest/release.yaml;
+  when: >
+    inventory_hostname == "kube-master-0" 
+  ignore_errors: yes
+
+- name: Run for those container runtime that does not support image-reference:tag@digest
+  shell: kubectl apply --filename https://storage.googleapis.com/tekton-releases/pipeline/latest/release.notags.yaml;
+  when: >
+    inventory_hostname == "kube-master-0" 
+  ignore_errors: yes
+
+- name: Create namespace for klovercloud
+  shell: kubectl create ns {{ klovercloud_namespace }};
+  when: >
+    inventory_hostname == "kube-master-0" 
+  ignore_errors: yes
+
+- name: Create namespace for klovercloud-ci 
+  shell: kubectl create ns {{ klovercloud_ci_namespace }};
+  when: >
+    inventory_hostname == "kube-master-0" 
+  ignore_errors: yes
+
+- name: Create secret to pull klovercloud-ci and generator images from harbor
+  shell: kubectl create secret docker-registry  {{ klovercloud_ci_image_pulling_secret }} --docker-server=https://container-registry.klovercloud.com --docker-username={{ klovercloud_ci_registry_username }} --docker-password={{ klovercloud_ci_registry_password }} --docker-email={{ klovercloud_ci_registry_email }} -n {{ klovercloud_ci_namespace }};
+  when: >
+    inventory_hostname == "kube-master-0" 
+  ignore_errors: yes
+
+- name: Creates /etc/kubernetes/kubeadm directory
+  file: path=/etc/kubernetes/kubeadm/klovercloud  recurse=yes state=directory
+  when: >
+    inventory_hostname == "kube-master-0"
+
+- name: Copy kube config files
+  template: src="{{ item.src }}" dest="{{ item.dest }}"
+  with_items:
+     - { src: 'step.1.klovercloud-ci.v1.1.0.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud_ci/step.1.klovercloud-ci.v1.1.0.yaml'  } 
+     - { src: 'step.1.klovercloud-ci.v1.1.0.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud_ci/step.2.mongodb.yaml.j2'  } 
+     - { src: 'step.1.klovercloud-ci.v1.1.0.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud_ci/step.3.kafka.yaml.j2'  } 
+     
+  when: >
+    inventory_hostname == "kube-master-0"
+  register: result
+
+- name:  
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/;
+  when: >
+    inventory_hostname == "kube-master-0" 
+  ignore_errors: yes
+
+  
+ 

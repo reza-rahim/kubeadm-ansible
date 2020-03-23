@@ -1,0 +1,191 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ klovercloud_mongodb_service_name }}
+  namespace: {{ klovercloud_namespace }}
+  labels:
+    app: {{ klovercloud_mongdb_app_label }}
+  annotations:
+spec:
+  type: ClusterIP
+  ports:
+  - name: {{ klovercloud_mongodb_service_name }}
+    port: 27017
+    protocol: TCP
+    targetPort: 27017
+    nodePort:
+  - name: metrics
+    port: 9216
+    protocol: TCP
+    targetPort: 9216
+    nodePort:
+  selector:
+    app: {{ klovercloud_mongdb_app_label }}
+    component: primary
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ klovercloud_mongodb_nodeport_service_name }}
+  namespace:  {{ klovercloud_namespace }}
+  labels:
+    app: {{ klovercloud_mongdb_app_label }}
+  annotations:
+spec:
+  type: NodePort
+  ports:
+  - name: mongodb
+    port: 27017
+    protocol: TCP
+    targetPort: 27017
+    nodePort: 32205
+  - name: metrics
+    port: 9216
+    protocol: TCP
+    targetPort: 9216
+    nodePort: 32206
+  selector:
+    app: {{ klovercloud_mongdb_app_label }}
+    component: primary
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ klovercloud_mongodb_statefulset_name }}
+  namespace:  {{ klovercloud_namespace }}
+  labels:
+    app: {{ klovercloud_mongdb_app_label }}
+spec:
+  serviceName: {{ klovercloud_mongodb_service_name }}
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ klovercloud_mongdb_app_label }}
+      component: primary
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      name: ''
+      annotations:
+        prometheus.io/port: '9216'
+        prometheus.io/scrape: 'true'
+      labels:
+        app: {{ klovercloud_mongdb_app_label }}
+        component: primary
+    spec:
+      terminationGracePeriodSeconds: 60
+      securityContext:
+      containers:
+      - name: mongodb
+        imagePullPolicy: IfNotPresent
+        image: {{ klovercloud_mongodb_image }}
+        resources:
+          requests:
+            cpu: 500m
+            memory: 500Mi
+          limits:
+            cpu: 1000m
+            memory: 1000Mi
+        command:
+        env:
+        - name: MONGODB_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+            secretKeyRef:
+        - name: MONGODB_REPLICA_SET_MODE
+          value: primary
+        - name: MONGODB_REPLICA_SET_NAME
+          value: {{ klovercloud_mongdb_app_label }}-2020030913370139
+        - name: MONGODB_REPLICA_SET_KEY
+          value: {{ klovercloud_mongodb_replica_set_key }}
+        - name: MONGODB_ROOT_PASSWORD
+          value: {{ klovercloud_mongodd_root_password }}
+        - name: MONGODB_ADVERTISED_HOSTNAME
+          value: "$(MONGODB_POD_NAME).mongodb.klovercloud.svc.cluster.local"
+        envFrom:
+        ports:
+        - name: mongodb
+          containerPort: 27017
+        volumeMounts:
+        - mountPath: "/bitnami/mongodb"
+          name: data
+        readinessProbe:
+          exec:
+            command:
+            - mongo
+            - "--eval"
+            - db.adminCommand('ping')
+          failureThreshold: 6
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        livenessProbe:
+          exec:
+            command:
+            - pgrep
+            - mongod
+          failureThreshold: 6
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        securityContext: {}
+      - name: metrics
+        imagePullPolicy: IfNotPresent
+        image: {{ klovercloud_mongodb_exporter_image }}
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+        command:
+        - sh
+        - "-c"
+        - "/bin/mongodb_exporter --mongodb.uri mongodb://root:${MONGODB_ROOT_PASSWORD}@localhost:27017/admin "
+        env:
+        - name: MONGODB_ROOT_PASSWORD
+          value: {{ klovercloud_mongodd_root_password }}
+        envFrom:
+        ports:
+        - name: metrics
+          containerPort: 9216
+        volumeMounts:
+        readinessProbe:
+          failureThreshold: 6
+          httpGet:
+            path: "/metrics"
+            port: 9216
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        livenessProbe:
+          failureThreshold: 6
+          httpGet:
+            path: "/metrics"
+            port: 9216
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        securityContext: {}
+      volumes: []
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+      namespace:  {{ klovercloud_namespace }}
+      labels:
+        app: {{ klovercloud_mongdb_app_label }}
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      storageClassName: rook-ceph-block
+      resources:
+        requests:
+          storage: 2000Mi
