@@ -63,9 +63,9 @@ spec:
         - name: DATABASE_NAME
           value: {{ DATABASE_NAME }}
         - name: WEBSOCKET_SERVER_URL
-          value: {{ WEBSOCKET_SERVER_URL }}
+          value: {{ WEBSOCKET_SERVICE_URL }}
         - name: WEBSOCKET_SERVER_ACCESS_TOKEN
-          value: {{ WEBSOCKET_SERVER_ACCESS_TOKEN }}
+          value: {{ WEBSOCKET_SERVICE_ACCESS_TOKEN }}
         - name: PIPELINE_SERVICE_BASE_URL
           value: {{ PIPELINE_SERVICE_BASE_URL }}
         - name: NEXUS_TOKEN
@@ -136,11 +136,11 @@ subjects:
 kind: Service
 apiVersion: v1
 metadata:
-  name: klovercloud-pipeline
+  name: {{ PIPELINE_SERVICE_NAME }}
   namespace:  {{ NAMESPACE }}
 spec:
   type: ExternalName
-  externalName: klovercloud-pipeline.klovercloud.svc.cluster.local
+  externalName: {{ PIPELINE_SERVICE_EXTERNAL_NAME }}
   ports:
   - port: 80
 
@@ -149,10 +149,10 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  name: klovercloud-facade
+  name: {{ WEBSOCKET_SERVICE_NAME }}
   namespace: {{ NAMESPACE }}
 spec:
   type: ExternalName
-  externalName: klovercloud-facade.klovercloud.svc.cluster.local
+  externalName: {{ WEBSOCKET_SERVICE_EXTERNAL_NAME }}
   ports:
   - port: 80

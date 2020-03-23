@@ -9,11 +9,15 @@ KLOVERCLOUD_CI_IMAGE: container-registry.klovercloud.com/klovercloud/klovercloud
 DATABASE_CONNECTION_STR: mongodb://mongoAdmin:abc123@mongodb-internal-kc:27017
 DATABASE_NAME: klovercloud_ci
 
-WEBSOCKET_SERVER_URL: klovercloud-facade-internal-kc/web-socket-ns
-WEBSOCKET_SERVER_ACCESS_TOKEN: 925a05d796362ba0617d241a72c977844f72cc768c491d74410cecb496ae2615TEFyBAkAw6
+WEBSOCKET_SERVICE_URL: klovercloud-facade-internal-kc/web-socket-ns
+WEBSOCKET_SERVICE_ACCESS_TOKEN: 925a05d796362ba0617d241a72c977844f72cc768c491d74410cecb496ae2615TEFyBAkAw6
+WEBSOCKET_SERVICE_NAME: klovercloud-facade
+WEBSOCKET_SERVICE_EXTERNAL_NAME: klovercloud-facade.klovercloud.svc.cluster.local
 
 
 PIPELINE_SERVICE_BASE_URL: http://klovercloud-pipeline-internal-kc
+PIPELINE_SERVICE_NAME: klovercloud-pipeline
+PIPELINE_SERVICE_EXTERNAL_NAME: klovercloud-pipeline.klovercloud.svc.cluster.local
 
 NEXUS_TOKEN: YWRtaW46YWRtaW4=
 NEXUS_USER: admin

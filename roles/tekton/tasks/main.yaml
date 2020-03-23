@@ -24,12 +24,6 @@
     inventory_hostname == "kube-master-0" 
   ignore_errors: yes
 
-- name: Create secret to pull klovercloud-ci and generator images from harbor
-  shell: kubectl create secret docker-registry  {{ HARBOR_SECRET }} --docker-server=https://container-registry.klovercloud.com --docker-username={{ HARBOR_USERNAME }} --docker-password={{ HARBOR_PASSWORD }} --docker-email={{ HARBOR_EMAIL }} -n {{ NAMESPACE }};
-  when: >
-    inventory_hostname == "kube-master-0" 
-  ignore_errors: yes
-
 - name: Creates /etc/kubernetes/kubeadm directory
   file: path=/etc/kubernetes/kubeadm/klovercloud_ci  recurse=yes state=directory
   when: >
