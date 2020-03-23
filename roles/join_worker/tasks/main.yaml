@@ -1,0 +1,20 @@
+---
+
+- name: check for the /etc/kubernetes/manifests/kube-apiserver.yaml
+  command: "ls /etc/kubernetes/kubelet.conf"
+  when: >
+    inventory_hostname not in groups['kube-master']
+  register: command_result
+  ignore_errors: True
+
+- name: copy token file to worker
+  copy: src=/var/klovercloud.com/cache/worker_join.sh dest=/etc/kubernetes/
+  when: >
+    inventory_hostname not in groups['kube-master']
+  ignore_errors: yes
+
+- name:  join worker to k8 cluster
+  shell: sh /etc/kubernetes/worker_join.sh
+  when: >
+    inventory_hostname not in groups['kube-master'] and
+    command_result.rc != 0    

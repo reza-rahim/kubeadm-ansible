@@ -1,0 +1,17 @@
+
+https://github.com/grafana/tanka/releases
+
+curl -fSL -o "/usr/local/bin/tk" "https://github.com/grafana/tanka/releases/download/v0.8.0/tk-linux-amd64"
+
+chmod a+x "/usr/local/bin/tk"
+
+
+## https://github.com/grafana/loki/blob/master/docs/installation/tanka.md
+
+##install jb
+yum -y install go
+go get -u github.com/jsonnet-bundler/jsonnet-bundler/cmd/jb
+mv /root/go/bin/jb /usr/local/bin
+
+
+

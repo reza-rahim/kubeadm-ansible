@@ -1,0 +1,10 @@
+{% macro label() -%}
+{% for host in groups['kube-storage'] %} kubectl label nodes {{ host }}  dedicated={{ storage_taint }} ; {% endfor %}
+{% endmacro -%}
+
+{% macro taint() -%}
+{% for host in groups['kube-storage'] %} kubectl taint nodes {{ host }} dedicated={{ storage_taint }}:NoSchedule ;  {% endfor %}
+{% endmacro -%}
+
+{{ label() }} 
+{{ taint() }}

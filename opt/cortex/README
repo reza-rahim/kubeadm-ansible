@@ -1,0 +1,5 @@
+
+ssh kube-master-0 "mkdir -p ~/cortex"
+scp  *.yaml  kube-master-0:~/cortex
+ssh kube-master-0 "kubectl apply -f ~/cortex"
+

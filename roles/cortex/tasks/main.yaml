@@ -1,0 +1,41 @@
+---
+
+- name: Creates /etc/kubernetes/kubeadm directory
+  file: path=/etc/kubernetes/kubeadm/cortex  recurse=yes state=directory
+  when: >
+    inventory_hostname == "kube-master-0"
+
+- name: Copy kube config files
+  template: src="{{ item.src }}" dest="{{ item.dest }}"
+  with_items:
+     - { src: 'step.1.table-manager.yaml.j2', dest: '/etc/kubernetes/kubeadm/cortex/step.1.table-manager.yaml'  }  
+     - { src: 'step.2.consul.yaml.j2', dest: '/etc/kubernetes/kubeadm/cortex/step.2.consul.yaml'  }  
+     - { src: 'step.3.memcached.yaml.j2', dest: '/etc/kubernetes/kubeadm/cortex/step.3.memcached.yaml'  }  
+     - { src: 'step.4.ingester.yaml.j2', dest: '/etc/kubernetes/kubeadm/cortex/step.4.ingester.yaml'  }  
+     - { src: 'step.5.querier.yaml.j2', dest: '/etc/kubernetes/kubeadm/cortex/step.5.querier.yaml'  }  
+     - { src: 'step.6.distributor.yaml.j2', dest: '/etc/kubernetes/kubeadm/cortex/step.6.distributor.yaml'  }  
+     - { src: 'step.7.queryfrontend.yaml.j2', dest: '/etc/kubernetes/kubeadm/cortex/step.7.queryfrontend.yaml'  }  
+     - { src: 'step.8.nginx.yaml.j2', dest: '/etc/kubernetes/kubeadm/cortex/step.8.nginx.yaml'  }  
+     - { src: 'step.9.grafana-dep.yaml.j2', dest: '/etc/kubernetes/kubeadm/cortex/step.9.grafana-dep.yaml'  }  
+  when: >
+    inventory_hostname == "kube-master-0"
+  register: result
+
+- name:  label and storage cortex  box
+  shell: sh /etc/kubernetes/kubeadm/cortex/taint.sh;
+  when: >
+    inventory_hostname == "kube-master-0" 
+  ignore_errors: yes
+
+- name:  create cortex namespace
+  shell: kubectl create ns cortex;
+  when: >
+    inventory_hostname == "kube-master-0" 
+  ignore_errors: yes
+
+
+- name: create cortex 
+  shell: kubectl apply -n cortex -f /etc/kubernetes/kubeadm/cortex/;
+  when: >
+    inventory_hostname == "kube-master-0" 
+  ignore_errors: yes

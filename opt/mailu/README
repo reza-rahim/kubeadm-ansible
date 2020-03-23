@@ -1,0 +1,4 @@
+#
+ssh kube-master-0 "mkdir -p ~/mailu"
+scp  *.yaml  kube-master-0:~/mailu 
+ssh kube-master-0 "kubectl apply -f ~/mailu"

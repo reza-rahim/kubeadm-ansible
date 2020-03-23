@@ -1,0 +1,78 @@
+---
+
+- name: disable filewalld
+  shell: systemctl stop firewalld; systemctl disable firewalld;
+
+- name: install yum-utils device-mapper-persistent-data lvm2
+  yum:
+     name: "{{ item }}"
+     state: present
+     update_cache: yes
+  loop:
+    - yum-utils
+    - device-mapper-persistent-data
+    - lvm2
+
+- name: Add repository docker-ce
+  shell: yum-config-manager --add-repo  https://download.docker.com/linux/centos/docker-ce.repo
+
+- name: install containerd.io docker-ce docker-ce-cli 
+  yum:
+     name: "{{ item }}"
+     state: present
+     update_cache: yes
+  loop:
+    - containerd.io-{{ containerd }}
+    - docker-ce-{{ docker_ce_redhat }}
+    - docker-ce-cli-{{ docker_ce_redhat }}
+
+- name: ansible /etc/docker
+  file:
+    path: /etc/docker
+    state: directory
+
+
+- name: Disable SELinux
+  selinux:
+    state: disabled
+
+- name: Disable SELinux
+  shell: setenforce 0
+
+- name: ansible create docker.service.d
+  file:
+    path: /etc/systemd/system/docker.service.d
+    state: directory
+
+- name: Copy docker deamon iles
+  template: src=docker-daemon-centos.json.j2  dest=/etc/docker/daemon.json
+  notify: restart docker      
+
+- name: Creating a repository file for Kubernetes
+  file:
+     path: /etc/yum.repos.d/kubernetes.repo
+     state: touch
+
+- name: Adding repository details in Kubernetes repo file.
+  blockinfile:
+    path: /etc/yum.repos.d/kubernetes.repo
+    block: |
+      [kubernetes]
+      name=Kubernetes
+      baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+      enabled=1
+      gpgcheck=1
+      repo_gpgcheck=1
+      gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg
+        https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+
+- name: Install kubelet kubeadm kubectl
+  yum:
+     name: "{{ item }}"
+     state: present
+     update_cache: yes
+  loop:
+    - kubelet-{{ redhat_k8_version }}
+    - kubeadm-{{ redhat_k8_version }} 
+    - kubectl-{{ redhat_k8_version }}
+  notify: restart kubelet      

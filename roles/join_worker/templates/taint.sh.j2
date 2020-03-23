@@ -1,0 +1,22 @@
+{% macro ingress-label() -%}
+{% for host in groups['kube-ingress'] %} kubectl label nodes {{ host }}  dedicated=ingress ; {% endfor %}
+{% endmacro -%}
+
+{% macro ingress-taint() -%}
+{% for host in groups['kube-ingress'] %} kubectl taint nodes {{ host }} dedicated=ingress:NoSchedule ;  {% endfor %}
+{% endmacro -%}
+
+{{ ingress-label() }} 
+{{ ingress-taint() }}
+
+
+% macro storage-label() -%}
+{% for host in groups['kube-storage'] %} kubectl label nodes {{ host }}  dedicated={{ storage_taint }} ; {% endfor %}
+{% endmacro -%}
+
+{% macro storage-taint() -%}
+{% for host in groups['kube-storage'] %} kubectl taint nodes {{ host }} dedicated={{ storage_taint }}:NoSchedule ;  {% endfor %}
+{% endmacro -%}
+
+{{ storage-label() }} 
+{{ storage-taint() }}

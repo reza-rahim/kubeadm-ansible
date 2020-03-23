@@ -1,0 +1,97 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: cassandra
+  name: cassandra
+spec:
+  clusterIP: None
+  ports:
+    - port: 9042
+  selector:
+    app: cassandra
+---
+apiVersion: "apps/v1"
+kind: StatefulSet
+metadata:
+  name: cassandra
+spec:
+  serviceName: cassandra
+  selector:
+    matchLabels:
+      app: cassandra
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: cassandra
+    spec:
+#     tolerations:
+#       - effect: NoSchedule
+#         key: dedicated
+#         operator: Equal
+#         value: storge
+#     affinity:
+#       nodeAffinity:
+#         requiredDuringSchedulingIgnoredDuringExecution:
+#           nodeSelectorTerms:
+#           - matchExpressions:
+#             - key: dedicated
+#               operator: In
+#               values:
+#               - storage
+      containers:
+        - name: cassandra
+          image: bitnami/cassandra:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - bash
+            - -ec
+            # Node 0 is the password seeder
+            - |
+              if [[ $HOSTNAME =~ (.*)-0$ ]]; then
+                echo "Setting node as password seeder"
+                export CASSANDRA_PASSWORD_SEEDER=yes
+              else
+                # Only node 0 will execute the startup initdb scripts
+                export CASSANDRA_IGNORE_INITDB_SCRIPTS=1
+              fi
+              /entrypoint.sh /run.sh
+          ports:
+            - containerPort: 7000
+              name: intra-node
+            - containerPort: 7001
+              name: tls-intra-node
+            - containerPort: 7199
+              name: jmx
+            - containerPort: 9042
+              name: cql
+          env:
+            - name: CASSANDRA_SEEDS
+              value: cassandra-0.cassandra.cassandra.svc.cluster.local
+            - name: MAX_HEAP_SIZE
+              value: 256M
+            - name: HEAP_NEWSIZE
+              value: 100M
+            - name: CASSANDRA_PASSWORD
+              value: admin1234
+            - name: CASSANDRA_CLUSTER_NAME
+              value: "Cassandra"
+            - name: CASSANDRA_DATACENTER
+              value: "DC1"
+            - name: CASSANDRA_RACK
+              value: "Rack1"
+            - name: CASSANDRA_ENDPOINT_SNITCH
+              value: GossipingPropertyFileSnitch
+          volumeMounts:
+            - name: cassandra-data
+              mountPath: /var/lib/cassandra/data
+  volumeClaimTemplates:
+    - metadata:
+        name: cassandra-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 5Gi
+        storageClassName: rook-ceph-block-ec

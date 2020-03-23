@@ -1,0 +1,27 @@
+---
+
+- name: Creates /etc/kubernetes/kubeadm/monitoring  directory
+  file: path=/etc/kubernetes/kubeadm/monitoring  recurse=yes state=directory
+  when: >
+    inventory_hostname == "kube-master-0"
+
+- name: Copy kube config files
+  template: src="{{ item.src }}" dest="{{ item.dest }}"
+  with_items:
+     - { src: 'prometheus.yaml.j2', dest: '/etc/kubernetes/kubeadm/monitoring/prometheus.yaml'  }  
+  when: >
+    inventory_hostname == "kube-master-0"
+  register: result
+
+- name:  create cortex namespace
+  shell: kubectl create ns monitoring;
+  when: >
+    inventory_hostname == "kube-master-0" 
+  ignore_errors: yes
+
+
+- name: create cortex 
+  shell: kubectl apply -n monitoring -f /etc/kubernetes/kubeadm/monitoring/;
+  when: >
+    inventory_hostname == "kube-master-0" 
+  ignore_errors: yes

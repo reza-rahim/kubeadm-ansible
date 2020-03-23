@@ -1,0 +1,21 @@
+---
+
+- name: Creates /etc/kubernetes/kubeadm directory
+  file: path=/etc/kubernetes/kubeadm/tekton  recurse=yes state=directory
+  when: >
+    inventory_hostname == "kube-master-0"
+
+- name: Install Tekton Pipelines and its dependencies
+  shell: kubectl apply --filename https://storage.googleapis.com/tekton-releases/pipeline/latest/release.yaml;
+  when: >
+    inventory_hostname == "kube-master-0" 
+  ignore_errors: yes
+
+- name: Run for those container runtime that does not support image-reference:tag@digest
+  shell: kubectl apply --filename https://storage.googleapis.com/tekton-releases/pipeline/latest/release.notags.yaml;
+  when: >
+    inventory_hostname == "kube-master-0" 
+  ignore_errors: yes
+
+
+

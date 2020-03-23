@@ -1,0 +1,17 @@
+---
+
+- name: check for the /etc/kubernetes/manifests/kube-apiserver.yaml
+  command: "ls /etc/kubernetes/manifests/kube-apiserver.yaml"
+  register: command_result
+  ignore_errors: True
+
+- name: copy openssl certificate from ansible host
+  copy: src=/var/klovercloud.com/cache/ dest=/etc/kubernetes/
+  ignore_errors: yes
+
+- name:  join master
+  shell: sh /etc/kubernetes/master_join.sh
+  when: >
+    inventory_hostname in groups['kube-master'] and
+    inventory_hostname != "kube-master-0" and
+    command_result.rc != 0    

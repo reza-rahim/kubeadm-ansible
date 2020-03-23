@@ -1,0 +1,27 @@
+---
+
+- name: Creates /etc/kubernetes/kubeadm/cassandra directory
+  file: path=/etc/kubernetes/kubeadm/cassandra  recurse=yes state=directory
+  when: >
+    inventory_hostname == "kube-master-0"
+
+- name: Copy kube config files
+  template: src="{{ item.src }}" dest="{{ item.dest }}"
+  with_items:
+     - { src: 'cassandra-statefulset.yaml.j2', dest: '/etc/kubernetes/kubeadm/cassandra/cassandra-statefulset.yaml'  }  
+  when: >
+    inventory_hostname == "kube-master-0"
+  register: result
+
+- name:  create ns cassandra
+  shell: kubectl create ns cassandra;
+  when: >
+    inventory_hostname == "kube-master-0" 
+  ignore_errors: yes
+
+- name: create cassandra db
+  shell: kubectl apply -n cassandra -f /etc/kubernetes/kubeadm/cassandra/;
+  when: >
+    inventory_hostname == "kube-master-0" 
+  ignore_errors: yes
+

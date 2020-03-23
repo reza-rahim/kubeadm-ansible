@@ -1,0 +1,1687 @@
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  name: promtail
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - nodes
+  - nodes/proxy
+  - services
+  - endpoints
+  - pods
+  verbs:
+  - get
+  - list
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: promtail
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: promtail
+subjects:
+- kind: ServiceAccount
+  name: promtail
+  namespace: loki
+---
+apiVersion: v1
+data:
+  consul-config.json: '{"leave_on_terminate": true, "telemetry": {"dogstatsd_addr":
+    "127.0.0.1:9125"}}'
+  mapping: |
+    mappings:
+    - match: consul.*.runtime.*
+      name: consul_runtime
+      labels:
+        type: $2
+    - match: consul.runtime.total_gc_pause_ns
+      name: consul_runtime_total_gc_pause_ns
+      labels:
+        type: $2
+    - match: consul.consul.health.service.query-tag.*.*.*
+      name: consul_health_service_query_tag
+      labels:
+        query: $1.$2.$3
+    - match: consul.consul.health.service.query-tag.*.*.*.*
+      name: consul_health_service_query_tag
+      labels:
+        query: $1.$2.$3.$4
+    - match: consul.consul.health.service.query-tag.*.*.*.*.*
+      name: consul_health_service_query_tag
+      labels:
+        query: $1.$2.$3.$4.$5
+    - match: consul.consul.health.service.query-tag.*.*.*.*.*.*
+      name: consul_health_service_query_tag
+      labels:
+        query: $1.$2.$3.$4.$5.$6
+    - match: consul.consul.health.service.query-tag.*.*.*.*.*.*.*
+      name: consul_health_service_query_tag
+      labels:
+        query: $1.$2.$3.$4.$5.$6.$7
+    - match: consul.consul.health.service.query-tag.*.*.*.*.*.*.*.*
+      name: consul_health_service_query_tag
+      labels:
+        query: $1.$2.$3.$4.$5.$6.$7.$8
+    - match: consul.consul.health.service.query-tag.*.*.*.*.*.*.*.*.*
+      name: consul_health_service_query_tag
+      labels:
+        query: $1.$2.$3.$4.$5.$6.$7.$8.$9
+    - match: consul.consul.health.service.query-tag.*.*.*.*.*.*.*.*.*.*
+      name: consul_health_service_query_tag
+      labels:
+        query: $1.$2.$3.$4.$5.$6.$7.$8.$9.$10
+    - match: consul.consul.health.service.query-tag.*.*.*.*.*.*.*.*.*.*.*
+      name: consul_health_service_query_tag
+      labels:
+        query: $1.$2.$3.$4.$5.$6.$7.$8.$9.$10.$11
+    - match: consul.consul.health.service.query-tag.*.*.*.*.*.*.*.*.*.*.*.*
+      name: consul_health_service_query_tag
+      labels:
+        query: $1.$2.$3.$4.$5.$6.$7.$8.$9.$10.$11.$12
+    - match: consul.consul.catalog.deregister
+      name: consul_catalog_deregister
+      labels: {}
+    - match: consul.consul.dns.domain_query.*.*.*.*.*
+      name: consul_dns_domain_query
+      labels:
+        query: $1.$2.$3.$4.$5
+    - match: consul.consul.health.service.not-found.*
+      name: consul_health_service_not_found
+      labels:
+        query: $1
+    - match: consul.consul.health.service.query.*
+      name: consul_health_service_query
+      labels:
+        query: $1
+    - match: consul.*.memberlist.health.score
+      name: consul_memberlist_health_score
+      labels: {}
+    - match: consul.serf.queue.*
+      name: consul_serf_events
+      labels:
+        type: $1
+    - match: consul.serf.snapshot.appendLine
+      name: consul_serf_snapshot_appendLine
+      labels:
+        type: $1
+    - match: consul.serf.coordinate.adjustment-ms
+      name: consul_serf_coordinate_adjustment_ms
+      labels: {}
+    - match: consul.consul.rpc.query
+      name: consul_rpc_query
+      labels: {}
+    - match: consul.*.consul.session_ttl.active
+      name: consul_session_ttl_active
+      labels: {}
+    - match: consul.raft.rpc.*
+      name: consul_raft_rpc
+      labels:
+        type: $1
+    - match: consul.raft.rpc.appendEntries.storeLogs
+      name: consul_raft_rpc_appendEntries_storeLogs
+      labels:
+        type: $1
+    - match: consul.consul.fsm.persist
+      name: consul_fsm_persist
+      labels: {}
+    - match: consul.raft.fsm.apply
+      name: consul_raft_fsm_apply
+      labels: {}
+    - match: consul.raft.leader.lastContact
+      name: consul_raft_leader_lastcontact
+      labels: {}
+    - match: consul.raft.leader.dispatchLog
+      name: consul_raft_leader_dispatchLog
+      labels: {}
+    - match: consul.raft.commitTime
+      name: consul_raft_commitTime
+      labels: {}
+    - match: consul.raft.replication.appendEntries.logs.*.*.*.*
+      name: consul_raft_replication_appendEntries_logs
+      labels:
+        query: ${1}.${2}.${3}.${4}
+    - match: consul.raft.replication.appendEntries.rpc.*.*.*.*
+      name: consul_raft_replication_appendEntries_rpc
+      labels:
+        query: ${1}.${2}.${3}.${4}
+    - match: consul.raft.replication.heartbeat.*.*.*.*
+      name: consul_raft_replication_heartbeat
+      labels:
+        query: ${1}.${2}.${3}.${4}
+    - match: consul.consul.rpc.request
+      name: consul_rpc_requests
+      labels: {}
+    - match: consul.consul.rpc.accept_conn
+      name: consul_rpc_accept_conn
+      labels: {}
+    - match: consul.memberlist.udp.*
+      name: consul_memberlist_udp
+      labels:
+        type: $1
+    - match: consul.memberlist.tcp.*
+      name: consul_memberlist_tcp
+      labels:
+        type: $1
+    - match: consul.memberlist.gossip
+      name: consul_memberlist_gossip
+      labels: {}
+    - match: consul.memberlist.probeNode
+      name: consul_memberlist_probenode
+      labels: {}
+    - match: consul.memberlist.pushPullNode
+      name: consul_memberlist_pushpullnode
+      labels: {}
+    - match: consul.http.*
+      name: consul_http_request
+      labels:
+        method: $1
+        path: /
+    - match: consul.http.*.*
+      name: consul_http_request
+      labels:
+        method: $1
+        path: /$2
+    - match: consul.http.*.*.*
+      name: consul_http_request
+      labels:
+        method: $1
+        path: /$2/$3
+    - match: consul.http.*.*.*.*
+      name: consul_http_request
+      labels:
+        method: $1
+        path: /$2/$3/$4
+    - match: consul.http.*.*.*.*.*
+      name: consul_http_request
+      labels:
+        method: $1
+        path: /$2/$3/$4/$5
+    - match: consul.consul.leader.barrier
+      name: consul_leader_barrier
+      labels: {}
+    - match: consul.consul.leader.reconcileMember
+      name: consul_leader_reconcileMember
+      labels: {}
+    - match: consul.consul.leader.reconcile
+      name: consul_leader_reconcile
+      labels: {}
+    - match: consul.consul.fsm.coordinate.batch-update
+      name: consul_fsm_coordinate_batch_update
+      labels: {}
+    - match: consul.consul.fsm.autopilot
+      name: consul_fsm_autopilot
+      labels: {}
+    - match: consul.consul.fsm.kvs.cas
+      name: consul_fsm_kvs_cas
+      labels: {}
+    - match: consul.consul.fsm.register
+      name: consul_fsm_register
+      labels: {}
+    - match: consul.consul.fsm.deregister
+      name: consul_fsm_deregister
+      labels: {}
+    - match: consul.consul.fsm.tombstone.reap
+      name: consul_fsm_tombstone_reap
+      labels: {}
+    - match: consul.consul.catalog.register
+      name: consul_catalog_register
+      labels: {}
+    - match: consul.consul.catalog.deregister
+      name: consul_catalog_deregister
+      labels: {}
+    - match: consul.consul.leader.reapTombstones
+      name: consul_leader_reapTombstones
+      labels: {}
+kind: ConfigMap
+metadata:
+  name: consul
+---
+apiVersion: v1
+data:
+  nginx.conf: |
+    worker_processes  5;  ## Default: 1
+    error_log  /dev/stderr;
+    pid        /tmp/nginx.pid;
+    worker_rlimit_nofile 8192;
+
+    events {
+      worker_connections  4096;  ## Default: 1024
+    }
+
+    http {
+      default_type application/octet-stream;
+      log_format   main '$remote_addr - $remote_user [$time_local]  $status '
+        '"$request" $body_bytes_sent "$http_referer" '
+        '"$http_user_agent" "$http_x_forwarded_for"';
+      access_log   /dev/stderr  main;
+      sendfile     on;
+      tcp_nopush   on;
+      resolver kube-dns.kube-system.svc.cluster.local;
+
+      server {
+        listen               80;
+        auth_basic           “Prometheus”;
+        auth_basic_user_file /etc/nginx/secrets/.htpasswd;
+        proxy_set_header     X-Scope-OrgID 1;
+
+        location = /api/prom/push {
+          proxy_pass       http://distributor.loki.svc.cluster.local$request_uri;
+        }
+
+        location = /api/prom/tail {
+          proxy_pass       http://querier.loki.svc.cluster.local$request_uri;
+          proxy_set_header Upgrade $http_upgrade;
+          proxy_set_header Connection "upgrade";
+        }
+
+        location ~ /api/prom/.* {
+          proxy_pass       http://query-frontend.loki.svc.cluster.local$request_uri;
+        }
+
+        location = /loki/api/v1/push {
+          proxy_pass       http://distributor.loki.svc.cluster.local$request_uri;
+        }
+
+        location = /loki/api/v1/tail {
+          proxy_pass       http://querier.loki.svc.cluster.local$request_uri;
+          proxy_set_header Upgrade $http_upgrade;
+          proxy_set_header Connection "upgrade";
+        }
+
+        location ~ /loki/api/.* {
+          proxy_pass       http://query-frontend.loki.svc.cluster.local$request_uri;
+        }
+      }
+    }
+kind: ConfigMap
+metadata:
+  name: gateway-config
+---
+apiVersion: v1
+data:
+  config.yaml: |
+    chunk_store_config:
+        chunk_cache_config:
+            memcached:
+                batch_size: 100
+                parallelism: 100
+            memcached_client:
+                consistent_hash: true
+                host: memcached.loki.svc.cluster.local
+                service: memcached-client
+        max_look_back_period: 0
+        write_dedupe_cache_config:
+            memcached:
+                batch_size: 100
+                parallelism: 100
+            memcached_client:
+                consistent_hash: true
+                host: memcached-index-writes.loki.svc.cluster.local
+                service: memcached-client
+    distributor:
+        ring:
+            kvstore:
+                consul:
+                    consistentreads: false
+                    host: consul.loki.svc.cluster.local:8500
+                    httpclienttimeout: 20s
+                    watchkeyburstsize: 1
+                    watchkeyratelimit: 1
+                store: consul
+    frontend:
+        compress_responses: true
+        max_outstanding_per_tenant: 200
+    frontend_worker:
+        address: query-frontend.loki.svc.cluster.local:9095
+        grpc_client_config:
+            max_send_msg_size: 1.048576e+08
+        parallelism: 8
+    ingester:
+        chunk_block_size: 262144
+        chunk_idle_period: 15m
+        lifecycler:
+            claim_on_rollout: true
+            heartbeat_period: 5s
+            interface_names:
+              - eth0
+            join_after: 30s
+            num_tokens: 512
+            ring:
+                heartbeat_timeout: 1m
+                kvstore:
+                    consul:
+                        consistentreads: true
+                        host: consul.loki.svc.cluster.local:8500
+                        httpclienttimeout: 20s
+                    store: consul
+                replication_factor: 3
+        max_transfer_retries: 60
+    ingester_client:
+        grpc_client_config:
+            max_recv_msg_size: 6.7108864e+07
+        remote_timeout: 1s
+    limits_config:
+        enforce_metric_name: false
+        ingestion_burst_size_mb: 20
+        ingestion_rate_mb: 10
+        ingestion_rate_strategy: global
+        max_global_streams_per_user: 10000
+        max_query_length: 12000h
+        max_query_parallelism: 32
+        max_streams_per_user: 0
+        reject_old_samples: true
+        reject_old_samples_max_age: 168h
+    query_range:
+        align_queries_with_step: true
+        cache_results: true
+        max_retries: 5
+        results_cache:
+            cache:
+                memcached_client:
+                    consistent_hash: true
+                    host: memcached-frontend.loki.svc.cluster.local
+                    max_idle_conns: 16
+                    service: memcached-client
+                    timeout: 500ms
+                    update_interval: 1m
+            max_freshness: 10m
+        split_queries_by_interval: 30m
+    schema_config:
+        configs:
+          - from: "2018-04-15"
+            index:
+                period: 168h
+                prefix: loki_index_
+            object_store: gcs
+            schema: v11
+            store: bigtable
+    server:
+        graceful_shutdown_timeout: 5s
+        grpc_server_max_concurrent_streams: 1000
+        grpc_server_max_recv_msg_size: 1.048576e+08
+        grpc_server_max_send_msg_size: 1.048576e+08
+        http_server_idle_timeout: 120s
+        http_server_write_timeout: 1m
+    storage_config:
+        cassandra:
+            addresses: cassandra.cassandra.svc.cluster.local
+            auth: true
+            keyspace: lokiindex
+            password: admin1234
+            username: cassandra
+        index_queries_cache_config:
+            memcached:
+                batch_size: 100
+                parallelism: 100
+            memcached_client:
+                consistent_hash: true
+                host: memcached-index-queries.loki.svc.cluster.local
+                service: memcached-client
+    table_manager:
+        chunk_tables_provisioning:
+            inactive_read_throughput: 0
+            inactive_write_throughput: 0
+            provisioned_read_throughput: 0
+            provisioned_write_throughput: 0
+        index_tables_provisioning:
+            inactive_read_throughput: 0
+            inactive_write_throughput: 0
+            provisioned_read_throughput: 0
+            provisioned_write_throughput: 0
+        retention_deletes_enabled: false
+        retention_period: 0
+kind: ConfigMap
+metadata:
+  name: loki
+---
+apiVersion: v1
+data:
+  overrides.yaml: |
+    overrides: {}
+kind: ConfigMap
+metadata:
+  name: overrides
+---
+apiVersion: v1
+data:
+  promtail.yml: |
+    clients:
+      - url: http://loki:password@gateway.loki.svc/loki/api/v1/push
+    scrape_configs:
+      - job_name: kubernetes-pods-name
+        kubernetes_sd_configs:
+          - role: pod
+        pipeline_stages:
+          - docker: {}
+        relabel_configs:
+          - source_labels:
+              - __meta_kubernetes_pod_label_name
+            target_label: __service__
+          - source_labels:
+              - __meta_kubernetes_pod_node_name
+            target_label: __host__
+          - action: drop
+            regex: ""
+            source_labels:
+              - __service__
+          - action: labelmap
+            regex: __meta_kubernetes_pod_label_(.+)
+          - action: replace
+            replacement: $1
+            separator: /
+            source_labels:
+              - __meta_kubernetes_namespace
+              - __service__
+            target_label: job
+          - action: replace
+            source_labels:
+              - __meta_kubernetes_namespace
+            target_label: namespace
+          - action: replace
+            source_labels:
+              - __meta_kubernetes_pod_name
+            target_label: instance
+          - action: replace
+            source_labels:
+              - __meta_kubernetes_pod_container_name
+            target_label: container_name
+          - replacement: /var/log/pods/*$1/*.log
+            separator: /
+            source_labels:
+              - __meta_kubernetes_pod_uid
+              - __meta_kubernetes_pod_container_name
+            target_label: __path__
+      - job_name: kubernetes-pods-app
+        kubernetes_sd_configs:
+          - role: pod
+        pipeline_stages:
+          - docker: {}
+        relabel_configs:
+          - action: drop
+            regex: .+
+            source_labels:
+              - __meta_kubernetes_pod_label_name
+          - source_labels:
+              - __meta_kubernetes_pod_label_app
+            target_label: __service__
+          - source_labels:
+              - __meta_kubernetes_pod_node_name
+            target_label: __host__
+          - action: drop
+            regex: ""
+            source_labels:
+              - __service__
+          - action: labelmap
+            regex: __meta_kubernetes_pod_label_(.+)
+          - action: replace
+            replacement: $1
+            separator: /
+            source_labels:
+              - __meta_kubernetes_namespace
+              - __service__
+            target_label: job
+          - action: replace
+            source_labels:
+              - __meta_kubernetes_namespace
+            target_label: namespace
+          - action: replace
+            source_labels:
+              - __meta_kubernetes_pod_name
+            target_label: instance
+          - action: replace
+            source_labels:
+              - __meta_kubernetes_pod_container_name
+            target_label: container_name
+          - replacement: /var/log/pods/*$1/*.log
+            separator: /
+            source_labels:
+              - __meta_kubernetes_pod_uid
+              - __meta_kubernetes_pod_container_name
+            target_label: __path__
+      - job_name: kubernetes-pods-direct-controllers
+        kubernetes_sd_configs:
+          - role: pod
+        pipeline_stages:
+          - docker: {}
+        relabel_configs:
+          - action: drop
+            regex: .+
+            separator: ""
+            source_labels:
+              - __meta_kubernetes_pod_label_name
+              - __meta_kubernetes_pod_label_app
+          - action: drop
+            regex: '[0-9a-z-.]+-[0-9a-f]{8,10}'
+            source_labels:
+              - __meta_kubernetes_pod_controller_name
+          - source_labels:
+              - __meta_kubernetes_pod_controller_name
+            target_label: __service__
+          - source_labels:
+              - __meta_kubernetes_pod_node_name
+            target_label: __host__
+          - action: drop
+            regex: ""
+            source_labels:
+              - __service__
+          - action: labelmap
+            regex: __meta_kubernetes_pod_label_(.+)
+          - action: replace
+            replacement: $1
+            separator: /
+            source_labels:
+              - __meta_kubernetes_namespace
+              - __service__
+            target_label: job
+          - action: replace
+            source_labels:
+              - __meta_kubernetes_namespace
+            target_label: namespace
+          - action: replace
+            source_labels:
+              - __meta_kubernetes_pod_name
+            target_label: instance
+          - action: replace
+            source_labels:
+              - __meta_kubernetes_pod_container_name
+            target_label: container_name
+          - replacement: /var/log/pods/*$1/*.log
+            separator: /
+            source_labels:
+              - __meta_kubernetes_pod_uid
+              - __meta_kubernetes_pod_container_name
+            target_label: __path__
+      - job_name: kubernetes-pods-indirect-controller
+        kubernetes_sd_configs:
+          - role: pod
+        pipeline_stages:
+          - docker: {}
+        relabel_configs:
+          - action: drop
+            regex: .+
+            separator: ""
+            source_labels:
+              - __meta_kubernetes_pod_label_name
+              - __meta_kubernetes_pod_label_app
+          - action: keep
+            regex: '[0-9a-z-.]+-[0-9a-f]{8,10}'
+            source_labels:
+              - __meta_kubernetes_pod_controller_name
+          - action: replace
+            regex: ([0-9a-z-.]+)-[0-9a-f]{8,10}
+            source_labels:
+              - __meta_kubernetes_pod_controller_name
+            target_label: __service__
+          - source_labels:
+              - __meta_kubernetes_pod_node_name
+            target_label: __host__
+          - action: drop
+            regex: ""
+            source_labels:
+              - __service__
+          - action: labelmap
+            regex: __meta_kubernetes_pod_label_(.+)
+          - action: replace
+            replacement: $1
+            separator: /
+            source_labels:
+              - __meta_kubernetes_namespace
+              - __service__
+            target_label: job
+          - action: replace
+            source_labels:
+              - __meta_kubernetes_namespace
+            target_label: namespace
+          - action: replace
+            source_labels:
+              - __meta_kubernetes_pod_name
+            target_label: instance
+          - action: replace
+            source_labels:
+              - __meta_kubernetes_pod_container_name
+            target_label: container_name
+          - replacement: /var/log/pods/*$1/*.log
+            separator: /
+            source_labels:
+              - __meta_kubernetes_pod_uid
+              - __meta_kubernetes_pod_container_name
+            target_label: __path__
+      - job_name: kubernetes-pods-static
+        kubernetes_sd_configs:
+          - role: pod
+        pipeline_stages:
+          - docker: {}
+        relabel_configs:
+          - action: drop
+            regex: ""
+            source_labels:
+              - __meta_kubernetes_pod_annotation_kubernetes_io_config_mirror
+          - action: replace
+            source_labels:
+              - __meta_kubernetes_pod_label_component
+            target_label: __service__
+          - source_labels:
+              - __meta_kubernetes_pod_node_name
+            target_label: __host__
+          - action: drop
+            regex: ""
+            source_labels:
+              - __service__
+          - action: labelmap
+            regex: __meta_kubernetes_pod_label_(.+)
+          - action: replace
+            replacement: $1
+            separator: /
+            source_labels:
+              - __meta_kubernetes_namespace
+              - __service__
+            target_label: job
+          - action: replace
+            source_labels:
+              - __meta_kubernetes_namespace
+            target_label: namespace
+          - action: replace
+            source_labels:
+              - __meta_kubernetes_pod_name
+            target_label: instance
+          - action: replace
+            source_labels:
+              - __meta_kubernetes_pod_container_name
+            target_label: container_name
+          - replacement: /var/log/pods/*$1/*.log
+            separator: /
+            source_labels:
+              - __meta_kubernetes_pod_annotation_kubernetes_io_config_mirror
+              - __meta_kubernetes_pod_container_name
+            target_label: __path__
+kind: ConfigMap
+metadata:
+  name: promtail
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: promtail
+spec:
+  minReadySeconds: 10
+  selector:
+    matchLabels:
+      name: promtail
+  template:
+    metadata:
+      labels:
+        name: promtail
+    spec:
+      containers:
+      - args:
+        - -config.file=/etc/promtail/promtail.yml
+        env:
+        - name: HOSTNAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        image: grafana/promtail:v1.3.0
+        imagePullPolicy: IfNotPresent
+        name: promtail
+        ports:
+        - containerPort: 80
+          name: http-metrics
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 80
+          initialDelaySeconds: 10
+          timeoutSeconds: 1
+        securityContext:
+          privileged: true
+          runAsUser: 0
+        volumeMounts:
+        - mountPath: /etc/promtail
+          name: promtail
+        - mountPath: /var/log
+          name: varlog
+        - mountPath: /var/lib/docker/containers
+          name: varlibdockercontainers
+          readOnly: true
+      serviceAccount: promtail
+      tolerations:
+      - effect: NoSchedule
+        operator: Exists
+      volumes:
+      - configMap:
+          name: promtail
+        name: promtail
+      - hostPath:
+          path: /var/log
+        name: varlog
+      - hostPath:
+          path: /var/lib/docker/containers
+        name: varlibdockercontainers
+  updateStrategy:
+    type: RollingUpdate
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: consul
+spec:
+  minReadySeconds: 10
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      name: consul
+  template:
+    metadata:
+      annotations:
+        consul-hash: 5778cd539088c126eed973ed617144e1
+      labels:
+        name: consul
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                name: consul
+            topologyKey: kubernetes.io/hostname
+      containers:
+      - args:
+        - agent
+        - -ui
+        - -server
+        - -client=0.0.0.0
+        - -config-file=/etc/config/consul-config.json
+        - -bootstrap-expect=1
+        env:
+        - name: CHECKPOINT_DISABLE
+          value: "1"
+        image: consul:1.5.3
+        imagePullPolicy: IfNotPresent
+        name: consul
+        ports:
+        - containerPort: 8300
+          name: server
+        - containerPort: 8301
+          name: serf
+        - containerPort: 8400
+          name: client
+        - containerPort: 8500
+          name: api
+        resources:
+          requests:
+            cpu: 100m
+            memory: 500Mi
+        volumeMounts:
+        - mountPath: /etc/config
+          name: consul
+      - args:
+        - --namespace=$(POD_NAMESPACE)
+        - --pod-name=$(POD_NAME)
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        image: weaveworks/consul-sidekick:master-f18ad13
+        imagePullPolicy: IfNotPresent
+        name: sidekick
+        volumeMounts:
+        - mountPath: /etc/config
+          name: consul
+      - args:
+        - --web.listen-address=:8000
+        - --statsd.mapping-config=/etc/config/mapping
+        image: prom/statsd-exporter:v0.12.2
+        imagePullPolicy: IfNotPresent
+        name: statsd-exporter
+        ports:
+        - containerPort: 8000
+          name: http-metrics
+        volumeMounts:
+        - mountPath: /etc/config
+          name: consul
+      - args:
+        - --consul.server=localhost:8500
+        - --web.listen-address=:9107
+        - --consul.timeout=1s
+        image: prom/consul-exporter:v0.5.0
+        imagePullPolicy: IfNotPresent
+        name: consul-exporter
+        ports:
+        - containerPort: 9107
+          name: http-metrics
+        volumeMounts:
+        - mountPath: /etc/config
+          name: consul
+      serviceAccount: consul-sidekick
+      volumes:
+      - configMap:
+          name: consul
+        name: consul
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: distributor
+spec:
+  minReadySeconds: 10
+  replicas: 3
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      name: distributor
+  template:
+    metadata:
+      annotations:
+        config_hash: 4f80cdaf0db655fa4b3b3cd15c0a0f44
+      labels:
+        name: distributor
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                name: distributor
+            topologyKey: kubernetes.io/hostname
+      containers:
+      - args:
+        - -config.file=/etc/loki/config/config.yaml
+        - -limits.per-user-override-config=/etc/loki/overrides/overrides.yaml
+        - -target=distributor
+        image: grafana/loki:v1.3.0
+        imagePullPolicy: IfNotPresent
+        name: distributor
+        ports:
+        - containerPort: 80
+          name: http-metrics
+        - containerPort: 9095
+          name: grpc
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 80
+          initialDelaySeconds: 15
+          timeoutSeconds: 1
+        resources:
+          limits:
+            cpu: "1"
+            memory: 1Gi
+          requests:
+            cpu: 500m
+            memory: 500Mi
+        volumeMounts:
+        - mountPath: /etc/loki/config
+          name: loki
+        - mountPath: /etc/loki/overrides
+          name: overrides
+      volumes:
+      - configMap:
+          name: loki
+        name: loki
+      - configMap:
+          name: overrides
+        name: overrides
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway
+spec:
+  minReadySeconds: 10
+  replicas: 3
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      name: gateway
+  template:
+    metadata:
+      labels:
+        name: gateway
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                name: gateway
+            topologyKey: kubernetes.io/hostname
+      containers:
+      - image: nginx:1.15.1-alpine
+        imagePullPolicy: IfNotPresent
+        name: nginx
+        ports:
+        - containerPort: 80
+          name: http
+        resources:
+          requests:
+            cpu: 50m
+            memory: 100Mi
+        volumeMounts:
+        - mountPath: /etc/nginx
+          name: gateway-config
+        - mountPath: /etc/nginx/secrets
+          name: gateway-secret
+      volumes:
+      - configMap:
+          name: gateway-config
+        name: gateway-config
+      - name: gateway-secret
+        secret:
+          defaultMode: 420
+          secretName: gateway-secret
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ingester
+spec:
+  minReadySeconds: 60
+  replicas: 3
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      name: ingester
+  strategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+  template:
+    metadata:
+      annotations:
+        config_hash: 4f80cdaf0db655fa4b3b3cd15c0a0f44
+      labels:
+        name: ingester
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                name: ingester
+            topologyKey: kubernetes.io/hostname
+      containers:
+      - args:
+        - -config.file=/etc/loki/config/config.yaml
+        - -limits.per-user-override-config=/etc/loki/overrides/overrides.yaml
+        - -target=ingester
+        image: grafana/loki:v1.3.0
+        imagePullPolicy: IfNotPresent
+        name: ingester
+        ports:
+        - containerPort: 80
+          name: http-metrics
+        - containerPort: 9095
+          name: grpc
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 80
+          initialDelaySeconds: 15
+          timeoutSeconds: 1
+        resources:
+          limits:
+            cpu: "2"
+            memory: 10Gi
+          requests:
+            cpu: "1"
+            memory: 5Gi
+        volumeMounts:
+        - mountPath: /etc/loki/config
+          name: loki
+        - mountPath: /etc/loki/overrides
+          name: overrides
+      terminationGracePeriodSeconds: 4800
+      volumes:
+      - configMap:
+          name: loki
+        name: loki
+      - configMap:
+          name: overrides
+        name: overrides
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: querier
+spec:
+  minReadySeconds: 10
+  replicas: 3
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      name: querier
+  template:
+    metadata:
+      annotations:
+        config_hash: 4f80cdaf0db655fa4b3b3cd15c0a0f44
+      labels:
+        name: querier
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                name: querier
+            topologyKey: kubernetes.io/hostname
+      containers:
+      - args:
+        - -config.file=/etc/loki/config/config.yaml
+        - -limits.per-user-override-config=/etc/loki/overrides/overrides.yaml
+        - -target=querier
+        image: grafana/loki:v1.3.0
+        imagePullPolicy: IfNotPresent
+        name: querier
+        ports:
+        - containerPort: 80
+          name: http-metrics
+        - containerPort: 9095
+          name: grpc
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 80
+          initialDelaySeconds: 15
+          timeoutSeconds: 1
+        volumeMounts:
+        - mountPath: /etc/loki/config
+          name: loki
+        - mountPath: /etc/loki/overrides
+          name: overrides
+      volumes:
+      - configMap:
+          name: loki
+        name: loki
+      - configMap:
+          name: overrides
+        name: overrides
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: query-frontend
+spec:
+  minReadySeconds: 10
+  replicas: 2
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      name: query-frontend
+  template:
+    metadata:
+      annotations:
+        config_hash: 4f80cdaf0db655fa4b3b3cd15c0a0f44
+      labels:
+        name: query-frontend
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                name: query-frontend
+            topologyKey: kubernetes.io/hostname
+      containers:
+      - args:
+        - -config.file=/etc/loki/config/config.yaml
+        - -limits.per-user-override-config=/etc/loki/overrides/overrides.yaml
+        - -log.level=debug
+        - -target=query-frontend
+        image: grafana/loki:v1.3.0
+        imagePullPolicy: IfNotPresent
+        name: query-frontend
+        ports:
+        - containerPort: 80
+          name: http-metrics
+        - containerPort: 9095
+          name: grpc
+        resources:
+          limits:
+            memory: 1200Mi
+          requests:
+            cpu: "2"
+            memory: 600Mi
+        volumeMounts:
+        - mountPath: /etc/loki/config
+          name: loki
+        - mountPath: /etc/loki/overrides
+          name: overrides
+      volumes:
+      - configMap:
+          name: loki
+        name: loki
+      - configMap:
+          name: overrides
+        name: overrides
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: table-manager
+spec:
+  minReadySeconds: 10
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      name: table-manager
+  template:
+    metadata:
+      annotations:
+        config_hash: 4f80cdaf0db655fa4b3b3cd15c0a0f44
+      labels:
+        name: table-manager
+    spec:
+      containers:
+      - args:
+        - -config.file=/etc/loki/config/config.yaml
+        - -limits.per-user-override-config=/etc/loki/overrides/overrides.yaml
+        - -target=table-manager
+        image: grafana/loki:v1.3.0
+        imagePullPolicy: IfNotPresent
+        name: table-manager
+        ports:
+        - containerPort: 80
+          name: http-metrics
+        - containerPort: 9095
+          name: grpc
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 80
+          initialDelaySeconds: 15
+          timeoutSeconds: 1
+        resources:
+          limits:
+            cpu: 200m
+            memory: 200Mi
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        volumeMounts:
+        - mountPath: /etc/loki/config
+          name: loki
+      volumes:
+      - configMap:
+          name: loki
+        name: loki
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: loki
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: Role
+metadata:
+  name: consul-sidekick
+  namespace: loki
+rules:
+- apiGroups:
+  - ""
+  - extensions
+  - apps
+  resources:
+  - pods
+  - replicasets
+  verbs:
+  - get
+  - list
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: RoleBinding
+metadata:
+  name: consul-sidekick
+  namespace: loki
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: consul-sidekick
+subjects:
+- kind: ServiceAccount
+  name: consul-sidekick
+  namespace: loki
+---
+apiVersion: v1
+data:
+  .htpasswd: bG9raTokYXByMSRINHlHaUdOZyRzc2w1L055bWFHRlJVdnhJVjFOeXIu
+kind: Secret
+metadata:
+  name: gateway-secret
+type: Opaque
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: consul
+  name: consul
+spec:
+  ports:
+  - name: consul-server
+    port: 8300
+    targetPort: 8300
+  - name: consul-serf
+    port: 8301
+    targetPort: 8301
+  - name: consul-client
+    port: 8400
+    targetPort: 8400
+  - name: consul-api
+    port: 8500
+    targetPort: 8500
+  - name: statsd-exporter-http-metrics
+    port: 8000
+    targetPort: 8000
+  - name: consul-exporter-http-metrics
+    port: 9107
+    targetPort: 9107
+  selector:
+    name: consul
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: distributor
+  name: distributor
+spec:
+  ports:
+  - name: distributor-http-metrics
+    port: 80
+    targetPort: 80
+  - name: distributor-grpc
+    port: 9095
+    targetPort: 9095
+  selector:
+    name: distributor
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: gateway
+  name: gateway
+spec:
+  ports:
+  - name: nginx-http
+    port: 80
+    targetPort: 80
+  selector:
+    name: gateway
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: ingester
+  name: ingester
+spec:
+  ports:
+  - name: ingester-http-metrics
+    port: 80
+    targetPort: 80
+  - name: ingester-grpc
+    port: 9095
+    targetPort: 9095
+  selector:
+    name: ingester
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: memcached
+  name: memcached
+spec:
+  clusterIP: None
+  ports:
+  - name: memcached-client
+    port: 11211
+    targetPort: 11211
+  - name: exporter-http-metrics
+    port: 9150
+    targetPort: 9150
+  selector:
+    name: memcached
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: memcached-frontend
+  name: memcached-frontend
+spec:
+  clusterIP: None
+  ports:
+  - name: memcached-client
+    port: 11211
+    targetPort: 11211
+  - name: exporter-http-metrics
+    port: 9150
+    targetPort: 9150
+  selector:
+    name: memcached-frontend
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: memcached-index-queries
+  name: memcached-index-queries
+spec:
+  clusterIP: None
+  ports:
+  - name: memcached-client
+    port: 11211
+    targetPort: 11211
+  - name: exporter-http-metrics
+    port: 9150
+    targetPort: 9150
+  selector:
+    name: memcached-index-queries
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: memcached-index-writes
+  name: memcached-index-writes
+spec:
+  clusterIP: None
+  ports:
+  - name: memcached-client
+    port: 11211
+    targetPort: 11211
+  - name: exporter-http-metrics
+    port: 9150
+    targetPort: 9150
+  selector:
+    name: memcached-index-writes
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: querier
+  name: querier
+spec:
+  ports:
+  - name: querier-http-metrics
+    port: 80
+    targetPort: 80
+  - name: querier-grpc
+    port: 9095
+    targetPort: 9095
+  selector:
+    name: querier
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: query-frontend
+  name: query-frontend
+spec:
+  clusterIP: None
+  ports:
+  - name: query-frontend-http-metrics
+    port: 80
+    targetPort: 80
+  - name: query-frontend-grpc
+    port: 9095
+    targetPort: 9095
+  selector:
+    name: query-frontend
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: table-manager
+  name: table-manager
+spec:
+  ports:
+  - name: table-manager-http-metrics
+    port: 80
+    targetPort: 80
+  - name: table-manager-grpc
+    port: 9095
+    targetPort: 9095
+  selector:
+    name: table-manager
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: consul-sidekick
+  namespace: loki
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: promtail
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: memcached
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      name: memcached
+  serviceName: memcached
+  template:
+    metadata:
+      labels:
+        name: memcached
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                name: memcached
+            topologyKey: kubernetes.io/hostname
+      containers:
+      - args:
+        - -m 4096
+        - -I 2m
+        - -c 1024
+        - -v
+        image: memcached:1.5.17-alpine
+        imagePullPolicy: IfNotPresent
+        name: memcached
+        ports:
+        - containerPort: 11211
+          name: client
+        resources:
+          limits:
+            cpu: "3"
+            memory: 6Gi
+          requests:
+            cpu: 500m
+            memory: 5016Mi
+      - args:
+        - --memcached.address=localhost:11211
+        - --web.listen-address=0.0.0.0:9150
+        image: prom/memcached-exporter:v0.6.0
+        imagePullPolicy: IfNotPresent
+        name: exporter
+        ports:
+        - containerPort: 9150
+          name: http-metrics
+  updateStrategy:
+    type: RollingUpdate
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: memcached-frontend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      name: memcached-frontend
+  serviceName: memcached-frontend
+  template:
+    metadata:
+      labels:
+        name: memcached-frontend
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                name: memcached-frontend
+            topologyKey: kubernetes.io/hostname
+      containers:
+      - args:
+        - -m 1024
+        - -I 5m
+        - -c 1024
+        - -v
+        image: memcached:1.5.17-alpine
+        imagePullPolicy: IfNotPresent
+        name: memcached
+        ports:
+        - containerPort: 11211
+          name: client
+        resources:
+          limits:
+            cpu: "3"
+            memory: 1536Mi
+          requests:
+            cpu: 500m
+            memory: 1329Mi
+      - args:
+        - --memcached.address=localhost:11211
+        - --web.listen-address=0.0.0.0:9150
+        image: prom/memcached-exporter:v0.6.0
+        imagePullPolicy: IfNotPresent
+        name: exporter
+        ports:
+        - containerPort: 9150
+          name: http-metrics
+  updateStrategy:
+    type: RollingUpdate
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: memcached-index-queries
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      name: memcached-index-queries
+  serviceName: memcached-index-queries
+  template:
+    metadata:
+      labels:
+        name: memcached-index-queries
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                name: memcached-index-queries
+            topologyKey: kubernetes.io/hostname
+      containers:
+      - args:
+        - -m 1024
+        - -I 5m
+        - -c 1024
+        - -v
+        image: memcached:1.5.17-alpine
+        imagePullPolicy: IfNotPresent
+        name: memcached
+        ports:
+        - containerPort: 11211
+          name: client
+        resources:
+          limits:
+            cpu: "3"
+            memory: 1536Mi
+          requests:
+            cpu: 500m
+            memory: 1329Mi
+      - args:
+        - --memcached.address=localhost:11211
+        - --web.listen-address=0.0.0.0:9150
+        image: prom/memcached-exporter:v0.6.0
+        imagePullPolicy: IfNotPresent
+        name: exporter
+        ports:
+        - containerPort: 9150
+          name: http-metrics
+  updateStrategy:
+    type: RollingUpdate
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: memcached-index-writes
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      name: memcached-index-writes
+  serviceName: memcached-index-writes
+  template:
+    metadata:
+      labels:
+        name: memcached-index-writes
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                name: memcached-index-writes
+            topologyKey: kubernetes.io/hostname
+      containers:
+      - args:
+        - -m 1024
+        - -I 1m
+        - -c 1024
+        - -v
+        image: memcached:1.5.17-alpine
+        imagePullPolicy: IfNotPresent
+        name: memcached
+        ports:
+        - containerPort: 11211
+          name: client
+        resources:
+          limits:
+            cpu: "3"
+            memory: 1536Mi
+          requests:
+            cpu: 500m
+            memory: 1329Mi
+      - args:
+        - --memcached.address=localhost:11211
+        - --web.listen-address=0.0.0.0:9150
+        image: prom/memcached-exporter:v0.6.0
+        imagePullPolicy: IfNotPresent
+        name: exporter
+        ports:
+        - containerPort: 9150
+          name: http-metrics
+  updateStrategy:
+    type: RollingUpdate

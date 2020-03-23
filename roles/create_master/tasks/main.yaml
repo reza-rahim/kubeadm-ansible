@@ -1,0 +1,47 @@
+---
+
+- name: check for the /etc/kubernetes/manifests/kube-apiserver.yaml
+  command: "ls /etc/kubernetes/manifests/kube-apiserver.yaml"
+  register: command_result
+  ignore_errors: True
+
+- name: Creates /etc/kubernetes/kubeadm directory
+  file: path=/etc/kubernetes/kubeadm  recurse=yes state=directory
+  when: >
+    inventory_hostname in groups['kube-master'] and
+    inventory_hostname == "kube-master-0" and
+    command_result.rc != 0
+
+- name: Copy kube config files
+  template: src="{{ item.src }}" dest="{{ item.dest }}"
+  with_items:
+     - { src: 'kubeadm-config.yaml.j2', dest: '/etc/kubernetes/kubeadm/kubeadm-config.yaml'  }  
+     - { src: 'calico.yaml.j2', dest: '/etc/kubernetes/kubeadm/calico.yaml'  }  
+     - { src: 'dashboard.yaml.j2', dest: '/etc/kubernetes/kubeadm/dashboard.yaml'  }  
+     #- { src: 'kube-flannel.yml.j2', dest: '/etc/kubernetes/kubeadm/kube-flannel.yaml'  }  
+  when: >
+    inventory_hostname in groups['kube-master'] and
+    inventory_hostname == "kube-master-0" and
+    command_result.rc != 0
+
+- name:  Create master
+  shell: kubeadm init --config=/etc/kubernetes/kubeadm/kubeadm-config.yaml --upload-certs
+  when: >
+    inventory_hostname in groups['kube-master'] and
+    inventory_hostname == "kube-master-0" and
+    command_result.rc != 0
+
+- name:  Create .kube dir
+  shell:  rm -rf $HOME/.kube; mkdir -p $HOME/.kube; sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config;  sudo chown $(id -u):$(id -g) $HOME/.kube/config; 
+  when: >
+    inventory_hostname in groups['kube-master'] and
+    inventory_hostname == "kube-master-0" and
+    command_result.rc != 0
+
+- name:  Create calico
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/calico.yaml;
+  #shell: kubectl apply -f /etc/kubernetes/kubeadm/kube-flannel.yaml;
+  when: >
+    inventory_hostname in groups['kube-master'] and
+    inventory_hostname == "kube-master-0" and
+    command_result.rc != 0

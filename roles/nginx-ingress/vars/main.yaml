@@ -1,0 +1,6 @@
+nginx_http_port: 32080
+nginx_https_port: 32443
+nginx_replica: 2
+nginx_ingress_controller_image: 0.29.0
+nginx_ingress_default_backend_image: 1.5
+nginx_namespace: nginx-ingress
