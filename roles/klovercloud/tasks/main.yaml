@@ -125,7 +125,6 @@
     headers:
       Content-Type: "application/json"
       x-auth-token: login_result.json.token
-    body: {}
   register: api_access_token
   when: login_result.json.success == true
   ignore_errors: yes
@@ -159,10 +158,107 @@
 
 
 
+- name: Copy facade descriptor
+  template: src="{{ item.src }}" dest="{{ item.dest }}"
+  with_items:
+     - { src: 'step.8.facade.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/step.8.facade.yaml'  } 
+     
+  when: >
+    inventory_hostname == "kube-master-0"
+  register: result
+
+- name:  
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/step.8.facade.yaml;
+  when: >
+    inventory_hostname == "kube-master-0" 
+  ignore_errors: yes
+
+
+- name: sleep for a specified interval
+  command: sleep '{{ sleep_interval_extrem }}'
+
+
+
+
+
+- name: Login to facade service as super admin user
+  uri:
+    url: https://{{klovercloud_facade_host}}/api/auth/login
+    method: POST
+    return_content: yes
+    status_code: 200
+    body_format: json
+    headers:
+      Content-Type: "application/json"
+    body: '{
+              "username": "admin@klovercloud.com",
+              "password": "hello123"
+            }'
+  register: facade_login_result
+  until: facade_login_result.json.success == true
+  retries: 10
+  delay: 10
+  ignore_errors: yes
+
+- name: Request to create a Service User using facade login token
+  uri:
+    url:  http://{{klovercloud_facade_host}}/api/user
+    method: POST
+    return_content: yes
+    status_code: 200
+    body_format: json
+    headers:
+      Content-Type: "application/json"
+      x-auth-token: facade_login_result.json.token
+    body: '{
+              "firstName": "klovercloud service",
+              "lastName": "user",
+              "username": "klovercloud-service-user@klovercloud.com",
+              "userType" : "AGENT_SERVICE",
+              "authorities":[ "ROLE_AGENT_SERVICE"]
+            }' 
+  register: service_user
+  when: facade_login_result.json.success == true
+  ignore_errors: yes
+
+- name: Request to create a facade Service access token
+  uri:
+    url:  http://{{klovercloud_facade_host}}/api/api-access-token
+    method: POST
+    return_content: yes
+    status_code: 200
+    body_format: json
+    headers:
+      Content-Type: "application/json"
+      x-auth-token: facade_login_result.json.token
+    body: '{
+              "userId":service_user.json.data 
+           }' 
+  register: facade_api_access_token
+  when: service_user.json.success == true
+  ignore_errors: yes
+
+- name: reset klovercloud_facade_api_access_token
+  set_fact:
+    klovercloud_facade_api_access_token: facade_api_access_token.json.data
+  when: facade_api_access_token.json.success == true
+  ignore_errors: yes
+
+- name: sleep for a specified interval
+  command: sleep '{{ sleep_interval_extrem }}'
+
+
+
+
+
+  
+
+
   # clone generator repos 
   # build generator images 
   # push to harbor 
+  # Change nexus username and password
 
-  # Change nexus username and password 
+
 
 

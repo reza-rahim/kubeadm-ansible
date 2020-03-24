@@ -1,5 +1,9 @@
 # common
 sleep_interval: 30
+sleep_interval_extrem: 110
+
+klovercloud_dns_manager_service: klovercloud-dns-manager
+klovercloud_default_ingress_domain: klovercloud.com
 klovercloud_developer_alias: klovercloud
 klovercloud_namespace: klovercloud
 klovercloud_api_access_token: abcxyz
@@ -7,10 +11,9 @@ klovercloud_image_pulling_secret: regcred-harbor
 klovercloud_registry_username: klover-dev
 klovercloud_registry_password: Dev@Klover2019!
 klovercloud_registry_email: shihab.hasan@klovercloud.com
-klovercloud_ci_tecknology: TEKTON
+
 
 # Klovercloud-ci
-
 klovercloud_ci_namespace: tekton
 klovercloud_ci_replica: 1
 klovercloud_ci_cpu_request: 500m
@@ -18,6 +21,8 @@ klovercloud_ci_memory_request: 1024Mi
 klovercloud_ci_cpu_limit: 1000m
 klovercloud_ci_memory_limit: 1536Mi
 klovercloud_ci_containers_port: 8084
+klovercloud_ci_tecknology: TEKTON
+
 
 klovercloud_ci_image: container-registry.klovercloud.com/klovercloud/klovercloud-ci:1.1.0
 klovercloud_ci_mongo_service_name: mongodb-internal-kc
@@ -54,7 +59,6 @@ klovercloud_ci_service_account_name: klovercloud-ci
 
 
 # klovercloud mongodb 
-
 klovercloud_mongodb_replica: 1
 klovercloud_mongodb_storage: 2000Mi
 klovercloud_mongodb_cpu_request: 500m
@@ -84,6 +88,8 @@ klovercloud_mongodb_image: docker.io/bitnami/mongodb:4.2.3-debian-10-r31
 klovercloud_mongodb_exporter_image: docker.io/bitnami/mongodb-exporter:0.10.0-debian-10-r27
 klovercloud_mongodb_replica_set_key: admin123
 klovercloud_mongodd_root_password: admin123
+klovercloud_mongo_auth_db_name: admin
+klovercloud_mongo_root_username: root
 
 
 # klovercloud kafka
@@ -137,7 +143,6 @@ klovercloud_nexus_ingress_host: nexus.klovercloud.com
 
 
 # Listener
-
 klovercloud_listener_replica: 1
 klovercloud_listener_cpu_request: 350m
 klovercloud_listener_memory_request: 512Mi
@@ -160,7 +165,6 @@ klovercloud_listener_admin_password: hello123
 
 
 # Cert Issuer
-
 klovercloud_cert_issuer_name: letsencrypt-prod
 acme_server: https://acme-v02.api.letsencrypt.org/directory
 acme_email: user@klovercloud.com
@@ -188,3 +192,42 @@ klovercloud_management_metrics_port: 80
 klovercloud_management_metrics_target_port: 80
 klovercloud_management_ci_service_name: klovercloud-ci-internal-kc
 klovercloud_management_ci_external_service_name: klovercloud-ci.tekton.svc.cluster.local
+klovercloud_management_ci_service_port: 80
+
+# Facade
+klovercloud_facade_replica: 1
+klovercloud_facade_deployment_name: klovercloud-facade
+klovercloud_facade_service_name: klovercloud-facade
+klovercloud_facade_ingress_name: klovercloud-facade
+klovercloud_facade_app_label: klovercloud-facade
+klovercloud_facade_cpu_request: 500m
+klovercloud_facade_memory_request: 778Mi
+klovercloud_facade_cpu_limit: 750m
+klovercloud_facade_memory_limit: 1024Mi
+klovercloud_facade_container_port1: 8080
+klovercloud_facade_container_port2: 8081
+klovercloud_facade_service_port: 80
+klovercloud_facade_target_port: 8080
+klovercloud_facade_metrics_port: 8081
+klovercloud_facade_metrics_target_port: 8081
+klovercloud_facade_tls_secret: facade-tls
+klovercloud_facade_host: facade.klovercloud.com
+klovercloud_facade_admin_username: admin@klovercloud.com
+klovercloud_facade_admin_password: hello123
+klovercloud_facade_image: container-registry.klovercloud.com/klovercloud/klovercloud-facade:latest
+klovercloud_facade_api_access_token: abcxyz
+
+#pipeline
+klovercloud_pipeline_replica: 1
+klovercloud_pipeline_deployment_name: klovercloud-pipeline
+klovercloud_pipeline_app_label: klovercloud-pipeline
+klovercloud_pipeline_service_name:  klovercloud-pipeline-internal-kc
+klovercloud_pipeline_image: container-registry.klovercloud.com/klovercloud/klovercloud-pipeline:latest
+
+klovercloud_pipeline_cpu_request: 500m
+klovercloud_pipeline_memory_request: 756Mi
+klovercloud_pipeline_cpu_limit: 1000m
+klovercloud_pipeline_memory_limit: 1024Mi
+
+klovercloud_pipeline_container_port1: 8080
+klovercloud_pipeline_container_port2: 8081
