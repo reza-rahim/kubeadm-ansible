@@ -11,14 +11,14 @@ spec:
   type: ClusterIP
   ports:
   - name: {{ klovercloud_mongodb_service_name }}
-    port: 27017
+    port: {{ klovercloud_mongodb_service_port }}
     protocol: TCP
-    targetPort: 27017
+    targetPort: {{ klovercloud_mongodb_service_target_port }}
     nodePort:
   - name: metrics
-    port: 9216
+    port: {{ klovercloud_mongodb_metrics_port }}
     protocol: TCP
-    targetPort: 9216
+    targetPort: {{ klovercloud_mongodb_metrics_target_port }}
     nodePort:
   selector:
     app: {{ klovercloud_mongdb_app_label }}
@@ -36,15 +36,15 @@ spec:
   type: NodePort
   ports:
   - name: mongodb
-    port: 27017
+    port: {{ klovercloud_mongodb_service_port }}
     protocol: TCP
-    targetPort: 27017
-    nodePort: 32205
+    targetPort: {{ klovercloud_mongodb_service_target_port }}
+    nodePort: {{ klovercloud_mongodb_service_node_port }}
   - name: metrics
-    port: 9216
+    port: {{ klovercloud_mongodb_metrics_port }}
     protocol: TCP
-    targetPort: 9216
-    nodePort: 32206
+    targetPort: {{ klovercloud_mongodb_metrics_target_port }}
+    nodePort: {{ klovercloud_mongodb_metrics_node_port }}
   selector:
     app: {{ klovercloud_mongdb_app_label }}
     component: primary
@@ -58,7 +58,7 @@ metadata:
     app: {{ klovercloud_mongdb_app_label }}
 spec:
   serviceName: {{ klovercloud_mongodb_service_name }}
-  replicas: 1
+  replicas: {{ klovercloud_mongodb_replica }}
   selector:
     matchLabels:
       app: {{ klovercloud_mongdb_app_label }}
@@ -83,11 +83,11 @@ spec:
         image: {{ klovercloud_mongodb_image }}
         resources:
           requests:
-            cpu: 500m
-            memory: 500Mi
+            cpu: {{ klovercloud_mongodb_cpu_request }}
+            memory: {{ klovercloud_mongodb_memory_request }}
           limits:
-            cpu: 1000m
-            memory: 1000Mi
+            cpu: {{ klovercloud_mongodb_cpu_limit }}
+            memory: {{ klovercloud_mongodb_memory_limit }}
         command:
         env:
         - name: MONGODB_POD_NAME
@@ -108,7 +108,7 @@ spec:
         envFrom:
         ports:
         - name: mongodb
-          containerPort: 27017
+          containerPort: {{ klovercloud_mongodb_containers_port }}
         volumeMounts:
         - mountPath: "/bitnami/mongodb"
           name: data
@@ -139,11 +139,11 @@ spec:
         image: {{ klovercloud_mongodb_exporter_image }}
         resources:
           requests:
-            cpu: 100m
-            memory: 128Mi
+            cpu: {{ klovercloud_mongodb_metrics_cpu_request }}
+            memory: {{ klovercloud_mongodb_metrics_memory_request }}
           limits:
-            cpu: 200m
-            memory: 256Mi
+            cpu: {{ klovercloud_mongodb_metrics_cpu_limit }}
+            memory: {{ klovercloud_mongodb_metrics_memory_limit }}
         command:
         - sh
         - "-c"
@@ -154,13 +154,13 @@ spec:
         envFrom:
         ports:
         - name: metrics
-          containerPort: 9216
+          containerPort: {{ klovercloud_mongodb_metrics_container_port }}
         volumeMounts:
         readinessProbe:
           failureThreshold: 6
           httpGet:
             path: "/metrics"
-            port: 9216
+            port: {{ klovercloud_mongodb_metrics_container_port }}
           initialDelaySeconds: 5
           periodSeconds: 10
           successThreshold: 1
@@ -169,7 +169,7 @@ spec:
           failureThreshold: 6
           httpGet:
             path: "/metrics"
-            port: 9216
+            port: {{ klovercloud_mongodb_metrics_container_port }}
           initialDelaySeconds: 30
           periodSeconds: 10
           successThreshold: 1
@@ -188,4 +188,4 @@ spec:
       storageClassName: rook-ceph-block
       resources:
         requests:
-          storage: 2000Mi
+          storage: {{ klovercloud_mongodb_storage }}

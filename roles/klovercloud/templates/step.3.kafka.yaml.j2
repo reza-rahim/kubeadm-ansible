@@ -12,8 +12,8 @@ items:
   spec:
     ports:
     - name: "9092"
-      port: 9092
-      targetPort: 9092
+      port: {{ klovercloud_kafka_service_port }}
+      targetPort: {{ klovercloud_kafka_target_port }}
     selector:
       io.kompose.service: {{ klovercloud_kafka_io_kompose_service }}
   status:
@@ -29,8 +29,8 @@ items:
   spec:
     ports:
     - name: "2181"
-      port: 2181
-      targetPort: 2181
+      port: {{ klovercloud_zookeeper_service_port }}
+      targetPort: {{ klovercloud_zookeeper_target_port }}
     selector:
       io.kompose.service: {{ klovercloud_zookeeper_io_kompose_service }}
   status:
@@ -42,7 +42,7 @@ items:
     namespace: {{ klovercloud_namespace }}
   spec:
     serviceName: {{ klovercloud_kafka_service_name }}
-    replicas: 1
+    replicas: {{ klovercloud_kafka_replica }}
     template:
       metadata:
         labels:
@@ -59,7 +59,7 @@ items:
         terminationGracePeriodSeconds: 10
         containers:
         - name: kafka
-          image: bitnami/kafka:latest
+          image: {{ klovercloud_kafka_image }}
           imagePullPolicy: IfNotPresent
           env:
           - name: KAFKA_ZOOKEEPER_CONNECT
@@ -67,7 +67,7 @@ items:
           - name: ALLOW_PLAINTEXT_LISTENER
             value: "yes"
           ports:
-          - containerPort: 9092
+          - containerPort: {{ klovercloud_kafka_container_port }}
           resources: {}
           volumeMounts:
           - name: kafka-data
@@ -84,7 +84,7 @@ items:
         storageClassName: rook-ceph-block
         resources:
           requests:
-            storage: 2Gi
+            storage: {{ klovercloud_kafka_storage }}
 - apiVersion: extensions/v1beta1
   kind: Deployment
   metadata:
@@ -92,7 +92,7 @@ items:
     name: {{ klovercloud_zookeeper_deployment_name }}
     namespace: {{ klovercloud_namespace }}
   spec:
-    replicas: 1
+    replicas: {{ klovercloud_zookeeper_replica }}
     strategy:
       type: Recreate
     template:
@@ -109,13 +109,13 @@ items:
           - mountPath: /bitnami
             name: zookeeper-data
         containers:
-        - image: bitnami/zookeeper:latest
+        - image: {{ klovercloud_zookeeper_image }}
           name: zookeeper
           env:
           - name: ALLOW_ANONYMOUS_LOGIN
             value: "yes"
           ports:
-          - containerPort: 2181
+          - containerPort: {{ klovercloud_zookeeper_container_port }}
           resources: {}
           volumeMounts:
           - mountPath: /bitnami/zookeeper
@@ -140,7 +140,7 @@ items:
     storageClassName: rook-ceph-block
     resources:
       requests:
-        storage: 2Gi
+        storage: {{ klovercloud_zookeeper_storage }}
   status: {}
 kind: List
 metadata: {}

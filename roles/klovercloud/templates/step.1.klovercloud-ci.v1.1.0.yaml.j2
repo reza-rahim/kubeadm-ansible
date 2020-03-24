@@ -11,9 +11,9 @@ metadata:
 spec:
   ports:
     - name: http-rest
-      port: 80
+      port: {{ klovercloud_ci_service_port }}
       protocol: TCP
-      targetPort: 8084
+      targetPort: {{ klovercloud_ci_containers_port }}
   selector:
     app: {{ klovercloud_ci_app_label }}
 
@@ -26,7 +26,7 @@ metadata:
   name: {{ klovercloud_ci_deployment_name }}
   namespace: {{ klovercloud_ci_namespace }}
 spec:
-  replicas: 1
+  replicas: {{ klovercloud_ci_replica }}
   selector:
     matchLabels:
       app: {{ klovercloud_ci_app_label }}
@@ -48,11 +48,11 @@ spec:
         image: {{ klovercloud_ci_image }}
         resources:
           requests:
-            cpu: 500m
-            memory: 1024Mi
+            cpu: {{ klovercloud_ci_cpu_request }}
+            memory: {{ klovercloud_ci_memory_request }}
           limits:
-            cpu: 1000m
-            memory: 1536Mi
+            cpu: {{ klovercloud_ci_cpu_limit }}
+            memory: {{ klovercloud_ci_memory_limit }}
         env:
         - name: RUN_MODE
           value: "PRODUCTION"
@@ -63,9 +63,9 @@ spec:
         - name: DATABASE_NAME
           value: {{ klovercloud_ci_db_name }}
         - name: WEBSOCKET_SERVER_URL
-          value: {{ klovercloud_ci_websocket_service_url }}
+          value: {{ klovercloud_ci_facade_service_url }}
         - name: WEBSOCKET_SERVER_ACCESS_TOKEN
-          value: {{ klovercloud_ci_websocket_service_access_token }}
+          value: {{ klovercloud_ci_facade_service_access_token }}
         - name: PIPELINE_SERVICE_BASE_URL
           value: {{ klovercloud_ci_pipeline_service_url }}
         - name: NEXUS_TOKEN
@@ -83,24 +83,24 @@ spec:
         - name: NEXUS_NPM_GROUP_URL
           value: {{ klovercloud_ci_nexus_npm_group_url }}
         - name: GENERATOR_IMAGE_PULL_SECRET
-          value: {{ klovercloud_ci_image_pulling_secret }}
+          value: {{ klovercloud_image_pulling_secret }}
         ports:
-        - containerPort: 8084
+        - containerPort: {{ klovercloud_ci_containers_port }}
         readinessProbe:
           httpGet:
             path: /health
-            port: 8084
+            port: {{ klovercloud_ci_containers_port }}
           initialDelaySeconds: 30
           periodSeconds: 10
         livenessProbe:
           httpGet:
             path: /health
-            port: 8084
+            port: {{ klovercloud_ci_containers_port }}
           initialDelaySeconds: 30
           periodSeconds: 10
       serviceAccount: {{ klovercloud_ci_service_account_name }}
       imagePullSecrets:
-      - name: {{ klovercloud_ci_image_pulling_secret }}
+      - name: {{ klovercloud_image_pulling_secret }}
 
 ---
 # ------------------- CI Service Account ------------------- #
@@ -142,17 +142,31 @@ spec:
   type: ExternalName
   externalName: {{ klovercloud_ci_pipeline_service_external_name }}
   ports:
-  - port: 80
+  - port: {{ klovercloud_ci_pipeline_service_port }}
 
 ---
-# ------------------- Websocket service ------------------- #
+# ------------------- Facade service ------------------- #
 kind: Service
 apiVersion: v1
 metadata:
-  name: {{ klovercloud_ci_websocket_service_name }}
+  name: {{ klovercloud_ci_facade_service_name }}
   namespace: {{ klovercloud_ci_namespace }}
 spec:
   type: ExternalName
-  externalName: {{ klovercloud_ci_websocket_service_external_name }}
+  externalName: {{ klovercloud_ci_facade_service_external_name }}
   ports:
-  - port: 80
+  - port: {{ klovercloud_ci_facade_port }}
+
+
+---
+# ------------------- mongo service ------------------- #
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ klovercloud_ci_mongo_service_name }}
+  namespace: {{ klovercloud_ci_namespace }}
+spec:
+  type: ExternalName
+  externalName: {{ klovercloud_ci_mongo_external_name }}
+  ports:
+  - port: {{ klovercloud_mongodb_service_port }}

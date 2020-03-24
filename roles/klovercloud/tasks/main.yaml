@@ -24,8 +24,14 @@
     inventory_hostname == "kube-master-0" 
   ignore_errors: yes
 
+- name: Create namespace for nexus 
+  shell: kubectl create ns {{ klovercloud_nexus_namespace }};
+  when: >
+    inventory_hostname == "kube-master-0" 
+  ignore_errors: yes
+
 - name: Create secret to pull klovercloud-ci and generator images from harbor
-  shell: kubectl create secret docker-registry  {{ klovercloud_ci_image_pulling_secret }} --docker-server=https://container-registry.klovercloud.com --docker-username={{ klovercloud_ci_registry_username }} --docker-password={{ klovercloud_ci_registry_password }} --docker-email={{ klovercloud_ci_registry_email }} -n {{ klovercloud_ci_namespace }};
+  shell: kubectl create secret docker-registry  {{ klovercloud_image_pulling_secret }} --docker-server=https://container-registry.klovercloud.com --docker-username={{ klovercloud_registry_username }} --docker-password={{ klovercloud_registry_password }} --docker-email={{ klovercloud_registry_email }} -n {{ klovercloud_ci_namespace }};
   when: >
     inventory_hostname == "kube-master-0" 
   ignore_errors: yes
@@ -38,9 +44,11 @@
 - name: Copy kube config files
   template: src="{{ item.src }}" dest="{{ item.dest }}"
   with_items:
-     - { src: 'step.1.klovercloud-ci.v1.1.0.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud_ci/step.1.klovercloud-ci.v1.1.0.yaml'  } 
-     - { src: 'step.1.klovercloud-ci.v1.1.0.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud_ci/step.2.mongodb.yaml.j2'  } 
-     - { src: 'step.1.klovercloud-ci.v1.1.0.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud_ci/step.3.kafka.yaml.j2'  } 
+     - { src: 'step.1.klovercloud-ci.v1.1.0.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/step.1.klovercloud-ci.v1.1.0.yaml'  } 
+     - { src: 'step.2.klovercloud-ci.v1.1.0.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/step.2.mongodb.yaml'  } 
+     - { src: 'step.3.klovercloud-ci.v1.1.0.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/step.3.kafka.yaml'  } 
+     - { src: 'step.4.nexus.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/step.4.nexus.yaml'  } 
+     - { src: 'step.5.listener.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/step.5.listener.yaml'  } 
      
   when: >
     inventory_hostname == "kube-master-0"
@@ -52,5 +60,109 @@
     inventory_hostname == "kube-master-0" 
   ignore_errors: yes
 
+
+
+- name: Copy cert-issuer descriptor
+  template: src="{{ item.src }}" dest="{{ item.dest }}"
+  with_items:
+     - { src: 'step.5.cert_issuer.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/step.5.cert_issuer.yaml'  } 
+     
+  when: >
+    inventory_hostname == "kube-master-0"
+  register: result
+
+- name:  
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/step.5.cert_issuer.yaml;
+  when: >
+    inventory_hostname == "kube-master-0" 
+  ignore_errors: yes
+
+
+
+- name: Copy listener descriptor
+  template: src="{{ item.src }}" dest="{{ item.dest }}"
+  with_items:
+     - { src: 'step.6.listener.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/step.6.listener.yaml'  } 
+     
+  when: >
+    inventory_hostname == "kube-master-0"
+  register: result
+
+- name:  
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/step.6.listener.yaml;
+  when: >
+    inventory_hostname == "kube-master-0" 
+  ignore_errors: yes
+
+
+- name: sleep for a specified interval
+  command: sleep '{{ sleep_interval }}'
+
+
+- name: Login to listener service as admin user
+  uri:
+    url:  http://{{klovercloud_listener_ingress_host}}/api/auth/login
+    method: POST
+    return_content: yes
+    status_code: 200
+    body_format: json
+    headers:
+      Content-Type: "application/json"
+    body: '{"username": "admin-listener@klovercloud.com","password": "hello123"}'
+  register: login_result
+  until: login_result.json.success == true
+  retries: 10
+  delay: 10
+  ignore_errors: yes
+
+- name: Create an API Access Token when login request returns token
+  uri:
+    url:  http://{{klovercloud_listener_ingress_host}}/api/api-access-token
+    method: POST
+    return_content: yes
+    status_code: 200
+    body_format: json
+    headers:
+      Content-Type: "application/json"
+      x-auth-token: login_result.json.token
+    body: {}
+  register: api_access_token
+  when: login_result.json.success == true
+  ignore_errors: yes
+
+- name: reset klovercloud_api_access_token
+  set_fact:
+    klovercloud_api_access_token: api_access_token.json.data
+  when: api_access_token.json.success == true
+  ignore_errors: yes
+
   
- 
+
+- name: Copy management descriptor
+  template: src="{{ item.src }}" dest="{{ item.dest }}"
+  with_items:
+     - { src: 'step.7.management.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/step.7.management.yaml'  } 
+     
+  when: >
+    inventory_hostname == "kube-master-0"
+  register: result
+
+- name:  
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/step.7.management.yaml;
+  when: >
+    inventory_hostname == "kube-master-0" 
+  ignore_errors: yes
+
+
+- name: sleep for a specified interval
+  command: sleep '{{ sleep_interval }}'
+
+
+
+  # clone generator repos 
+  # build generator images 
+  # push to harbor 
+
+  # Change nexus username and password 
+
+
