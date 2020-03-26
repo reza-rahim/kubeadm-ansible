@@ -1,3 +1,5 @@
+kube_master_lb: {{ lb }}
+
 docker_ce_ubuntu: 18.06.2~ce~3-0~ubuntu
 docker_ce_redhat: 18.09.9
 containerd: 1.2.10
