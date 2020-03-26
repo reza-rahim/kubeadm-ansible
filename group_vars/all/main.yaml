@@ -1,4 +1,5 @@
 kube_master_lb: {{ lb }}
+kube-master-0: kube-master-0
 
 docker_ce_ubuntu: 18.06.2~ce~3-0~ubuntu
 docker_ce_redhat: 18.09.9
