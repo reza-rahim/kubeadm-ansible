@@ -16,7 +16,7 @@ kind: Deployment
 metadata:
   name: default-backend
 spec:
-  replicas: 2
+  replicas: {{ nginx_ingress_controller_replicas }}
   template:
     metadata:
       labels:
@@ -93,7 +93,7 @@ kind: Deployment
 metadata:
   name: nginx-ingress-controller
 spec:
-  replicas: 2
+  replicas: {{ nginx_ingress_controller_replicas }}
   revisionHistoryLimit: 3
   template:
     metadata:
