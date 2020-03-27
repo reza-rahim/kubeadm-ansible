@@ -1,10 +1,14 @@
+
 {% macro label() -%}
-{% for host in groups['kube-storage'] %} kubectl label nodes {{ host }}  dedicated={{ cassandra_taint }} ; {% endfor %}
+  {% for host in groups['kube-storage'] %} kubectl label nodes {{ host }}  dedicated={{ cassandra_taint }} ; {% endfor %}
 {% endmacro -%}
+
 
 {% macro taint() -%}
 {% for host in groups['kube-storage'] %} kubectl taint nodes {{ host }} dedicated={{ cassandra_taint }}:NoSchedule ;  {% endfor %}
-{% endmacro -%}
 
 {{ label() }} 
-{{ taint() }}
+
+{% if profile  == "prod" %}
+  {{ taint() }}
+{% endif %}

@@ -26,20 +26,24 @@ spec:
       labels:
         app: cassandra
     spec:
-#     tolerations:
-#       - effect: NoSchedule
-#         key: dedicated
-#         operator: Equal
-#         value: storge
-#     affinity:
-#       nodeAffinity:
-#         requiredDuringSchedulingIgnoredDuringExecution:
-#           nodeSelectorTerms:
-#           - matchExpressions:
-#             - key: dedicated
-#               operator: In
-#               values:
-#               - storage
+{% if  profile   == "prod" %}
+
+      tolerations:
+        - effect: NoSchedule
+          key: dedicated
+          operator: Equal
+          value: storge
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: dedicated
+                operator: In
+                values:
+                - storage
+{% endif %}
+
       containers:
         - name: cassandra
           image: bitnami/cassandra:latest

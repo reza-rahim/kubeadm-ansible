@@ -7,4 +7,7 @@
 {% endmacro -%}
 
 {{ label() }} 
-{{ taint() }}
+
+{% if profile  == "prod" %}
+  {{ taint() }}
+{% endif %}

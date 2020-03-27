@@ -1,5 +1,5 @@
+profile: dev
 kube_master_lb: 10.20.0.13
-kube-master-0: kube-master-0
 
 docker_ce_ubuntu: 18.06.2~ce~3-0~ubuntu
 docker_ce_redhat: 18.09.9
@@ -12,11 +12,11 @@ redhat_k8_version: 1.15.10-0
 nginx_ingress_controller_version: 0.29.0
 nginx_ingress_controller_replicas: 2
 ingress_hostname: www.klovercloud.com
-nginx_ingress_http: 30080
-nginx_ingress_https: 30443
 nginx_ingress_http_mgmt: 18080
-kube_master_lb: 10.20.0.13
-kube_master_lb: 10.20.0.13
+ingress_limit_cpu: 10m
+ingress_limit_mem: 20Mi
+ingress_request_cpu: 10m
+ingress_request_mem: 20Mi
 
 
 ### monitoring ####
@@ -27,6 +27,11 @@ cassandra_replicas: 3
 cassandra_taint: cassandra 
 cassandra_version: v13
 cassandra_password: admin1234
+cassandra_taint: storage
+cassandra_limit_cpu: 10m
+cassandra_limit_mem: 20Mi
+cassandra_request_cpu: 10m
+cassandra_request_mem: 20Mi
 
 ####### cortex #####
 cortex_version: v0.4.0
