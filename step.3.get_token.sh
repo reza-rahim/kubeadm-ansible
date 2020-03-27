@@ -1,4 +1,5 @@
 #!/bin/bash
+export kube-master-0=kube-master-0
 mkdir -p /var/klovercloud.com/cache  
 mount -t tmpfs -o size=1M,mode=0755 tmpfs /var/klovercloud.com/cache
 

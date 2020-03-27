@@ -1,0 +1,14 @@
+---
+
+- name: check for the /etc/kubernetes/manifests/kube-apiserver.yaml
+  command: "ls /etc/kubernetes/manifests/kube-apiserver.yaml"
+  register: command_result
+  ignore_errors: True
+
+- name: Creates /etc/kubernetes/kubeadm directory
+  file: path=/etc/kubernetes/kubeadm  recurse=yes state=directory
+  when: >
+    inventory_hostname in groups['kube-master'] and
+    groups['kube-master'].index(inventory_hostname) == 0 and
+    command_result.rc != 0
+

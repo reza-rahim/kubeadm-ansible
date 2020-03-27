@@ -13,5 +13,5 @@
   shell: sh /etc/kubernetes/master_join.sh
   when: >
     inventory_hostname in groups['kube-master'] and
-    inventory_hostname != "kube-master-0" and
+    groups['kube-master'].index(inventory_hostname) >  0 and
     command_result.rc != 0    

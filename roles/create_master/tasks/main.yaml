@@ -9,7 +9,7 @@
   file: path=/etc/kubernetes/kubeadm  recurse=yes state=directory
   when: >
     inventory_hostname in groups['kube-master'] and
-    inventory_hostname == "kube-master-0" and
+    groups['kube-master'].index(inventory_hostname) == 0 and
     command_result.rc != 0
 
 - name: Copy kube config files
@@ -21,21 +21,21 @@
      #- { src: 'kube-flannel.yml.j2', dest: '/etc/kubernetes/kubeadm/kube-flannel.yaml'  }  
   when: >
     inventory_hostname in groups['kube-master'] and
-    inventory_hostname == "kube-master-0" and
+    groups['kube-master'].index(inventory_hostname) == 0 and
     command_result.rc != 0
 
 - name:  Create master
   shell: kubeadm init --config=/etc/kubernetes/kubeadm/kubeadm-config.yaml --upload-certs
   when: >
     inventory_hostname in groups['kube-master'] and
-    inventory_hostname == "kube-master-0" and
+    groups['kube-master'].index(inventory_hostname) == 0 and
     command_result.rc != 0
 
 - name:  Create .kube dir
   shell:  rm -rf $HOME/.kube; mkdir -p $HOME/.kube; sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config;  sudo chown $(id -u):$(id -g) $HOME/.kube/config; 
   when: >
     inventory_hostname in groups['kube-master'] and
-    inventory_hostname == "kube-master-0" and
+    groups['kube-master'].index(inventory_hostname) == 0 and
     command_result.rc != 0
 
 - name:  Create calico
@@ -43,5 +43,5 @@
   #shell: kubectl apply -f /etc/kubernetes/kubeadm/kube-flannel.yaml;
   when: >
     inventory_hostname in groups['kube-master'] and
-    inventory_hostname == "kube-master-0" and
+    groups['kube-master'].index(inventory_hostname) == 0 and
     command_result.rc != 0

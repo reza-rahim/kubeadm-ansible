@@ -3,7 +3,7 @@
 - name: Creates /etc/kubernetes/kubeadm directory
   file: path=/etc/kubernetes/kubeadm/storage  recurse=yes state=directory
   when: >
-    inventory_hostname == "kube-master-0"
+    groups['kube-master'].index(inventory_hostname) == 0    
 
 - name: Copy kube config files
   template: src="{{ item.src }}" dest="{{ item.dest }}"
@@ -18,20 +18,17 @@
      - { src: 'step.7.StorageClassEC.yaml.j2', dest: '/etc/kubernetes/kubeadm/storage/step.7.StorageClassEC.yaml.j2'  }  
      - { src: 'taint.sh.j2', dest: '/etc/kubernetes/kubeadm/storage/taint.sh'  }  
   when: >
-    inventory_hostname == "kube-master-0"
+    groups['kube-master'].index(inventory_hostname) == 0    
   register: result
 
 - name:  label and storage ingress box
   shell: sh /etc/kubernetes/kubeadm/storage/taint.sh;
   when: >
-    inventory_hostname == "kube-master-0" 
+    groups['kube-master'].index(inventory_hostname) == 0    
   ignore_errors: yes
 
 - name:  
   shell: kubectl apply -f /etc/kubernetes/kubeadm/storage/;
   when: >
-    inventory_hostname == "kube-master-0" 
+    groups['kube-master'].index(inventory_hostname) == 0    
   ignore_errors: yes
-
-
-

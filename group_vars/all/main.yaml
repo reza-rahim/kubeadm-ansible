@@ -1,4 +1,4 @@
-kube_master_lb: {{ lb }}
+kube_master_lb: 10.20.0.13
 kube-master-0: kube-master-0
 
 docker_ce_ubuntu: 18.06.2~ce~3-0~ubuntu

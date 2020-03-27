@@ -2,7 +2,7 @@ apiVersion: kubeadm.k8s.io/v1beta1
 kind: ClusterConfiguration
 kubernetesVersion: stable
 # REPLACE with `loadbalancer` IP
-controlPlaneEndpoint: "10.20.0.13:6443"
+controlPlaneEndpoint: "{{ kube_master_lb }}:6443"
 
 networking:
   podSubnet: 192.168.0.0/16 
