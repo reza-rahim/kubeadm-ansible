@@ -1,0 +1,74 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: querier
+  name: querier
+spec:
+  ports:
+  - name: querier-http-metrics
+    port: 80
+    targetPort: 80
+  - name: querier-grpc
+    port: 9095
+    targetPort: 9095
+  selector:
+    name: querier
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: querier
+spec:
+  minReadySeconds: 10
+  replicas: 3
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      name: querier
+  template:
+    metadata:
+      annotations:
+        config_hash: 4f80cdaf0db655fa4b3b3cd15c0a0f44
+      labels:
+        name: querier
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                name: querier
+            topologyKey: kubernetes.io/hostname
+      containers:
+      - args:
+        - -config.file=/etc/loki/config/config.yaml
+        #- -limits.per-user-override-config=/etc/loki/overrides/overrides.yaml
+        - -target=querier
+        image: grafana/loki:v1.3.0
+        imagePullPolicy: IfNotPresent
+        name: querier
+        ports:
+        - containerPort: 80
+          name: http-metrics
+        - containerPort: 9095
+          name: grpc
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 80
+          initialDelaySeconds: 15
+          timeoutSeconds: 1
+        volumeMounts:
+        - mountPath: /etc/loki/config
+          name: loki
+        - mountPath: /etc/loki/overrides
+          name: overrides
+      volumes:
+      - configMap:
+          name: loki
+        name: loki
+      - configMap:
+          name: overrides
+        name: overrides
