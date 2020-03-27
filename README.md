@@ -1,6 +1,10 @@
 ## kubeadm-ansible
 
 ```bash
+ssh-keygen -t rsa -N ''
+
+# copy id_rsa.pub to authorized_keys 
+
 cat <<EOF >/root/.ssh/config
 Host *
   StrictHostKeyChecking no
