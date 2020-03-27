@@ -43,9 +43,9 @@ spec:
         - name: MONGO_PORT
           value: {{ klovercloud_mongodb_service_port }}
         - name: MONGO_AUTH_DATABASE
-          value: "admin"
+          value: {{ klovercloud_mongo_auth_db_name }}
         - name: MONGO_USERNAME
-          value: "root"
+          value: {{ klovercloud_mongo_root_username }}
         - name: MONGO_PASSWORD
           value: {{ klovercloud_mongodd_root_password }}
         - name: KAFKA_SERVER
@@ -57,9 +57,15 @@ spec:
         - name: ZOO_KEEPER_PORT
           value: {{ klovercloud_zookeeper_service_port }}
         - name: ADMIN_USERNAME
-          value: {{ klovercloud_listener_admin_username }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ klovercloud_super_admin_secret }}
+              key: username
         - name: ADMIN_PASSWORD
-          value: {{ klovercloud_listener_admin_password }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ klovercloud_super_admin_secret }}
+              key: password
         - name: KLOVERCLOUD_MANAGEMENT_SERVICE_NAME
           value: {{ klovercloud_management_service_name }}
         ports:

@@ -36,19 +36,23 @@
     inventory_hostname == "kube-master-0" 
   ignore_errors: yes
 
+
 - name: Creates /etc/kubernetes/kubeadm directory
   file: path=/etc/kubernetes/kubeadm/klovercloud  recurse=yes state=directory
   when: >
     inventory_hostname == "kube-master-0"
 
+
+    ## separte mongo deployment ( 1st phase)
+
 - name: Copy kube config files
   template: src="{{ item.src }}" dest="{{ item.dest }}"
   with_items:
      - { src: 'step.1.klovercloud-ci.v1.1.0.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/step.1.klovercloud-ci.v1.1.0.yaml'  } 
-     - { src: 'step.2.klovercloud-ci.v1.1.0.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/step.2.mongodb.yaml'  } 
-     - { src: 'step.3.klovercloud-ci.v1.1.0.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/step.3.kafka.yaml'  } 
+     - { src: 'step.2.mongodb.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/step.2.mongodb.yaml'  } 
+     - { src: 'step.3.kafka.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/step.3.kafka.yaml'  } 
      - { src: 'step.4.nexus.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/step.4.nexus.yaml'  } 
-     - { src: 'step.5.listener.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/step.5.listener.yaml'  } 
+     - { src: 'step.5.admin_secret.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/step.5.admin_secret.yaml'  } 
      
   when: >
     inventory_hostname == "kube-master-0"
@@ -58,45 +62,48 @@
   shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/;
   when: >
     inventory_hostname == "kube-master-0" 
-  ignore_errors: yes
-
 
 
 - name: Copy cert-issuer descriptor
   template: src="{{ item.src }}" dest="{{ item.dest }}"
   with_items:
-     - { src: 'step.5.cert_issuer.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/step.5.cert_issuer.yaml'  } 
+     - { src: 'step.6.cert_issuer.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/step.6.cert_issuer.yaml'  } 
      
   when: >
     inventory_hostname == "kube-master-0"
   register: result
 
 - name:  
-  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/step.5.cert_issuer.yaml;
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/step.6.cert_issuer.yaml;
   when: >
     inventory_hostname == "kube-master-0" 
-  ignore_errors: yes
+
+
+- name: reset klovercloud_super_admin_username and klovercloud_super_admin_password
+  set_fact:
+    klovercloud_super_admin_username: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
+    klovercloud_super_admin_password: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
 
 
 
 - name: Copy listener descriptor
   template: src="{{ item.src }}" dest="{{ item.dest }}"
   with_items:
-     - { src: 'step.6.listener.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/step.6.listener.yaml'  } 
+     - { src: 'step.7.listener.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/step.7.listener.yaml'  } 
      
   when: >
     inventory_hostname == "kube-master-0"
   register: result
 
 - name:  
-  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/step.6.listener.yaml;
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/step.7.listener.yaml;
   when: >
     inventory_hostname == "kube-master-0" 
-  ignore_errors: yes
 
 
-- name: sleep for a specified interval
-  command: sleep '{{ sleep_interval }}'
+- name: 
+  wait_for:
+    timeout: 30
 
 
 - name: Login to listener service as admin user
@@ -108,12 +115,11 @@
     body_format: json
     headers:
       Content-Type: "application/json"
-    body: '{"username": "admin-listener@klovercloud.com","password": "hello123"}'
+    body: "{ \"username\": \"{{ klovercloud_super_admin_username }}\",\"password\": \"{{ klovercloud_super_admin_password }}\"}" 
   register: login_result
   until: login_result.json.success == true
   retries: 10
   delay: 10
-  ignore_errors: yes
 
 - name: Create an API Access Token when login request returns token
   uri:
@@ -127,58 +133,53 @@
       x-auth-token: login_result.json.token
   register: api_access_token
   when: login_result.json.success == true
-  ignore_errors: yes
+
 
 - name: reset klovercloud_api_access_token
   set_fact:
     klovercloud_api_access_token: api_access_token.json.data
   when: api_access_token.json.success == true
-  ignore_errors: yes
-
   
 
 - name: Copy management descriptor
   template: src="{{ item.src }}" dest="{{ item.dest }}"
   with_items:
-     - { src: 'step.7.management.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/step.7.management.yaml'  } 
+     - { src: 'step.8.management.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/step.8.management.yaml'  } 
      
   when: >
     inventory_hostname == "kube-master-0"
   register: result
 
 - name:  
-  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/step.7.management.yaml;
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/step.8.management.yaml;
   when: >
     inventory_hostname == "kube-master-0" 
-  ignore_errors: yes
 
 
-- name: sleep for a specified interval
-  command: sleep '{{ sleep_interval }}'
+- name: 
+  wait_for:
+    timeout: 30
 
 
 
 - name: Copy facade descriptor
   template: src="{{ item.src }}" dest="{{ item.dest }}"
   with_items:
-     - { src: 'step.8.facade.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/step.8.facade.yaml'  } 
+     - { src: 'step.9.facade.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/step.9.facade.yaml'  } 
      
   when: >
     inventory_hostname == "kube-master-0"
   register: result
 
 - name:  
-  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/step.8.facade.yaml;
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/step.9.facade.yaml;
   when: >
     inventory_hostname == "kube-master-0" 
-  ignore_errors: yes
 
 
-- name: sleep for a specified interval
-  command: sleep '{{ sleep_interval_extrem }}'
-
-
-
+- name: 
+  wait_for:
+    timeout: 110
 
 
 - name: Login to facade service as super admin user
@@ -189,16 +190,12 @@
     status_code: 200
     body_format: json
     headers:
-      Content-Type: "application/json"
-    body: '{
-              "username": "admin@klovercloud.com",
-              "password": "hello123"
-            }'
+      Content-Type: "application/json" 
+    body: "{ \"username\": \"{{ klovercloud_super_admin_username }}\",\"password\": \"{{ klovercloud_super_admin_password }}\"}"
   register: facade_login_result
   until: facade_login_result.json.success == true
   retries: 10
   delay: 10
-  ignore_errors: yes
 
 - name: Request to create a Service User using facade login token
   uri:
@@ -210,16 +207,9 @@
     headers:
       Content-Type: "application/json"
       x-auth-token: facade_login_result.json.token
-    body: '{
-              "firstName": "klovercloud service",
-              "lastName": "user",
-              "username": "klovercloud-service-user@klovercloud.com",
-              "userType" : "AGENT_SERVICE",
-              "authorities":[ "ROLE_AGENT_SERVICE"]
-            }' 
+    body: "{ \"firstName\": \"{{klovercloud_service_firstname}}\",\"lastName\": \"{{klovercloud_service_lastname}}\",\"username\": \"{{ klovercloud_service_username }}\",\"userType\": \"{{ klovercloud_service_usertype }}\",\"authorities\": [ \"ROLE_AGENT_SERVICE\"]}"
   register: service_user
   when: facade_login_result.json.success == true
-  ignore_errors: yes
 
 - name: Request to create a facade Service access token
   uri:
@@ -231,24 +221,33 @@
     headers:
       Content-Type: "application/json"
       x-auth-token: facade_login_result.json.token
-    body: '{
-              "userId":service_user.json.data 
-           }' 
+    body:  "{ \"userId\": \"{{ service_user.json.data }}\"}" 
   register: facade_api_access_token
   when: service_user.json.success == true
-  ignore_errors: yes
 
 - name: reset klovercloud_facade_api_access_token
   set_fact:
     klovercloud_facade_api_access_token: facade_api_access_token.json.data
   when: facade_api_access_token.json.success == true
-  ignore_errors: yes
+  
 
-- name: sleep for a specified interval
-  command: sleep '{{ sleep_interval_extrem }}'
+- name: 
+  wait_for:
+    timeout: 110
 
+- name: Copy pipeline descriptor
+  template: src="{{ item.src }}" dest="{{ item.dest }}"
+  with_items:
+     - { src: 'step.10.pipeline.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/step.10.pipeline.yaml'  } 
+     
+  when: >
+    inventory_hostname == "kube-master-0"
+  register: result
 
-
+- name:  
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/step.10.pipeline.yaml;
+  when: >
+    inventory_hostname == "kube-master-0" 
 
 
   

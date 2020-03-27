@@ -49,9 +49,15 @@ spec:
         - name: MONGO_PASSWORD
           value: {{ klovercloud_mongodd_root_password }}
         - name: ADMIN_USERNAME
-          value: {{ klovercloud_facade_admin_username }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ klovercloud_super_admin_secret }}
+              key: username
         - name: ADMIN_PASSWORD
-          value: {{ klovercloud_facade_admin_password }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ klovercloud_super_admin_secret }}
+              key: password
         - name: KLOVERCLOUD_MANAGEMENT_SERVICE_NAME
           value: {{ klovercloud_management_service_name }}
         - name: KLOVERCLOUD_PIPELINE_SERVICE_NAME
@@ -71,9 +77,9 @@ spec:
         - name: KLOVERCLOUD_MONITOR_SERVICE_NAME
           value: "klovercloud-monitor"
         - name: KLOVERCLOUD_LOG_MANAGER_SERVICE_NAME
-          value: "klovercloud-log-manager"
+          value: {{ klovercloud_log_manager_service }}
         - name: KLOVERCLOUD_DNS_MANAGER_SERVICE_NAME
-          value: "klovercloud-dns-manager"
+          value: {{ klovercloud_dns_manager_service }}
         ports:
         - containerPort: {{ klovercloud_facade_container_port1 }}
         - containerPort: {{ klovercloud_facade_container_port2 }}

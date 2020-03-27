@@ -1,17 +1,23 @@
 # common
-sleep_interval: 30
-sleep_interval_extrem: 110
-
+klovercloud_super_admin_username: admin-listener@klovercloud.com
+klovercloud_super_admin_password: hello123
+klovercloud_super_admin_secret: klovercloud-super-admin-secret
 klovercloud_dns_manager_service: klovercloud-dns-manager
+klovercloud_log_manager_service: klovercloud-log-manager
 klovercloud_default_ingress_domain: klovercloud.com
 klovercloud_developer_alias: klovercloud
 klovercloud_namespace: klovercloud
 klovercloud_api_access_token: abcxyz
 klovercloud_image_pulling_secret: regcred-harbor
+
 klovercloud_registry_username: klover-dev
 klovercloud_registry_password: Dev@Klover2019!
 klovercloud_registry_email: shihab.hasan@klovercloud.com
-
+klovercloud_service_username: klovercloud-service-user@klovercloud.com
+klovercloud_service_lastname: user
+klovercloud_service_firstname: klovercloud service
+klovercloud_service_usertype: AGENT_SERVICE
+klovercloud_service_authorities: ROLE_AGENT_SERVICE
 
 # Klovercloud-ci
 klovercloud_ci_namespace: tekton
@@ -23,13 +29,11 @@ klovercloud_ci_memory_limit: 1536Mi
 klovercloud_ci_containers_port: 8084
 klovercloud_ci_tecknology: TEKTON
 
-
 klovercloud_ci_image: container-registry.klovercloud.com/klovercloud/klovercloud-ci:1.1.0
 klovercloud_ci_mongo_service_name: mongodb-internal-kc
 klovercloud_ci_mongo_external_name: mongodb.klovercloud.svc.cluster.local
 klovercloud_ci_db_connection_str: mongodb://mongoAdmin:abc123@mongodb-internal-kc:27017
 klovercloud_ci_db_name: klovercloud_ci
-
 
 klovercloud_ci_facade_service_url: klovercloud-facade-internal-kc/web-socket-ns
 klovercloud_ci_facade_service_access_token: 925a05d796362ba0617d241a72c977844f72cc768c491d74410cecb496ae2615TEFyBAkAw6
@@ -41,7 +45,6 @@ klovercloud_ci_pipeline_service_url: http://klovercloud-pipeline-internal-kc
 klovercloud_ci_pipeline_service_name: klovercloud-pipeline-internal-kc
 klovercloud_ci_pipeline_service_external_name: klovercloud-pipeline.klovercloud.svc.cluster.local
 klovercloud_ci_pipeline_service_port: 80
-
 
 klovercloud_ci_nexus_token: YWRtaW46YWRtaW4=
 klovercloud_ci_nexus_username: admin
@@ -57,7 +60,6 @@ klovercloud_ci_app_label: klovercloud-ci
 klovercloud_ci_deployment_name: klovercloud-ci
 klovercloud_ci_service_account_name: klovercloud-ci
 
-
 # klovercloud mongodb 
 klovercloud_mongodb_replica: 1
 klovercloud_mongodb_storage: 2000Mi
@@ -71,7 +73,6 @@ klovercloud_mongodb_metrics_memory_request: 128Mi
 klovercloud_mongodb_metrics_cpu_limit: 200m
 klovercloud_mongodb_metrics_memory_limit: 256Mi
 klovercloud_mongodb_metrics_container_port: 9216
-
 
 klovercloud_mongdb_app_label: mongodb-server
 klovercloud_mongodb_statefulset_name: mongodb
@@ -90,7 +91,6 @@ klovercloud_mongodb_replica_set_key: admin123
 klovercloud_mongodd_root_password: admin123
 klovercloud_mongo_auth_db_name: admin
 klovercloud_mongo_root_username: root
-
 
 # klovercloud kafka
 klovercloud_kafka_replica: 1
@@ -128,7 +128,6 @@ klovercloud_nexus_memory_limit: 4Gi
 klovercloud_nexus_operator_name: nexus-operator
 klovercloud_nexus_operator_image: zeromsi2/nexus
 
-
 klovercloud_nexus_operator_role_name: nexus-operator
 klovercloud_nexus_operator_role_binding_name: nexus-operator
 klovercloud_nexus_operator_service_account_name: nexus-operator
@@ -160,8 +159,6 @@ klovercloud_listener_metrics_sevice_port: 80
 klovercloud_listener_metrics_sevice_target_port: 8080
 klovercloud_listener_ingress_name: klovercloud-listener
 klovercloud_listener_ingress_host: listener.klovercloud.com
-klovercloud_listener_admin_username: admin-listener@klovercloud.com
-klovercloud_listener_admin_password: hello123
 
 
 # Cert Issuer
