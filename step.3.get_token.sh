@@ -1,11 +1,12 @@
 #!/bin/bash
-export kube-master-0=kube-master-0
+export kube_master=$(cat inventory.ini | grep -A1 '\[kube-master\]' | grep -v '\[kube-master\]')
+
 mkdir -p /var/klovercloud.com/cache  
 mount -t tmpfs -o size=1M,mode=0755 tmpfs /var/klovercloud.com/cache
 
-export JOIN=`ssh kube-master-0 kubeadm token create --ttl 30m --print-join-command` 
+export JOIN=`ssh $kube_master kubeadm token create --ttl 30m --print-join-command` 
 
-export OUTPUT=`ssh kube-master-0 kubeadm init phase upload-certs --upload-certs | tail -n 1`
+export OUTPUT=`ssh $kube_master kubeadm init phase upload-certs --upload-certs | tail -n 1`
 
 echo $JOIN  " --certificate-key "  $OUTPUT  " --control-plane" > /var/klovercloud.com/cache/master_join.sh
 echo "mkdir -p $HOME/.kube" >>  /var/klovercloud.com/cache/master_join.sh
