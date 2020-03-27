@@ -1,0 +1,98 @@
+---
+# Source: cortex/templates/consul-svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: cortex-consul
+  labels:
+    chart: cortex-0.0.1
+    release: cortex
+    heritage: Helm
+    cortex: consul
+spec:
+  ports:
+  - name: http
+    port: 8500
+  selector:
+    app: cortex-consul
+    release: cortex
+---
+---
+# Source: cortex/templates/consul-dep.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cortex-consul
+  labels:
+    chart: cortex-0.0.1
+    release: cortex
+    heritage: Helm
+    cortex: consul
+spec:
+  # Only one pod. Ingesters handle data loss well
+  replicas: 1
+  # Ensure we only have one pod running at a time.
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: cortex-consul
+      release: cortex
+  template:
+    metadata:
+      labels:
+        app: cortex-consul
+        release: cortex
+        cortex: consul
+      annotations:
+        sidecar.istio.io/inject: "false"
+    spec:
+      tolerations:
+        - effect: NoSchedule
+          key: dedicated
+          operator: Equal
+          value: storage
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: dedicated
+                operator: In
+                values:
+                - storage
+      containers:
+      - name: consul
+        image: "consul:1.0.7"
+        imagePullPolicy: IfNotPresent
+        args:
+        - agent
+        - -ui
+        - -server
+        - -client=0.0.0.0
+        - -bootstrap
+        env:
+        - name: CHECKPOINT_DISABLE
+          value: "1"
+        ports:
+        - name: server-noscrape
+          containerPort: 8300
+        - name: serf-noscrape
+          containerPort: 8301
+        - name: client-noscrape
+          containerPort: 8400
+        - name: http-noscrape
+          containerPort: 8500
+        livenessProbe:
+          exec:
+            command:
+            - consul
+            - members
+          initialDelaySeconds: 300
+          timeoutSeconds: 5
+        #resources:
+        # limits:
+        #   cpu: 1
+        # requests:
+        #   cpu: 1
+        #   memory: 512Mi

@@ -1,0 +1,385 @@
+---
+# Source: cortex/charts/memcached-index-read/templates/pdb.yaml
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: cortex-memcached-index-read
+spec:
+  selector:
+    matchLabels:
+      app: cortex-memcached-index-read
+      chart: "memcached-index-read-2.6.0"
+      release: "cortex"
+      heritage: "Helm"
+  minAvailable: 1
+---
+# Source: cortex/charts/memcached-index-write/templates/pdb.yaml
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: cortex-memcached-index-write
+spec:
+  selector:
+    matchLabels:
+      app: cortex-memcached-index-write
+      chart: "memcached-index-write-2.6.0"
+      release: "cortex"
+      heritage: "Helm"
+  minAvailable: 1
+
+---
+# Source: cortex/charts/memcached/templates/pdb.yaml
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: cortex-memcached
+spec:
+  selector:
+    matchLabels:
+      app: cortex-memcached
+      chart: "memcached-2.6.0"
+      release: "cortex"
+      heritage: "Helm"
+  minAvailable: 1
+
+---
+# Source: cortex/charts/memcached-index-read/templates/svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: cortex-memcached-index-read
+  labels:
+    app: cortex-memcached-index-read
+    chart: "memcached-index-read-2.6.0"
+    release: "cortex"
+    heritage: "Helm"
+  annotations:
+    {}
+spec:
+  clusterIP: None
+  ports:
+  - name: memcache
+    port: 11211
+    targetPort: memcache
+  - name: metrics
+    port: 9150
+    targetPort: metrics
+  selector:
+    app: cortex-memcached-index-read
+
+---
+# Source: cortex/charts/memcached-index-write/templates/svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: cortex-memcached-index-write
+  labels:
+    app: cortex-memcached-index-write
+    chart: "memcached-index-write-2.6.0"
+    release: "cortex"
+    heritage: "Helm"
+  annotations:
+    {}
+spec:
+  clusterIP: None
+  ports:
+  - name: memcache
+    port: 11211
+    targetPort: memcache
+  - name: metrics
+    port: 9150
+    targetPort: metrics
+  selector:
+    app: cortex-memcached-index-write
+---
+
+
+#Source: cortex/charts/memcached/templates/svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: cortex-memcached
+  labels:
+    app: cortex-memcached
+    chart: "memcached-2.6.0"
+    release: "cortex"
+    heritage: "Helm"
+  annotations:
+    {}
+spec:
+  clusterIP: None
+  ports:
+  - name: memcache
+    port: 11211
+    targetPort: memcache
+  - name: metrics
+    port: 9150
+    targetPort: metrics
+  selector:
+    app: cortex-memcached
+
+---
+
+# Source: cortex/charts/memcached-index-read/templates/statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: cortex-memcached-index-read
+  labels:
+    app: cortex-memcached-index-read
+    chart: "memcached-index-read-2.6.0"
+    release: "cortex"
+    heritage: "Helm"
+spec:
+  spec:
+  selector:
+    matchLabels:
+      app: cortex-memcached-index-read
+  serviceName: cortex-memcached-index-read
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: cortex-memcached-index-read
+        chart: "memcached-index-read-2.6.0"
+        release: "cortex"
+        heritage: "Helm"
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - topologyKey: "kubernetes.io/hostname"
+            labelSelector:
+              matchLabels:
+                app:  cortex-memcached-index-read
+                release: "cortex"
+      containers:
+      - name: cortex-memcached-index-read
+        image: memcached:1.5.7-alpine
+        imagePullPolicy: ""
+        command:
+        - memcached
+        - -m 3840
+        - -o
+        - modern
+        - -v
+        - -I 32m
+        - -t 32
+        ports:
+        - name: memcache
+          containerPort: 11211
+        livenessProbe:
+          tcpSocket:
+            port: memcache
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+        readinessProbe:
+          tcpSocket:
+            port: memcache
+          initialDelaySeconds: 5
+          timeoutSeconds: 1
+        #resources:
+        #  limit:
+        #    cpu: 500m
+        #  requests:
+        #    cpu: 500m
+        #    memory: 4Gi
+      - name: metrics
+        image: quay.io/prometheus/memcached-exporter:v0.4.1
+        imagePullPolicy: ""
+        ports:
+        - name: metrics
+          containerPort: 9150
+        resources:
+          {}
+      tolerations:
+        - effect: NoSchedule
+          key: dedicated
+          operator: Equal
+          #value: cortex-memcached
+          value: storage
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: dedicated
+                operator: In
+                values:
+                #- cortex-memcached
+                - storage
+---
+# Source: cortex/charts/memcached-index-write/templates/statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: cortex-memcached-index-write
+  labels:
+    app: cortex-memcached-index-write
+    chart: "memcached-index-write-2.6.0"
+    release: "cortex"
+    heritage: "Helm"
+spec:
+  selector:
+    matchLabels:
+      app: cortex-memcached-index-write
+  serviceName: cortex-memcached-index-write
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: cortex-memcached-index-write
+        chart: "memcached-index-write-2.6.0"
+        release: "cortex"
+        heritage: "Helm"
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - topologyKey: "kubernetes.io/hostname"
+            labelSelector:
+              matchLabels:
+                app:  cortex-memcached-index-write
+                release: "cortex"
+      containers:
+      - name: cortex-memcached-index-write
+        image: memcached:1.5.7-alpine
+        imagePullPolicy: ""
+        command:
+        - memcached
+        - -m 3840
+        - -o
+        - modern
+        - -v
+        - -I 32m
+        - -t 32
+        ports:
+        - name: memcache
+          containerPort: 11211
+        livenessProbe:
+          tcpSocket:
+            port: memcache
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+        readinessProbe:
+          tcpSocket:
+            port: memcache
+          initialDelaySeconds: 5
+          timeoutSeconds: 1
+        #resources:
+        # limit:
+        #   cpu: 500m
+        # requests:
+        #  cpu: 500m
+        #  memory: 4Gi
+      - name: metrics
+        image: quay.io/prometheus/memcached-exporter:v0.4.1
+        imagePullPolicy: ""
+        ports:
+        - name: metrics
+          containerPort: 9150
+        resources:
+          {}
+      tolerations:
+        - effect: NoSchedule
+          key: dedicated
+          operator: Equal
+          #value: cortex-memcached
+          value: storage
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: dedicated
+                operator: In
+                values:
+                #- cortex-memcached
+                - storage
+---
+# Source: cortex/charts/memcached/templates/statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: cortex-memcached
+  labels:
+    app: cortex-memcached
+    chart: "memcached-2.6.0"
+    release: "cortex"
+    heritage: "Helm"
+spec:
+  selector:
+    matchLabels:
+      app: cortex-memcached 
+  serviceName: cortex-memcached
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: cortex-memcached
+        chart: "memcached-2.6.0"
+        release: "cortex"
+        heritage: "Helm"
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - topologyKey: "kubernetes.io/hostname"
+            labelSelector:
+              matchLabels:
+                app:  cortex-memcached
+                release: "cortex"
+      containers:
+      - name: cortex-memcached
+        image: memcached:1.5.12-alpine
+        imagePullPolicy: ""
+        command:
+        - memcached
+        - -m 3840
+        - -o
+        - modern
+        - -v
+        - -t 32
+        ports:
+        - name: memcache
+          containerPort: 11211
+        livenessProbe:
+          tcpSocket:
+            port: memcache
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+        readinessProbe:
+          tcpSocket:
+            port: memcache
+          initialDelaySeconds: 5
+          timeoutSeconds: 1
+        #resources:
+        # limit:
+        #   cpu: 500m
+        # requests:
+        #   cpu: 500m
+        #   memory: 4Gi
+      - name: metrics
+        image: quay.io/prometheus/memcached-exporter:v0.4.1
+        imagePullPolicy: ""
+        ports:
+        - name: metrics
+          containerPort: 9150
+        resources:
+          {}
+      tolerations:
+        - effect: NoSchedule
+          key: dedicated
+          operator: Equal
+          #value: cortex-memcached
+          value: storage
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: dedicated
+                operator: In
+                values:
+                #- cortex-memcached
+                - storage
