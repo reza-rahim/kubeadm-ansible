@@ -149,6 +149,17 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
+{% if profile  == "prod" %}
+
+          resources:
+            limits:
+              cpu: {{ ingress_limit_cpu }}
+              memory: {{ ingress_limit_mem }}
+            requests:
+              cpu: {{ ingress_request_cpu }}
+              memory: {{ ingress_request_mem }}
+{% endif %}
+
           ports:
             - containerPort: 80
             - containerPort: 443
