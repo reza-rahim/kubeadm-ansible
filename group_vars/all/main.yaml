@@ -24,6 +24,7 @@ cortex_endpoint: http://cortex-nginx.cortex.svc.cluster.local:80/api/prom/push
 
 ####### Ceph ######
 ceph_mon: 3
+osdsPerDevice: 1 # number of OSD per device 
 
 ###### cassandra #######
 cassandra_endpoint:  cassandra.cassandra.svc.cluster.local
