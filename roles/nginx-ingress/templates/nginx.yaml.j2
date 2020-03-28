@@ -23,15 +23,11 @@ spec:
         app: default-backend
     spec:
       terminationGracePeriodSeconds: 60
-      {% if profile  == "prod" %}
-
       tolerations:
         - effect: NoSchedule
           key: dedicated
           operator: Equal
           value: ingress
-      {% endif %}
-
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -53,8 +49,6 @@ spec:
           timeoutSeconds: 5
         ports:
         - containerPort: 8080
-        {% if profile  == "prod" %}
-
         resources:
           limits:
             cpu: 10m
@@ -62,8 +56,6 @@ spec:
           requests:
             cpu: 10m
             memory: 20Mi
-        {% endif %}
-
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -111,15 +103,11 @@ spec:
       hostNetwork: true
       terminationGracePeriodSeconds: 60
       serviceAccount: nginx
-      {% if profile  == "prod" %}
-
       tolerations:
         - effect: NoSchedule
           key: dedicated
           operator: Equal
           value: ingress
-      {% endif %}
-
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -166,13 +154,3 @@ spec:
             - containerPort: 443
             - containerPort: 18080
             - containerPort: 10254
-          {% if profile  == "prod" %}
-
-          resources:
-            limits:
-              cpu: {{ ingress_limit_cpu }}
-              memory: {{ ingress_limit_mem }}
-            requests:
-              cpu: {{ ingress_request_cpu }}
-              memory: {{ ingress_request_mem }}
-          {% endif %}
