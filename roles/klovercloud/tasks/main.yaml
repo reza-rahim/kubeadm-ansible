@@ -64,6 +64,7 @@
     inventory_hostname == "kube-master-0" 
 
 
+
 - name: Copy cert-issuer descriptor
   template: src="{{ item.src }}" dest="{{ item.dest }}"
   with_items:
@@ -108,7 +109,7 @@
 
 - name: Login to listener service as admin user
   uri:
-    url:  http://{{klovercloud_listener_ingress_host}}/api/auth/login
+    url: http://{{klovercloud_listener_ingress_host}}/api/auth/login
     method: POST
     return_content: yes
     status_code: 200
@@ -123,7 +124,7 @@
 
 - name: Create an API Access Token when login request returns token
   uri:
-    url:  http://{{klovercloud_listener_ingress_host}}/api/api-access-token
+    url: http://{{klovercloud_listener_ingress_host}}/api/api-access-token
     method: POST
     return_content: yes
     status_code: 200
@@ -199,7 +200,7 @@
 
 - name: Request to create a Service User using facade login token
   uri:
-    url:  http://{{klovercloud_facade_host}}/api/user
+    url: http://{{klovercloud_facade_host}}/api/user
     method: POST
     return_content: yes
     status_code: 200
@@ -250,7 +251,26 @@
     inventory_hostname == "kube-master-0" 
 
 
-  
+- name: copy admin.password file from pod
+  shell: kubectl cp {{klovercloud_nexus_cr}}-0:/nexus-data/admin.password /etc/kubernetes/kubeadm/klovercloud/admin.password -n nexus
+
+
+
+- name: 
+  set_fact:
+    klovercloud_nexus_default_super_admin_password: "{{ lookup('file', '/etc/kubernetes/kubeadm/klovercloud/admin.password') }}"
+
+- name: Request to reset admin pass of nexus
+  uri:
+    url: http://{{klovercloud_nexus_ingress_host}}/service/rest/beta/security/users/{{klovercloud_nexus_super_admin}}/change-password
+    method: PUT
+    return_content: yes
+    status_code: 200
+    body_format: json
+    headers:
+      Content-Type: "text/plain"
+      Authorization: "Basic {{klovercloud_nexus_default_super_admin_password}}"
+    body: "{{klovercloud_nexus_super_admin_password}}"
 
 
   # clone generator repos 

@@ -30,6 +30,7 @@ spec:
       - name: {{ klovercloud_pipeline_deployment_name }}
         imagePullPolicy: Always
         image: {{ klovercloud_pipeline_image }}
+{% if profile  == "prod" %}
         resources:
           requests:
             cpu: {{ klovercloud_pipeline_cpu_request }}
@@ -37,6 +38,7 @@ spec:
           limits:
             cpu: {{ klovercloud_pipeline_cpu_limit }}
             memory: {{ klovercloud_pipeline_memory_limit }}
+{% endif %}
         env:
         - name: MONGO_SERVER
           value: {{ klovercloud_mongodb_service_name }}

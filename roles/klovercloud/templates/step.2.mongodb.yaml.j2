@@ -81,6 +81,7 @@ spec:
       - name: mongodb
         imagePullPolicy: IfNotPresent
         image: {{ klovercloud_mongodb_image }}
+{% if profile  == "prod" %}
         resources:
           requests:
             cpu: {{ klovercloud_mongodb_cpu_request }}
@@ -88,6 +89,7 @@ spec:
           limits:
             cpu: {{ klovercloud_mongodb_cpu_limit }}
             memory: {{ klovercloud_mongodb_memory_limit }}
+{% endif %}
         command:
         env:
         - name: MONGODB_POD_NAME
@@ -137,6 +139,7 @@ spec:
       - name: metrics
         imagePullPolicy: IfNotPresent
         image: {{ klovercloud_mongodb_exporter_image }}
+{% if profile  == "prod" %}
         resources:
           requests:
             cpu: {{ klovercloud_mongodb_metrics_cpu_request }}
@@ -144,6 +147,7 @@ spec:
           limits:
             cpu: {{ klovercloud_mongodb_metrics_cpu_limit }}
             memory: {{ klovercloud_mongodb_metrics_memory_limit }}
+{% endif %}
         command:
         - sh
         - "-c"

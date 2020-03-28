@@ -235,6 +235,7 @@ spec:
   # Add fields here
   replicas: {{ klovercloud_nexus_replica }}
   claim: nexus-claim-pvc
+{% if profile  == "prod" %}
   resources:
     limits:
       memory: {{ klovercloud_nexus_memory_limit }}
@@ -242,6 +243,7 @@ spec:
     requests:
       memory: {{ klovercloud_nexus_memory_request }}
       cpu: {{ klovercloud_nexus_cpu_request }}
+{% endif %}
 
 
      

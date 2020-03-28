@@ -46,6 +46,7 @@ spec:
       - name: klovercloud-ci
         imagePullPolicy: Always
         image: {{ klovercloud_ci_image }}
+{% if profile  == "prod" %}
         resources:
           requests:
             cpu: {{ klovercloud_ci_cpu_request }}
@@ -53,6 +54,7 @@ spec:
           limits:
             cpu: {{ klovercloud_ci_cpu_limit }}
             memory: {{ klovercloud_ci_memory_limit }}
+{% endif %}
         env:
         - name: RUN_MODE
           value: "PRODUCTION"
@@ -170,3 +172,69 @@ spec:
   externalName: {{ klovercloud_ci_mongo_external_name }}
   ports:
   - port: {{ klovercloud_mongodb_service_port }}
+
+
+
+---
+# ------------------- tekton task  ------------------- #
+
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: build-docker-image-from-git-source
+  namespace: tekton
+spec:
+  inputs:
+    resources:
+      - name: docker-source
+        type: git
+    params:
+      - name: pathToDockerFile
+        type: string
+        description: The path to the dockerfile to build
+        default: /workspace/docker-source/Dockerfile
+      - name: pathToContext
+        type: string
+        description:
+          The build context used by Kaniko
+          (https://github.com/GoogleContainerTools/kaniko#kaniko-build-contexts)
+        default: /workspace/docker-source
+      - name: nexususer
+        type: string
+      - name: nexuspassword
+        type: string
+      - name: nexus-maven-public-url
+        type: string
+      - name: nexus-maven-releases-url
+        type: string
+      - name: nexus-maven-snapshots-url
+        type: string
+      - name: nexus-npm-group-url
+        type: string
+      - name: nexus-token
+        type: string
+  outputs:
+    resources:
+      - name: builtImage
+        type: image
+  steps:
+    - name: build-and-push
+      image: gcr.io/kaniko-project/executor:v0.14.0
+
+      # specifying DOCKER_CONFIG is required to allow kaniko to detect docker credential
+      env:
+        - name: "DOCKER_CONFIG"
+          value: "/tekton/home/.docker/"
+      command:
+        - /kaniko/executor
+      args:
+        - --dockerfile=$(inputs.params.pathToDockerFile)
+        - --destination=$(outputs.resources.builtImage.url)
+        - --context=$(inputs.params.pathToContext)
+        - --build-arg=NEXUS_USER=$(inputs.params.nexususer)
+        - --build-arg=NEXUS_PASSWORD=$(inputs.params.nexuspassword)
+        - --build-arg=NEXUS_MAVEN_PUBLIC_URL=$(inputs.params.nexus-maven-public-url)
+        - --build-arg=NEXUS_MAVEN_RELEASES_URL=$(inputs.params.nexus-maven-releases-url)
+        - --build-arg=NEXUS_MAVEN_SNAPSHOTS_URL=$(inputs.params.nexus-maven-snapshots-url)
+        - --build-arg=NEXUS_NPM_GROUP_URL=$(inputs.params.nexus-npm-group-url)
+        - --build-arg=NEXUS_TOKEN=$(inputs.params.nexus-token)
