@@ -64,13 +64,11 @@ spec:
         app: rook-ceph-operator
     spec:
       serviceAccountName: rook-ceph-system
-{% if profile  == "prod" %}
-
       tolerations:
         - effect: NoSchedule
           key: dedicated
           operator: Equal
-          value: {{ storage_taint }}
+          value: storage
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -79,9 +77,7 @@ spec:
               - key: dedicated
                 operator: In
                 values:
-                - {{ storage_taint }}
- {% endif %}
-
+                - storage
       containers:
       - name: rook-ceph-operator
         image: rook/ceph:master
