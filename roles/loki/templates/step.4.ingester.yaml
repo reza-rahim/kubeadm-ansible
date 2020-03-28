@@ -22,7 +22,7 @@ metadata:
   name: ingester
 spec:
   minReadySeconds: 60
-  replicas: 3
+  replicas: {{ loki_ingester_replica }}
   revisionHistoryLimit: 10
   selector:
     matchLabels:
@@ -64,13 +64,17 @@ spec:
             port: 80
           initialDelaySeconds: 15
           timeoutSeconds: 1
-        #resources:
-        # limits:
-        #   cpu: "2"
-        #   memory: 10Gi
-        # requests:
-        #   cpu: "1"
-        #   memory: 5Gi
+ {% if profile  == "prod" %}
+
+        resources:
+         limits:
+           cpu: "2"
+           memory: 10Gi
+         requests:
+           cpu: "1"
+           memory: 5Gi
+ {% endif %}
+
         volumeMounts:
         - mountPath: /etc/loki/config
           name: loki

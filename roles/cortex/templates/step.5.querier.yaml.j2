@@ -29,7 +29,7 @@ metadata:
     heritage: Helm
     cortex: querier
 spec:
-  replicas: {{ cortex_querier }}
+  replicas: 3
   strategy:
     rollingUpdate:
       maxUnavailable: 1
@@ -48,11 +48,14 @@ spec:
         prometheus.io/scrape: "true"
         sidecar.istio.io/inject: "false"
     spec:
+
+      {% if profile  == "prod" %}
+
       tolerations:
         - effect: NoSchedule
           key: dedicated
           operator: Equal
-          value: {{ cortex_taint }} 
+          value:  {{ cortex_taint }}
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -62,6 +65,8 @@ spec:
                 operator: In
                 values:
                 - {{ cortex_taint }}
+      {% endif %}
+
       containers:
       - name: querier
         #image: "quay.io/cortexproject/querier:master-79bba2f9"
@@ -69,48 +74,28 @@ spec:
         imagePullPolicy: IfNotPresent
         args:
         - -target=querier
+        - -log.level=debug
         - -server.http-listen-port=80
-        - -consul.hostname=cortex-consul.cortex.svc.cluster.local:8500
-        - -querier.frontend-address=cortex-query-frontend:9095
-        - -querier.query-ingesters-within=0
-        - -cassandra.addresses={{ cortex_cassandra }}
-        - "-cassandra.auth=true"
-        - "-cassandra.password={{ cassandra_password }}"
-        - "-cassandra.username=cassandra"
-        - -cassandra.keyspace=cortex
-        - -cassandra.timeout=1000ms
-        - -cassandra.replication-factor=2
-        - -chunk.storage-client=cassandra
-        - -dynamodb.chunk-table.prefix=cortex_chunks_
-        - -dynamodb.chunk-table.tag=cortex=chunks
-        - -dynamodb.chunk-table.from={{ cortex_date }}
-        - -dynamodb.chunk-table.period=168h
-        - -dynamodb.periodic-table.prefix=cortex_weekly_
-        - -dynamodb.periodic-table.tag=cortex=periodic-table
-        - -dynamodb.periodic-table.from={{ cortex_date }}
-        - -dynamodb.periodic-table.period=168h
-        - -dynamodb.v9-schema-from={{ cortex_date }}
-        - -memcached.hostname=cortex-memcached.cortex.svc.cluster.local
-        - -memcached.timeout=100ms
-        - -memcached.service=memcache # Service port name
-        - -memcached.timeout=500ms
-        - -store.index-cache-write.memcached.hostname=cortex-memcached-index-write.cortex.svc.cluster.local
-        - -store.index-cache-write.memcached.service=memcache # Service port name
-        - -store.index-cache-write.memcached.timeout=500ms
-        - -store.index-cache-read.memcached.hostname=cortex-memcached-index-read.cortex.svc.cluster.local
-
-        - -store.index-cache-read.memcached.service=memcache # Service port name
-        - -store.index-cache-read.memcached.timeout=500ms
-        - -distributor.replication-factor=3
-        - -querier.batch-iterators
-        - -querier.ingester-streaming
-        - -querier.max-concurrent=5
+        - -config.file=/etc/cortex/config/config.yaml
         ports:
         - containerPort: 80
           name: http
-        #resources:
-        # limits:
-        #   cpu: 1
-        # requests:
-        #   cpu: 1
-        #   memory: 1Gi
+
+{% if profile  == "prod" %}
+
+        resources:
+         limits:
+           cpu: 1
+         requests:
+           cpu: 1
+           memory: 1Gi
+ {% endif %}
+
+        volumeMounts:
+        - mountPath: /etc/cortex/config
+          name: cortex
+      volumes:
+        - configMap:
+            name: cortex
+          name: cortex
+

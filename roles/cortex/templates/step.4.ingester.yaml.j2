@@ -31,7 +31,7 @@ metadata:
     heritage: Helm
     cortex: ingester
 spec:
-  replicas: {{ cortex_ingester }}
+  replicas: {{ cortex_ingester_replica }}
 
   # Ingesters are not ready for at least 1 min
   # after creation.  This has to be in sync with
@@ -69,6 +69,8 @@ spec:
       # too many ingesters at once.
       terminationGracePeriodSeconds: 4800
 
+ {% if profile  == "prod" %}
+
       tolerations:
         - effect: NoSchedule
           key: dedicated
@@ -83,6 +85,7 @@ spec:
                 operator: In
                 values:
                 - {{ cortex_taint }}
+{% endif %}
 
       containers:
       - name: ingester
@@ -91,39 +94,8 @@ spec:
         imagePullPolicy: IfNotPresent
         args:
         - -target=ingester
-        - -ingester.join-after=30s
-        - -ingester.claim-on-rollout=true
-        #- -ingester.search-pending-for=5m
-        - -consul.hostname=cortex-consul.cortex.svc.cluster.local:8500
-        - -cassandra.addresses={{ cortex_cassandra }}
-        - "-cassandra.auth=true"
-        - "-cassandra.password={{ cassandra_password }}"
-        - "-cassandra.username=cassandra"
-        - -cassandra.keyspace=cortex
-        - -cassandra.timeout=1000ms
-        - -cassandra.replication-factor=2
-        - -chunk.storage-client=cassandra
-        - -dynamodb.chunk-table.prefix=cortex_chunks_
-        - -dynamodb.chunk-table.tag=cortex=chunks
-        - -dynamodb.chunk-table.from={{ cortex_date }}
-        - -dynamodb.chunk-table.period=168h
-        - -dynamodb.periodic-table.prefix=cortex_weekly_
-        - -dynamodb.periodic-table.tag=cortex=periodic-table
-        - -dynamodb.periodic-table.from={{ cortex_date }}
-        - -dynamodb.periodic-table.period=168h
-        #- -dynamodb.v6-schema-from=2020-02-01
-        - -dynamodb.v9-schema-from={{ cortex_date }}
-        - -dynamodb.use-periodic-tables
-        - -memcached.hostname=cortex-memcached.cortex.svc.cluster.local
-        - -memcached.timeout=100ms
-        - -memcached.service=memcache # Service port name
-        - -memcached.timeout=500ms
-        - -store.index-cache-write.memcached.hostname=cortex-memcached-index-write.cortex.svc.cluster.local
-        - -store.index-cache-write.memcached.service=memcache # Service port name
-        - -store.index-cache-write.memcached.timeout=500ms
-        - -store.index-cache-read.memcached.hostname=cortex-memcached-index-read.cortex.svc.cluster.local
-        - -store.index-cache-read.memcached.service=memcache # Service port name
-        - -store.index-cache-read.memcached.timeout=500ms
+        - "-config.file=/etc/cortex/config/config.yaml"
+        #- -log.level=debug
         ports:
         - containerPort: 80
           name: http
@@ -133,9 +105,21 @@ spec:
             port: 80
           initialDelaySeconds: 15
           timeoutSeconds: 1
-        #resources:
-        # limits:
-        #   cpu: 4
-        # requests:
-        #   cpu: 4
-        #   memory: 4Gi
+
+{% if profile  == "prod" %}
+
+        resources:
+         limits:
+           cpu: 4
+         requests:
+           cpu: 4
+           memory: 4Gi
+{% endif %}
+
+        volumeMounts:
+        - mountPath: /etc/cortex/config
+          name: cortex
+      volumes:
+        - configMap:
+            name: cortex
+          name: cortex

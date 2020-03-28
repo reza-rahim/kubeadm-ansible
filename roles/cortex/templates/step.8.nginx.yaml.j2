@@ -82,7 +82,7 @@ spec:
   selector:
     matchLabels:
       cortex: nginx
-  replicas: {{ cortex_nginx }}
+  replicas: {{ cortex_nginx_replica }}
   template:
     metadata:
       labels:
@@ -91,6 +91,8 @@ spec:
       annotations:
         prometheus.io.scrape: "false"
     spec:
+{% if profile  == "prod" %}
+
       tolerations:
         - effect: NoSchedule
           key: dedicated
@@ -105,6 +107,8 @@ spec:
                 operator: In
                 values:
                 - {{ cortex_taint }}
+ {% endif %}
+
       containers:
       - name: nginx
         image: nginx

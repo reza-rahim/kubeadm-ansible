@@ -55,7 +55,7 @@ spec:
         - effect: NoSchedule
           key: dedicated
           operator: Equal
-          value: {{ cortex_taint }}
+          value: storage
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -64,7 +64,7 @@ spec:
               - key: dedicated
                 operator: In
                 values:
-                - {{ cortex_taint }}
+                - storage
       containers:
       - name: grafana
         image: grafana/grafana:latest

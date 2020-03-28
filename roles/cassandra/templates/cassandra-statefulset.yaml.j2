@@ -20,7 +20,7 @@ spec:
   selector:
     matchLabels:
       app: cassandra
-  replicas: 3
+  replicas: {{ cassandra_replicas }}
   template:
     metadata:
       labels:
@@ -32,7 +32,7 @@ spec:
         - effect: NoSchedule
           key: dedicated
           operator: Equal
-          value: storge
+          value: {{ cassandra_taint }}
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -41,7 +41,7 @@ spec:
               - key: dedicated
                 operator: In
                 values:
-                - storage
+                - {{ cassandra_taint }}
 {% endif %}
 
       containers:
@@ -74,11 +74,11 @@ spec:
             - name: CASSANDRA_SEEDS
               value: cassandra-0.cassandra.cassandra.svc.cluster.local
             - name: MAX_HEAP_SIZE
-              value: 256M
+              value: {{ cassandra_max_heap_size }}
             - name: HEAP_NEWSIZE
-              value: 100M
+              value: {{ cassandra_heap_newsize }}
             - name: CASSANDRA_PASSWORD
-              value: admin1234
+              value: {{ cassandra_password }}
             - name: CASSANDRA_CLUSTER_NAME
               value: "Cassandra"
             - name: CASSANDRA_DATACENTER
@@ -90,6 +90,17 @@ spec:
           volumeMounts:
             - name: cassandra-data
               mountPath: /var/lib/cassandra/data
+{% if profile  == "prod" %}
+
+          resources:
+            limits:
+              cpu: {{ cassandra_limit_cpu }}
+              memory: {{ cassandra_limit_mem }}
+            requests:
+              cpu: {{ cassandra_request_cpu }}
+              memory: {{ cassandra_request_mem }}
+{% endif %}
+
   volumeClaimTemplates:
     - metadata:
         name: cassandra-data
@@ -97,5 +108,5 @@ spec:
         accessModes: ["ReadWriteOnce"]
         resources:
           requests:
-            storage: 5Gi
-        storageClassName: rook-ceph-block-ec
+            storage: {{ cassandra_storage }}
+        storageClassName: {{ cassandra_strorage_class }}

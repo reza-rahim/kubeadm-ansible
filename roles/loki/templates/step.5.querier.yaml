@@ -22,7 +22,7 @@ metadata:
   name: querier
 spec:
   minReadySeconds: 10
-  replicas: 3
+  replicas: {{ loki_querier_replica }}
   revisionHistoryLimit: 10
   selector:
     matchLabels:
@@ -65,6 +65,17 @@ spec:
           name: loki
         - mountPath: /etc/loki/overrides
           name: overrides
+{% if profile  == "prod" %}
+
+        resources:
+         limits:
+           cpu: "2"
+           memory: 10Gi
+         requests:
+           cpu: "1"
+           memory: 5Gi
+ {% endif %}
+
       volumes:
       - configMap:
           name: loki

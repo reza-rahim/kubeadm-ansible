@@ -13,25 +13,33 @@ nginx_ingress_controller_version: 0.29.0
 nginx_ingress_controller_replicas: 2
 ingress_hostname: www.klovercloud.com
 nginx_ingress_http_mgmt: 18080
-ingress_limit_cpu: 10m
-ingress_limit_mem: 20Mi
-ingress_request_cpu: 10m
-ingress_request_mem: 20Mi
+ingress_limit_cpu: 1000m
+ingress_limit_mem: 2Gi
+ingress_request_cpu: 1000m
+ingress_request_mem: 2Gi
 
 
 ### monitoring ####
 cortex_endpoint: http://cortex-nginx.cortex.svc.cluster.local:80/api/prom/push
 
+####### Ceph ######
+ceph_mon: 3
+
 ###### cassandra #######
+cassandra_endpoint:  cassandra.cassandra.svc.cluster.local
 cassandra_replicas: 3
-cassandra_taint: cassandra 
-cassandra_version: v13
+cassandra_storage: 5Gi
+cassandra_strorage_class: rook-ceph-block-ec
+cassandra_taint: storage 
 cassandra_password: admin1234
 cassandra_taint: storage
-cassandra_limit_cpu: 10m
-cassandra_limit_mem: 20Mi
-cassandra_request_cpu: 10m
-cassandra_request_mem: 20Mi
+cassandra_limit_cpu: 1000m
+cassandra_limit_mem: 500Mi
+cassandra_request_cpu: 1000m
+cassandra_request_mem: 500Mi
+cassandra_max_heap_size: 256M
+cassandra_heap_newsize: 100M
+
 
 ####### cortex #####
 cortex_version: v0.4.0
@@ -43,4 +51,26 @@ cortex_querier: 3
 cortex_distributor: 1
 cortex_queryfrontend: 2
 cortex_nginx: 1
+cortex_memcached_replica: 1
+cortex_memcached_index_read_replica: 1
+cortex_memcached_index_write: 1
+cortex_ingester_replica: 1
+cortex_distributor_replica: 1
+cortex_query_frontend_replica: 1
+cortex_nginx_replica: 1
+
+####### Loki  ######
+loki_version: v0.4.0
+loki_date: 2017-03-01
+loki_taint: storage
+l_cassandra: cassandra.cassandra.svc.cluster.local
+loki_memcached_replica: 3
+loki_memcached_frontend_replica: 3
+loki_memcached_index_queries_replica: 3
+loki_memcached_index_writes_replica: 3
+loki_ingester_replica: 3
+loki_querier_replica: 3
+loki_distributor_replica: 3
+loki_query-frontend_replica: 2
+
 

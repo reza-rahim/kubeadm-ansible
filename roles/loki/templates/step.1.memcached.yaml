@@ -76,7 +76,7 @@ kind: StatefulSet
 metadata:
   name: memcached
 spec:
-  replicas: 3
+  replicas: {{ loki_memcached_replica }}
   selector:
     matchLabels:
       name: memcached
@@ -105,6 +105,8 @@ spec:
         ports:
         - containerPort: 11211
           name: client
+{% if profile  == "prod" %}
+
         resources:
           limits:
             cpu: "3"
@@ -112,6 +114,8 @@ spec:
           requests:
             cpu: 500m
             memory: 5016Mi
+ {% endif %}
+
       - args:
         - --memcached.address=localhost:11211
         - --web.listen-address=0.0.0.0:9150
@@ -129,7 +133,7 @@ kind: StatefulSet
 metadata:
   name: memcached-frontend
 spec:
-  replicas: 3
+  replicas: {{ loki_memcached-frontend_replica }}
   selector:
     matchLabels:
       name: memcached-frontend
@@ -158,6 +162,9 @@ spec:
         ports:
         - containerPort: 11211
           name: client
+
+{% if profile  == "prod" %}
+
         resources:
           limits:
             cpu: "3"
@@ -165,6 +172,8 @@ spec:
           requests:
             cpu: 500m
             memory: 1329Mi
+ {% endif %}
+
       - args:
         - --memcached.address=localhost:11211
         - --web.listen-address=0.0.0.0:9150
@@ -182,7 +191,7 @@ kind: StatefulSet
 metadata:
   name: memcached-index-queries
 spec:
-  replicas: 3
+  replicas: {{ loki_memcached_index_queries_replica }}
   selector:
     matchLabels:
       name: memcached-index-queries
@@ -211,6 +220,9 @@ spec:
         ports:
         - containerPort: 11211
           name: client
+
+{% if profile  == "prod" %}
+
         resources:
           limits:
             cpu: "3"
@@ -218,6 +230,8 @@ spec:
           requests:
             cpu: 500m
             memory: 1329Mi
+ {% endif %}
+
       - args:
         - --memcached.address=localhost:11211
         - --web.listen-address=0.0.0.0:9150
@@ -235,7 +249,7 @@ kind: StatefulSet
 metadata:
   name: memcached-index-writes
 spec:
-  replicas: 3
+  replicas: {{ loki_memcached_index_writes_replica }}
   selector:
     matchLabels:
       name: memcached-index-writes
@@ -264,6 +278,8 @@ spec:
         ports:
         - containerPort: 11211
           name: client
+{% if profile  == "prod" %}
+
         resources:
           limits:
             cpu: "3"
@@ -271,6 +287,9 @@ spec:
           requests:
             cpu: 500m
             memory: 1329Mi
+
+{% endif %}
+
       - args:
         - --memcached.address=localhost:11211
         - --web.listen-address=0.0.0.0:9150

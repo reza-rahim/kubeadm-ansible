@@ -29,7 +29,7 @@ metadata:
     heritage: Helm
     cortex: distributor
 spec:
-  replicas: {{ cortex_distributor }}
+  replicas: {{ cortex_distributor_replica }}
   strategy:
     rollingUpdate:
       maxUnavailable: 1
@@ -52,7 +52,7 @@ spec:
         - effect: NoSchedule
           key: dedicated
           operator: Equal
-          value: {{ cortex_taint }}
+          value: storage
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -61,18 +61,17 @@ spec:
               - key: dedicated
                 operator: In
                 values:
-                - {{ cortex_taint }}
+                - storage
       containers:
       - name: distributor
-        #image: "quay.io/cortexproject/distributor:master-79bba2f9"
         image: quay.io/cortexproject/cortex:v0.4.0
         imagePullPolicy: IfNotPresent
         args:
         - -target=distributor
-        - -log.level=debug
+        #- -log.level=debug
         - -server.http-listen-port=80
-        - -consul.hostname=cortex-consul.cortex.svc.cluster.local:8500
-        - -distributor.replication-factor=3
+        #- -distributor.replication-factor=3
+        - -config.file=/etc/cortex/config/config.yaml
         ports:
         - containerPort: 80
           name: http
@@ -82,3 +81,10 @@ spec:
         # requests:
         #   cpu: 4
         #   memory: 4Gi
+        volumeMounts:
+        - mountPath: /etc/cortex/config
+          name: cortex
+      volumes:
+        - configMap:
+            name: cortex
+          name: cortex

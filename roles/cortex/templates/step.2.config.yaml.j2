@@ -1,0 +1,126 @@
+---
+apiVersion: v1
+data:
+  config.yaml: |
+    # Configuration for running Cortex in single-process mode.
+    # This should not be used in production.  It is only for getting started
+    # and development.
+
+    # Disable the requirement that every request to Cortex has a
+    # X-Scope-OrgID header. `fake` will be substituted in instead.
+    auth_enabled: false
+
+    chunk_store:
+        chunk_cache_config:
+            memcached:
+                batch_size: 100
+                parallelism: 100
+            memcached_client:
+                consistent_hash: true
+                host: cortex-memcached.cortex.svc.cluster.local
+                service: memcache
+        max_look_back_period: 0
+        write_dedupe_cache_config:
+            memcached:
+                batch_size: 100
+                parallelism: 100
+            memcached_client:
+                consistent_hash: true
+                host: cortex-memcached-index-write.cortex.svc.cluster.local
+                service: memcache
+    server:
+       http_listen_port: 9009
+
+       # Configure the server to allow messages up to 100MB.
+       grpc_server_max_recv_msg_size: 104857600
+       grpc_server_max_send_msg_size: 104857600
+       grpc_server_max_concurrent_streams: 1000
+
+    distributor:
+       shard_by_all_labels: true
+       pool:
+          health_check_ingesters: true
+
+    ingester_client:
+       grpc_client_config:
+          # Configure the client to allow messages up to 100MB.
+          max_recv_msg_size: 104857600
+          max_send_msg_size: 104857600
+          use_gzip_compression: true
+
+    ingester:
+       
+       lifecycler:
+          
+          # We want to start immediately and flush on shutdown.
+          join_after: 0
+          claim_on_rollout: false
+          final_sleep: 0s
+          num_tokens: 512
+
+          # Use an in memory ring store, so we don't need to launch a Consul.
+          ring:
+             kvstore:
+                 consul:
+                     consistentreads: true
+                     host: cortex-consul.cortex.svc.cluster.local:8500
+                     httpclienttimeout: 20s
+                 store: consul
+             replication_factor: 3
+
+    frontend:
+        compress_responses: true
+        max_outstanding_per_tenant: 200
+
+    frontend_worker:
+        address: cortex-query-frontend.cortex.svc.cluster.local:9095
+        grpc_client_config:
+            max_send_msg_size: 1.048576e+08
+        parallelism: 8
+
+    # Use cassandra as storage -for both index store and chunks store.
+    schema:
+       configs:
+       - from: 2020-03-20
+         store: cassandra
+         object_store: cassandra
+         schema: v10
+         index:
+            prefix: index_
+            period: 168h
+         chunks:
+            prefix: chunk_
+            period: 168h
+
+    storage:
+       cassandra:
+          addresses: cassandra.cassandra.svc.cluster.local  # configure cassandra addresses here.
+          keyspace: cortex   # configure desired keyspace here.
+          auth: true
+          username: cassandra
+          password: admin1234
+       index_queries_cache_config:
+            memcached:
+                batch_size: 100
+                parallelism: 100
+            memcached_client:
+                consistent_hash: true
+                host: cortex-memcached-index-read.cortex.svc.cluster.local
+                service: memcache
+
+    table_manager:
+       chunk_tables_provisioning:
+            inactive_read_throughput: 0
+            inactive_write_throughput: 0
+            provisioned_read_throughput: 0
+            provisioned_write_throughput: 0
+       index_tables_provisioning:
+            inactive_read_throughput: 0
+            inactive_write_throughput: 0
+            provisioned_read_throughput: 0
+            provisioned_write_throughput: 0
+       retention_deletes_enabled: false
+       retention_period: 0
+kind: ConfigMap
+metadata:
+    name: cortex

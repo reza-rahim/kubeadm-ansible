@@ -80,7 +80,7 @@ metadata:
   name: gateway
 spec:
   minReadySeconds: 10
-  replicas: 3
+  replicas: 
   revisionHistoryLimit: 10
   selector:
     matchLabels:

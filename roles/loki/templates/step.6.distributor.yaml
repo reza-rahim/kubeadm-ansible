@@ -22,7 +22,7 @@ metadata:
   name: distributor
 spec:
   minReadySeconds: 10
-  replicas: 3
+  replicas: {{ loki_distributor_replica }}
   revisionHistoryLimit: 10
   selector:
     matchLabels:
@@ -51,7 +51,7 @@ spec:
         name: distributor
         ports:
         - containerPort: 80
-          name: http-metrics
+        :  name: http-metrics
         - containerPort: 9095
           name: grpc
         readinessProbe:
@@ -60,13 +60,17 @@ spec:
             port: 80
           initialDelaySeconds: 15
           timeoutSeconds: 1
-        #resources:
-        # limits:
-        #   cpu: "1"
-        #   memory: 1Gi
-        # requests:
-        #   cpu: 500m
-        #   memory: 500Mi
+ {% if profile  == "prod" %}
+
+        resources:
+         limits:
+           cpu: "1"
+           memory: 1Gi
+        requests:
+           cpu: 500m
+           memory: 500Mi
+{% endif %}
+
         volumeMounts:
         - mountPath: /etc/loki/config
           name: loki

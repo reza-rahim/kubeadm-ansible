@@ -23,7 +23,7 @@ metadata:
   name: query-frontend
 spec:
   minReadySeconds: 10
-  replicas: 2
+  replicas: {{ loki_query-frontend_replica }}
   revisionHistoryLimit: 10
   selector:
     matchLabels:
@@ -56,13 +56,17 @@ spec:
           name: http-metrics
         - containerPort: 9095
           name: grpc
-        #resources:
-        #  limits:
-        #   memory: 1200Mi
-        # requests:
-        #   cpu: "2"
-        #   memory: 600Mi
-        volumeMounts:
+{% if profile  == "prod" %}
+
+        resources:
+          limits:
+           memory: 1200Mi
+         requests:
+           cpu: "2"
+          memory: 600Mi
+{% endif %}
+
+        olumeMounts:
         - mountPath: /etc/loki/config
           name: loki
         - mountPath: /etc/loki/overrides
