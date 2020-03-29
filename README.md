@@ -1,5 +1,6 @@
 ## kubeadm-ansible
 
+#### SSH passwordless 
 ```bash
 ssh-keygen -t rsa -N ''
 
@@ -11,8 +12,15 @@ Host *
   ForwardAgent yes
 EOF
 ```
+#### lookback device 
+```bash
 
-### Delete storage node ###
+dd if=/dev/zero of=/root/virtual_hard_drive.bin bs=1M count=10
+mknod /dev/sdb b 7 500
+losetup /dev/sdb /root/virtual_hard_drive.bin 
+
+```
+#### Delete storage node ###
 
 ```bash
 1 . comment out the storage creation part in terraform and terraform apply
