@@ -14,4 +14,4 @@
   when: >
     inventory_hostname in groups['kube-master'] and
     groups['kube-master'].index(inventory_hostname) >  0 and
-    command_result.rc != 0    
+    command_result.rc != 0 

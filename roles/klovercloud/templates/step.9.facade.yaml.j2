@@ -1,0 +1,157 @@
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ klovercloud_facade_deployment_name }}
+  namespace: {{ klovercloud_namespace }}
+spec:
+  replicas: {{ klovercloud_facade_replica }}
+  selector:
+    matchLabels:
+      app: {{ klovercloud_facade_app_label }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0
+  minReadySeconds: 25
+  template:
+    metadata:
+      annotations:
+        prometheus.io/path: "/prometheus"
+        prometheus.io/port: '8081'
+        prometheus.io/scrape: 'true'
+      labels:
+        app: {{ klovercloud_facade_app_label }}
+    spec:
+      terminationGracePeriodSeconds: 60
+      containers:
+      - name: {{ klovercloud_facade_deployment_name }}
+        imagePullPolicy: Always
+        image: {{ klovercloud_facade_image }}
+
+{% if profile  == "prod" %}
+        resources:
+          requests:
+            cpu: {{ klovercloud_facade_cpu_request }}
+            memory: {{ klovercloud_facade_memory_request }}
+          limits:
+            cpu: {{ klovercloud_facade_cpu_limit }}
+            memory: {{ klovercloud_facade_memory_limit }}
+{% endif %}
+
+        env:
+        - name: MONGO_SERVER
+          value: {{ klovercloud_mongodb_service_name }}
+        - name: MONGO_PORT
+          value: {{ klovercloud_mongodb_service_port }}
+        - name: MONGO_AUTH_DATABASE
+          value: {{ klovercloud_mongo_auth_db_name }}
+        - name: MONGO_USERNAME
+          value: {{ klovercloud_mongo_root_username }}
+        - name: MONGO_PASSWORD
+          value: {{ klovercloud_mongodd_root_password }}
+        - name: ADMIN_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: {{ klovercloud_super_admin_secret }}
+              key: username
+        - name: ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ klovercloud_super_admin_secret }}
+              key: password
+        - name: KLOVERCLOUD_MANAGEMENT_SERVICE_NAME
+          value: {{ klovercloud_management_service_name }}
+        - name: KLOVERCLOUD_PIPELINE_SERVICE_NAME
+          value: {{ klovercloud_pipeline_service_name }}
+        - name: KLOVERCLOUD_LISTENER_SERVICE_NAME
+          value: {{ klovercloud_listener_service_name }}
+        - name: KLOVERCLOUD_LISTENER_SERVICE_API_ACCESS_TOKEN
+          value: {{ klovercloud_api_access_token }}
+        - name: KLOVERCLOUD_DATABASE_SERVICE_NAME
+          value: "klovercloud-database"
+        - name: KLOVERCLOUD_OBJECT_STORAGE_SERVICE_NAME
+          value: "klovercloud-object-storage"
+        - name: KLOVERCLOUD_HARBOR_SERVICE_NAME
+          value: "klovercloud-harbor"
+        - name: KLOVERCLOUD_METRICS_SERVICE_NAME
+          value: "klovercloud-metrics"
+        - name: KLOVERCLOUD_MONITOR_SERVICE_NAME
+          value: "klovercloud-monitor"
+        - name: KLOVERCLOUD_LOG_MANAGER_SERVICE_NAME
+          value: {{ klovercloud_log_manager_service }}
+        - name: KLOVERCLOUD_DNS_MANAGER_SERVICE_NAME
+          value: {{ klovercloud_dns_manager_service }}
+        ports:
+        - containerPort: {{ klovercloud_facade_container_port1 }}
+        - containerPort: {{ klovercloud_facade_container_port2 }}
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: {{ klovercloud_facade_container_port1 }}
+          failureThreshold: 6
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: {{ klovercloud_facade_container_port1 }}
+          failureThreshold: 6
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+      imagePullSecrets:
+      - name: {{ klovercloud_image_pulling_secret }}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ klovercloud_facade_service_name }}
+  namespace: {{ klovercloud_namespace }}
+  labels:
+    app: {{ klovercloud_facade_app_label }}
+spec:
+  ports:
+  - name: http-rest
+    port: {{ klovercloud_facade_service_port }}
+    protocol: TCP
+    targetPort: {{ klovercloud_facade_target_port }}
+  - name: http-metrics
+    port: {{ klovercloud_facade_metrics_port }}
+    protocol: TCP
+    targetPort: {{ klovercloud_facade_metrics_target_port }}
+  selector:
+    app: {{ klovercloud_facade_app_label }}
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ klovercloud_facade_ingress_name }}
+  namespace: {{ klovercloud_namespace }}
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/rewrite-target: "/"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  tls:
+  - hosts:
+    - {{ klovercloud_facade_host }}
+    secretName: {{ klovercloud_facade_tls_secret }}
+  rules:
+  - host: {{ klovercloud_facade_host }}
+    http:
+      paths:
+      - backend:
+          serviceName: {{ klovercloud_facade_service_name }}
+          servicePort: {{ klovercloud_facade_service_port }}
+        path: "/"

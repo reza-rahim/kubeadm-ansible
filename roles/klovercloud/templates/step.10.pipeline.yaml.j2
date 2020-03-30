@@ -1,0 +1,133 @@
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ klovercloud_pipeline_deployment_name }}
+  namespace: {{ klovercloud_namespace }}
+spec:
+  replicas: {{ klovercloud_pipeline_replica }}
+  selector:
+    matchLabels:
+      app: {{ klovercloud_pipeline_app_label }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0
+  minReadySeconds: 25
+  template:
+    metadata:
+      annotations:
+        prometheus.io/path: "/prometheus"
+        prometheus.io/port: '8081'
+        prometheus.io/scrape: 'true'
+      labels:
+        app: {{ klovercloud_pipeline_app_label }}
+    spec:
+      terminationGracePeriodSeconds: 60
+      containers:
+      - name: {{ klovercloud_pipeline_deployment_name }}
+        imagePullPolicy: Always
+        image: {{ klovercloud_pipeline_image }}
+{% if profile  == "prod" %}
+        resources:
+          requests:
+            cpu: {{ klovercloud_pipeline_cpu_request }}
+            memory: {{ klovercloud_pipeline_memory_request }}
+          limits:
+            cpu: {{ klovercloud_pipeline_cpu_limit }}
+            memory: {{ klovercloud_pipeline_memory_limit }}
+{% endif %}
+        env:
+        - name: MONGO_SERVER
+          value: {{ klovercloud_mongodb_service_name }}
+        - name: MONGO_PORT
+          value: {{ klovercloud_mongodb_service_port }}
+        - name: MONGO_AUTH_DATABASE
+          value: {{ klovercloud_mongo_auth_db_name }}
+        - name: MONGO_USERNAME
+          value: {{ klovercloud_mongo_root_username }}
+        - name: MONGO_PASSWORD
+          value: {{ klovercloud_mongodd_root_password }}
+        - name: JENKINS_SERVER
+          value: "35.239.103.165"
+        - name: JENKINS_PORT
+          value: "8080"
+        - name: JENKINS_USER
+          value: "klovercloud"
+        - name: JENKINS_TOKEN
+          value: "1114011c70ca964a1b6f05ebb16ddae103"
+        - name: KAFKA_SERVER
+          value: {{ klovercloud_kafka_service_name }}
+        - name: KAFKA_PORT
+          value: {{ klovercloud_kafka_service_port }}
+        - name: KLOVERCLOUD_FACADE_SERVICE_DOMAIN
+          value: {{ klovercloud_facade_host }}
+        - name: KLOVERCLOUD_FACADE_SERVICE_NAME
+          value: {{ klovercloud_facade_service_name }}
+        - name: KLOVERCLOUD_FACADE_SERVICE_API_ACCESS_TOKEN
+          value: {{ klovercloud_facade_api_access_token }}
+        - name: CONNECT_TO_KLOVERCLOUD_FACADE_WEB_SOCKET
+          value: "true"
+        - name: KLOVERCLOUD_MANAGEMENT_SERVICE_NAME
+          value: {{ klovercloud_management_service_name }}
+        - name: KLOVERCLOUD_APP_BUILDER_SERVICE_NAME
+          value: "klovercloud-app-builder"
+        - name: KLOVERCLOUD_HARBOR_SERVICE_NAME
+          value: "klovercloud-harbor"
+        - name: KLOVERCLOUD_MONITOR_SERVICE_NAME
+          value: "klovercloud-monitor"
+        - name: KLOVERCLOUD_CI_SERVICE_NAME
+          value: {{ klovercloud_management_ci_service_name }}
+        - name: KLOVERCLOUD_DNS_MANAGER_SERVICE_NAME
+          value: {{ klovercloud_dns_manager_service }}
+        - name: CI_TECHNOLOGY
+          value: {{ klovercloud_ci_tecknology }}
+        - name: DEFAULT_INGRESS_DOMAIN
+          value: {{ klovercloud_default_ingress_domain }}
+        ports:
+        - containerPort: {{ klovercloud_pipeline_container_port1 }}
+        - containerPort: {{ klovercloud_pipeline_container_port2 }}
+        readinessProbe:
+          httpGet:
+            path: /
+            port: {{ klovercloud_pipeline_container_port1 }}
+          failureThreshold: 6
+          initialDelaySeconds: 80
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /
+            port: {{ klovercloud_pipeline_container_port1 }}
+          failureThreshold: 6
+          initialDelaySeconds: 80
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+      imagePullSecrets:
+      - name: {{ klovercloud_image_pulling_secret }}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: klovercloud-pipeline
+  namespace: {{ klovercloud_namespace }}
+  labels:
+    app: {{ klovercloud_pipeline_app_label }}
+spec:
+  ports:
+  - name: http-rest
+    port: 80
+    protocol: TCP
+    targetPort: 8080
+  - name: http-metrics
+    port: 8081
+    protocol: TCP
+    targetPort: 8081
+  selector:
+    app: {{ klovercloud_pipeline_app_label }}

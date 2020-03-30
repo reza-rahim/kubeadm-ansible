@@ -74,4 +74,3 @@ loki_querier_replica: 3
 loki_distributor_replica: 3
 loki_query-frontend_replica: 2
 
-
