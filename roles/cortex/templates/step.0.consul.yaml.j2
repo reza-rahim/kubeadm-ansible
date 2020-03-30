@@ -53,7 +53,7 @@ spec:
         - effect: NoSchedule
           key: dedicated
           operator: Equal
-          value: storage
+          value: {{ cortex_taint }}
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -62,7 +62,7 @@ spec:
               - key: dedicated
                 operator: In
                 values:
-                - storage
+                - {{ cortex_taint }}
  {% endif %}
 
       containers:
