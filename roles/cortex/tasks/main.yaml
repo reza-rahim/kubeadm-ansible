@@ -8,9 +8,10 @@
 - name: Copy kube config files
   template: src="{{ item.src }}" dest="{{ item.dest }}"
   with_items:
-     - { src: 'step.1.table-manager.yaml.j2', dest: '/etc/kubernetes/kubeadm/cortex/step.1.table-manager.yaml'  }  
-     - { src: 'step.2.consul.yaml.j2', dest: '/etc/kubernetes/kubeadm/cortex/step.2.consul.yaml'  }  
-     - { src: 'step.3.memcached.yaml.j2', dest: '/etc/kubernetes/kubeadm/cortex/step.3.memcached.yaml'  }  
+     - { src: 'step.0.consul.yaml.j2', dest: '/etc/kubernetes/kubeadm/cortex/step.0.consul.yaml'  }  
+     - { src: 'step.1.memcached.yaml.j2', dest: '/etc/kubernetes/kubeadm/cortex/step.1.memcached.yaml'  }  
+     - { src: 'step.2.config.yaml.j2', dest: '/etc/kubernetes/kubeadm/cortex/step.2.config.yaml'  }  
+     - { src: 'step.3.table-manager.yaml.j2', dest: '/etc/kubernetes/kubeadm/cortex/step.3.table-manager.yaml'  }  
      - { src: 'step.4.ingester.yaml.j2', dest: '/etc/kubernetes/kubeadm/cortex/step.4.ingester.yaml'  }  
      - { src: 'step.5.querier.yaml.j2', dest: '/etc/kubernetes/kubeadm/cortex/step.5.querier.yaml'  }  
      - { src: 'step.6.distributor.yaml.j2', dest: '/etc/kubernetes/kubeadm/cortex/step.6.distributor.yaml'  }  
@@ -34,7 +35,16 @@
   ignore_errors: yes
 
 - name: create cortex 
-  shell: kubectl apply -n cortex -f /etc/kubernetes/kubeadm/cortex/;
+  shell: kubectl apply -n cortex -f /etc/kubernetes/kubeadm/cortex/step.0.consul.yaml; \
+         kubectl apply -n cortex -f /etc/kubernetes/kubeadm/cortex/step.1.memcached.yaml; \
+         kubectl apply -n cortex -f /etc/kubernetes/kubeadm/cortex/step.2.config.yaml; \
+         kubectl apply -n cortex -f /etc/kubernetes/kubeadm/cortex/step.3.table-manager.yaml; \
+         kubectl apply -n cortex -f /etc/kubernetes/kubeadm/cortex/step.4.ingester.yaml; \
+         kubectl apply -n cortex -f /etc/kubernetes/kubeadm/cortex/step.5.querier.yaml; \
+         kubectl apply -n cortex -f /etc/kubernetes/kubeadm/cortex/step.6.distributor.yaml; \
+         kubectl apply -n cortex -f /etc/kubernetes/kubeadm/cortex/step.7.queryfrontend.yaml; \
+         kubectl apply -n cortex -f /etc/kubernetes/kubeadm/cortex/step.8.nginx.yaml; \
+         kubectl apply -n cortex -f /etc/kubernetes/kubeadm/cortex/step.9.grafana-dep.yaml;
   when: >
     groups['kube-master'].index(inventory_hostname) == 0 
   ignore_errors: yes

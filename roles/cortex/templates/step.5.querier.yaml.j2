@@ -29,7 +29,7 @@ metadata:
     heritage: Helm
     cortex: querier
 spec:
-  replicas: 3
+  replicas: {{ cortex_querier_replica }}
   strategy:
     rollingUpdate:
       maxUnavailable: 1
@@ -49,7 +49,7 @@ spec:
         sidecar.istio.io/inject: "false"
     spec:
 
-      {% if profile  == "prod" %}
+{% if cortex_taint is defined and profile  == "prod" %}
 
       tolerations:
         - effect: NoSchedule
@@ -65,12 +65,12 @@ spec:
                 operator: In
                 values:
                 - {{ cortex_taint }}
-      {% endif %}
+{% endif %}
 
       containers:
       - name: querier
         #image: "quay.io/cortexproject/querier:master-79bba2f9"
-        image: quay.io/cortexproject/cortex:v0.4.0
+        image: quay.io/cortexproject/cortex:{{ cortex_version }}
         imagePullPolicy: IfNotPresent
         args:
         - -target=querier
@@ -85,10 +85,10 @@ spec:
 
         resources:
          limits:
-           cpu: 1
+           cpu: {{ cortex_querier_limit_cpu }}
          requests:
-           cpu: 1
-           memory: 1Gi
+           cpu: {{ cortex_querier_req_cpu }}
+           memory: {{ cortex_querier_req_mem }}
  {% endif %}
 
         volumeMounts:

@@ -51,20 +51,6 @@ spec:
       labels:
         app: grafana
     spec:
-      tolerations:
-        - effect: NoSchedule
-          key: dedicated
-          operator: Equal
-          value: storage
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: dedicated
-                operator: In
-                values:
-                - storage
       containers:
       - name: grafana
         image: grafana/grafana:latest

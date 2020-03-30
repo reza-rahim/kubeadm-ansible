@@ -46,10 +46,12 @@ spec:
         prometheus.io/scrape: "true"
         sidecar.istio.io/inject: "false"
     spec:
+{% if cortex_taint is defined and profile  == "prod" %}
+
       tolerations:
         - key: dedicated
           operator: Equal
-          value: storage
+          value: {{ cortex_taint }}
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -58,7 +60,9 @@ spec:
               - key: dedicated
                 operator: In
                 values:
-                - storage
+                - {{ cortex_taint }}
+{% endif %}
+
       containers:
       - name: table-manager
         image: "quay.io/cortexproject/cortex:v0.4.0"
@@ -70,12 +74,16 @@ spec:
         ports:
         - containerPort: 80
           name: http
-        #resources:
-        #  limits:
-        #    cpu: 200m
-        #  requests:
-        #    cpu: 200m
-        #    memory: 256Mi
+{% if profile  == "prod" %}
+
+        resources:
+          limits:
+            cpu: 200m
+          requests:
+            cpu: 200m
+            memory: 256Mi
+ {% endif %}
+
         volumeMounts:
         - mountPath: /etc/cortex/config
           name: cortex

@@ -69,7 +69,7 @@ spec:
       # too many ingesters at once.
       terminationGracePeriodSeconds: 4800
 
- {% if profile  == "prod" %}
+ {% if cortex_taint is defined and profile  == "prod" %}
 
       tolerations:
         - effect: NoSchedule
@@ -90,7 +90,7 @@ spec:
       containers:
       - name: ingester
         #image: "quay.io/cortexproject/ingester:master-79bba2f9"
-        image: quay.io/cortexproject/cortex:v0.4.0
+        image: quay.io/cortexproject/cortex:{{ cortex_version }}
         imagePullPolicy: IfNotPresent
         args:
         - -target=ingester
@@ -110,10 +110,11 @@ spec:
 
         resources:
          limits:
-           cpu: 4
+           cpu: {{ cortex_ingester_limit_cpu }}
+           memory: {{ cortex_ingester_limit_mem }}
          requests:
-           cpu: 4
-           memory: 4Gi
+           cpu: {{ cortex_ingester_req_cpu }}
+           memory: {{ cortex_ingester_req_mem }}
 {% endif %}
 
         volumeMounts:

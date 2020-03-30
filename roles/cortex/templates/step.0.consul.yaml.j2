@@ -47,6 +47,8 @@ spec:
       annotations:
         sidecar.istio.io/inject: "false"
     spec:
+{% if cortex_taint is defined and profile  == "prod" %}
+
       tolerations:
         - effect: NoSchedule
           key: dedicated
@@ -61,6 +63,8 @@ spec:
                 operator: In
                 values:
                 - storage
+ {% endif %}
+
       containers:
       - name: consul
         image: "consul:1.0.7"
@@ -90,9 +94,12 @@ spec:
             - members
           initialDelaySeconds: 300
           timeoutSeconds: 5
-        #resources:
-        # limits:
-        #   cpu: 1
-        # requests:
-        #   cpu: 1
-        #   memory: 512Mi
+{% if profile  == "prod" %}
+
+        resources:
+         limits:
+           cpu: 500m
+         requests:
+           cpu: 500m
+           memory: 512Mi
+{% endif %}

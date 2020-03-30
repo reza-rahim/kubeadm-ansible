@@ -181,11 +181,11 @@ spec:
  {% if profile  == "prod" %}
 
         resources:
-          limit:
-            cpu: 500m
+          limits: 
+            cpu: {{ cortex_memcached_limit_cpu }}
           requests:
-            cpu: 500m
-            memory: 4Gi
+            cpu: {{ cortex_memcached_req_cpu }}
+            memory: {{ cortex_memcached_req_mem }}
  {% endif %}
 
       - name: metrics
@@ -196,12 +196,13 @@ spec:
           containerPort: 9150
         resources:
           {}
+{% if cortex_taint is defined and profile  == "prod" %}
+
       tolerations:
         - effect: NoSchedule
           key: dedicated
           operator: Equal
-          #value: cortex-memcached
-          value: storage
+          value: {{ cortex_taint }}
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -210,8 +211,9 @@ spec:
               - key: dedicated
                 operator: In
                 values:
-                #- cortex-memcached
-                - storage
+                - {{ cortex_taint }}
+{% endif %}
+
 ---
 # Source: cortex/charts/memcached-index-write/templates/statefulset.yaml
 apiVersion: apps/v1
@@ -228,7 +230,7 @@ spec:
     matchLabels:
       app: cortex-memcached-index-write
   serviceName: cortex-memcached-index-write
-  replicas: {{ cortex_memcached_index_write }}
+  replicas: {{ cortex_memcached_index_write_replica }}
   template:
     metadata:
       labels:
@@ -273,11 +275,11 @@ spec:
  {% if profile  == "prod" %}
 
         resources:
-         limit:
-           cpu: 500m
-         requests:
-          cpu: 500m
-          memory: 4Gi
+          limits: 
+            cpu: {{ cortex_memcached_limit_cpu }}
+          requests:
+            cpu: {{ cortex_memcached_req_cpu }}
+            memory: {{ cortex_memcached_req_mem }}
  {% endif %}
 
       - name: metrics
@@ -288,12 +290,14 @@ spec:
           containerPort: 9150
         resources:
           {}
+ {% if cortex_taint is defined and profile  == "prod"  %}
+
       tolerations:
         - effect: NoSchedule
           key: dedicated
           operator: Equal
           #value: cortex-memcached
-          value: storage
+          value: {{ cortex_taint }}
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -302,8 +306,9 @@ spec:
               - key: dedicated
                 operator: In
                 values:
-                #- cortex-memcached
-                - storage
+                - {{ cortex_taint }}
+{% endif %}
+
 ---
 # Source: cortex/charts/memcached/templates/statefulset.yaml
 apiVersion: apps/v1
@@ -364,12 +369,11 @@ spec:
 {% if profile  == "prod" %}
 
         resources:
-          limit:
-            cpu: 500m
-            memory: 4Gi
+          limits: 
+            cpu: {{ cortex_memcached_limit_cpu }}
           requests:
-            cpu: 500m
-            memory: 4Gi
+            cpu: {{ cortex_memcached_req_cpu }}
+            memory: {{ cortex_memcached_req_mem }}
  {% endif %}
 
       - name: metrics
@@ -380,12 +384,13 @@ spec:
           containerPort: 9150
         resources:
           {}
+{% if cortex_taint is defined and profile  == "prod" %}
+
       tolerations:
         - effect: NoSchedule
           key: dedicated
           operator: Equal
-          #value: cortex-memcached
-          value: storage
+          value: {{ cortex_taint }}
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -394,5 +399,5 @@ spec:
               - key: dedicated
                 operator: In
                 values:
-                #- cortex-memcached
-                - storage
+                - {{ cortex_taint }}
+ {% endif %}
