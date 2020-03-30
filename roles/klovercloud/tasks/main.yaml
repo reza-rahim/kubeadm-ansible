@@ -30,6 +30,13 @@
     inventory_hostname == "kube-master-0" 
   ignore_errors: yes
 
+- name: Create namespace for harbor
+  shell: kubectl create ns {{ klovercloud_harbor_namespace }};
+  when: >
+    inventory_hostname == "kube-master-0" 
+  ignore_errors: yes
+
+
 - name: Create secret to pull klovercloud-ci and generator images from harbor
   shell: kubectl create secret docker-registry  {{ klovercloud_image_pulling_secret }} --docker-server=https://container-registry.klovercloud.com --docker-username={{ klovercloud_registry_username }} --docker-password={{ klovercloud_registry_password }} --docker-email={{ klovercloud_registry_email }} -n {{ klovercloud_ci_namespace }};
   when: >
@@ -38,9 +45,50 @@
 
 
 - name: Creates /etc/kubernetes/kubeadm directory
-  file: path=/etc/kubernetes/kubeadm/klovercloud  recurse=yes state=directory
+  file: path=/etc/kubernetes/kubeadm/klovercloud/harbor  recurse=yes state=directory
   when: >
     inventory_hostname == "kube-master-0"
+
+
+- name: Copy kube config files
+  template: src="{{ item.src }}" dest="{{ item.dest }}"
+  with_items:
+     - { src: 'step.0.harbor_installation.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/harbor/step.0.harbor_installation.yaml'  } 
+     - { src: 'step.0.1.klovercloud-harbor.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/harbor/step.0.1.klovercloud-harbor.yaml'  } 
+  when: >
+    inventory_hostname == "kube-master-0"
+  register: result
+
+- name:  
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/harbor/step.0.harbor_installation.yaml;
+  when: >
+    inventory_hostname == "kube-master-0" 
+
+
+- name: wait for pods to come up
+  shell: kubectl get pods -n {{ klovercloud_harbor_namespace }} -o json
+  register: kubectl_get_pods
+  until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
+
+
+- name:  
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/harbor/step.0.1.klovercloud-harbor.yaml;
+  when: >
+    inventory_hostname == "kube-master-0" 
+
+
+- name: wait for pods to come up
+  shell: kubectl get pods -n {{ klovercloud_namespace }} -o json
+  register: kubectl_get_pods
+  until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
+
+
+    
+- name: Creates /etc/kubernetes/kubeadm directory
+  file: path=/etc/kubernetes/kubeadm/klovercloud/apps  recurse=yes state=directory
+  when: >
+    inventory_hostname == "kube-master-0"
+
 
 
     ## separte mongo deployment ( 1st phase)
@@ -48,18 +96,18 @@
 - name: Copy kube config files
   template: src="{{ item.src }}" dest="{{ item.dest }}"
   with_items:
-     - { src: 'step.1.klovercloud-ci.v1.1.0.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/step.1.klovercloud-ci.v1.1.0.yaml'  } 
-     - { src: 'step.2.mongodb.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/step.2.mongodb.yaml'  } 
-     - { src: 'step.3.kafka.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/step.3.kafka.yaml'  } 
-     - { src: 'step.4.nexus.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/step.4.nexus.yaml'  } 
-     - { src: 'step.5.admin_secret.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/step.5.admin_secret.yaml'  } 
+     - { src: 'step.1.klovercloud-ci.v1.1.0.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/apps/step.1.klovercloud-ci.v1.1.0.yaml'  } 
+     - { src: 'step.2.mongodb.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/apps/step.2.mongodb.yaml'  } 
+     - { src: 'step.3.kafka.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/apps/step.3.kafka.yaml'  } 
+     - { src: 'step.4.nexus.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/apps/step.4.nexus.yaml'  } 
+     - { src: 'step.5.admin_secret.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/apps/step.5.admin_secret.yaml'  } 
      
   when: >
     inventory_hostname == "kube-master-0"
   register: result
 
 - name:  
-  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/;
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/apps/;
   when: >
     inventory_hostname == "kube-master-0" 
 
@@ -68,14 +116,14 @@
 - name: Copy cert-issuer descriptor
   template: src="{{ item.src }}" dest="{{ item.dest }}"
   with_items:
-     - { src: 'step.6.cert_issuer.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/step.6.cert_issuer.yaml'  } 
+     - { src: 'step.6.cert_issuer.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/apps/step.6.cert_issuer.yaml'  } 
      
   when: >
     inventory_hostname == "kube-master-0"
   register: result
 
 - name:  
-  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/step.6.cert_issuer.yaml;
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/apps/step.6.cert_issuer.yaml;
   when: >
     inventory_hostname == "kube-master-0" 
 
@@ -90,22 +138,20 @@
 - name: Copy listener descriptor
   template: src="{{ item.src }}" dest="{{ item.dest }}"
   with_items:
-     - { src: 'step.7.listener.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/step.7.listener.yaml'  } 
+     - { src: 'step.7.listener.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/apps/step.7.listener.yaml'  } 
      
   when: >
     inventory_hostname == "kube-master-0"
   register: result
 
 - name:  
-  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/step.7.listener.yaml;
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/apps/step.7.listener.yaml;
   when: >
     inventory_hostname == "kube-master-0" 
-
 
 - name: 
   wait_for:
     timeout: 30
-
 
 - name: Login to listener service as admin user
   uri:
@@ -145,42 +191,51 @@
 - name: Copy management descriptor
   template: src="{{ item.src }}" dest="{{ item.dest }}"
   with_items:
-     - { src: 'step.8.management.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/step.8.management.yaml'  } 
+     - { src: 'step.8.management.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/apps/step.8.management.yaml'  } 
      
   when: >
     inventory_hostname == "kube-master-0"
   register: result
 
 - name:  
-  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/step.8.management.yaml;
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/apps/step.8.management.yaml;
   when: >
     inventory_hostname == "kube-master-0" 
 
 
+
+
+- name: wait for pods to come up
+  shell: kubectl get pods -n {{ klovercloud_namespace }} -o json
+  register: kubectl_get_pods
+  until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
+
 - name: 
   wait_for:
-    timeout: 30
-
+    timeout: 10
+    
 
 
 - name: Copy facade descriptor
   template: src="{{ item.src }}" dest="{{ item.dest }}"
   with_items:
-     - { src: 'step.9.facade.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/step.9.facade.yaml'  } 
+     - { src: 'step.9.facade.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/apps/step.9.facade.yaml'  } 
      
   when: >
     inventory_hostname == "kube-master-0"
   register: result
 
 - name:  
-  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/step.9.facade.yaml;
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/apps/step.9.facade.yaml;
   when: >
     inventory_hostname == "kube-master-0" 
 
 
-- name: 
-  wait_for:
-    timeout: 110
+- name: wait for pods to come up
+  shell: kubectl get pods -n {{ klovercloud_namespace }} -o json
+  register: kubectl_get_pods
+  until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
+
 
 
 - name: Login to facade service as super admin user
@@ -231,34 +286,35 @@
     klovercloud_facade_api_access_token: facade_api_access_token.json.data
   when: facade_api_access_token.json.success == true
   
+- name: wait for pods to come up
+  shell: kubectl get pods -n {{ klovercloud_namespace }} -o json
+  register: kubectl_get_pods
+  until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
 
-- name: 
-  wait_for:
-    timeout: 110
 
 - name: Copy pipeline descriptor
   template: src="{{ item.src }}" dest="{{ item.dest }}"
   with_items:
-     - { src: 'step.10.pipeline.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/step.10.pipeline.yaml'  } 
+     - { src: 'step.10.pipeline.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/apps/step.10.pipeline.yaml'  } 
      
   when: >
     inventory_hostname == "kube-master-0"
   register: result
 
 - name:  
-  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/step.10.pipeline.yaml;
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/apps/step.10.pipeline.yaml;
   when: >
     inventory_hostname == "kube-master-0" 
 
 
 - name: copy admin.password file from pod
-  shell: kubectl cp {{klovercloud_nexus_cr}}-0:/nexus-data/admin.password /etc/kubernetes/kubeadm/klovercloud/admin.password -n nexus
+  shell: kubectl cp {{klovercloud_nexus_cr}}-0:/nexus-data/admin.password /etc/kubernetes/kubeadm/klovercloud/apps/admin.password -n nexus
 
 
 
 - name: 
   set_fact:
-    klovercloud_nexus_default_super_admin_password: "{{ lookup('file', '/etc/kubernetes/kubeadm/klovercloud/admin.password') }}"
+    klovercloud_nexus_default_super_admin_password: "{{ lookup('file', '/etc/kubernetes/kubeadm/klovercloud/apps/admin.password') }}"
 
 - name: Request to reset admin pass of nexus
   uri:
@@ -272,6 +328,25 @@
       Authorization: "Basic {{klovercloud_nexus_default_super_admin_password}}"
     body: "{{klovercloud_nexus_super_admin_password}}"
 
+
+- name: Copy monitoring and database service descriptor
+  template: src="{{ item.src }}" dest="{{ item.dest }}"
+  with_items:
+     - { src: 'step.11.monitor.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/apps/step.11.monitor.yaml'  } 
+     - { src: 'step.12.klovercloud-database.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/apps/step.12.klovercloud-database.yaml'  } 
+  when: >
+    inventory_hostname == "kube-master-0"
+  register: result
+
+- name:  
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/apps/step.11.monitor.yaml;
+  when: >
+    inventory_hostname == "kube-master-0" 
+
+- name:  
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/apps/step.12.klovercloud-database.yaml;
+  when: >
+    inventory_hostname == "kube-master-0" 
 
   # clone generator repos 
   # build generator images 

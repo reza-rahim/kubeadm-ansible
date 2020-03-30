@@ -308,3 +308,9 @@ klovercloud_pipeline_memory_limit: 1024Mi
 klovercloud_pipeline_container_port1: 8080
 klovercloud_pipeline_container_port2: 8081
 
+####### Klovercloud harbor #######
+
+klovercloud_harbor_namespace: harbor
+klovercloud_harbor_cert_issuer_name: letsencrypt-prod
+
+

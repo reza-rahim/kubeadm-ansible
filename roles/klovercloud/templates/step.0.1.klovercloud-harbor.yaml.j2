@@ -1,0 +1,89 @@
+---
+
+###### Klovercloud-harbor Deployment ######
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: klovercloud-harbor
+  namespace: klovercloud
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: klovercloud-harbor
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0
+  minReadySeconds: 25
+  template:
+    metadata:
+      labels:
+        app: klovercloud-harbor
+    spec:
+      terminationGracePeriodSeconds: 60
+      containers:
+        - name: klovercloud-harbor
+          imagePullPolicy: Always
+          image: container-registry.klovercloud.com/klovercloud/klovercloud-harbor:latest
+          resources:
+            requests:
+              cpu: 200m
+              memory: 350Mi
+            limits:
+              cpu: 350m
+              memory: 512Mi
+          env:
+            - name: RUN_MODE
+              value: "PRODUCTION"
+            - name: DATABASE_CONNECTION_STR
+              value: "mongodb://mongoAdmin:abc123@mongodb:27017"
+            - name: DATABASE_NAME
+              value: "klovercloud_harbor"
+            - name: HARBOR_SERVICE_URL
+              value: "https://container-registry.klovercloud.com"
+            - name: HARBOR_ADMIN_AUTH_TOKEN
+              value: "Basic YWRtaW46RG9ja2VyQEtsb3ZlcjIwMTkh"
+            - name: PROJECT_QUOTAS_COUNT_LIMIT
+              value: "20"
+            - name: PROJECT_QUOTAS_STORAGE_LIMIT
+              value: "10000000000"
+          ports:
+            - containerPort: 8085
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8085
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8085
+            initialDelaySeconds: 30
+            periodSeconds: 10
+      imagePullSecrets:
+        - name: regcred-harbor
+
+
+---
+
+###### Klovercloud-harbor service ######
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: klovercloud-harbor
+  namespace: klovercloud
+  labels:
+    app: klovercloud-harbor
+spec:
+  ports:
+    - name: http-rest
+      port: 80
+      protocol: TCP
+      targetPort: 8085
+  selector:
+    app: klovercloud-harbor

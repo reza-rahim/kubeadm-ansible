@@ -1,0 +1,90 @@
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: klovercloud-database
+  namespace: klovercloud
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: klovercloud-database
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0
+  minReadySeconds: 25
+  template:
+    metadata:
+      labels:
+        app: klovercloud-database
+    spec:
+      terminationGracePeriodSeconds: 60
+      containers:
+        - name: klovercloud-database
+          imagePullPolicy: Always
+          image: container-registry.klovercloud.com/klovercloud/klovercloud-database:latest
+          resources:
+            requests:
+              cpu: 200m
+              memory: 350Mi
+            limits:
+              cpu: 350m
+              memory: 512Mi
+          env:
+            - name: RUN_MODE
+              value: "PRODUCTION"
+            - name: DATABASE_CONNECTION_STR
+              value: "mongodb://USERNAME:PASSWORD@MONGODB_SERVICE_NAME:PORT"
+            - name: DATABASE_NAME
+              value: "klovercloud_database"
+            - name: KAFKA_PRODUCER_BOOTSTRAP_SERVER
+              value: "kafka:9092"
+            - name: MANAGEMENT_SERVICE_URL
+              value: "http://klovercloud-management/"
+            - name: USE_STORAGE_CLASS
+              value: "true"
+            - name: STORAGE_CLASS_NAME
+              value: "rook-ceph-block"
+            - name: STORAGE_CLASS_TYPE
+              value: "BLOCK_STORAGE"
+            - name: METRICS_ENABLED
+              value: "true"
+          ports:
+            - containerPort: 8095
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8095
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8095
+            initialDelaySeconds: 30
+            periodSeconds: 10
+      imagePullSecrets:
+        - name: regcred-harbor
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: klovercloud-database
+  namespace: klovercloud
+  labels:
+    app: klovercloud-database
+spec:
+  ports:
+    - name: http-rest
+      port: 80
+      protocol: TCP
+      targetPort: 8095
+  selector:
+    app: klovercloud-database
+
+

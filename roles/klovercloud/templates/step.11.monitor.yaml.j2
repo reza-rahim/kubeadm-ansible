@@ -1,0 +1,96 @@
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: klovercloud-monitor
+  namespace: klovercloud
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: klovercloud-monitor
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0
+  minReadySeconds: 25
+  template:
+    metadata:
+      labels:
+        app: klovercloud-monitor
+    spec:
+      terminationGracePeriodSeconds: 60
+      containers:
+      - name: klovercloud-monitor
+        imagePullPolicy: Always
+        image: container-registry.klovercloud.com/klovercloud/klovercloud-monitor:latest
+        resources:
+          requests:
+            cpu: 200m
+            memory: 350Mi
+          limits:
+            cpu: 350m
+            memory: 512Mi
+        env:
+        - name: DEVELOPER_ALIAS
+          value: "klovercloud"
+        - name: RUN_MODE
+          value: "PRODUCTION"
+        - name: MANAGEMENT_SERVICE_URL
+          value: "http://klovercloud-management/"
+        - name: PIPELINE_SERVICE_URL
+          value: "http://klovercloud-pipeline/"
+        - name: DATABASE_SERVICE_URL
+          value: "http://klovercloud-database/"
+        - name: DATABASE_CONNECTION_STR
+          value: "mongodb://USERNAME:PASS@MONGODB_SERVICE_NAME:27017"
+        - name: DATABASE_NAME
+          value: "klovercloud_monitor"
+        - name: KAFKA_BROKER
+          value: "kafka:9092"
+        - name: DEPLOYMENT_POD_FEED_KAFKA_TOPIC
+          value: "kt-klovercloud-ca-deployment-pod-feed"
+        - name: DEPLOYMENT_POD_FEED_KAFKA_GROUP_ID
+          value: "cg-klovercloud-ca-deployment-pod-feed"
+        - name: DEPLOYMENT_POD_FEED_CLEANUP_TIMEOUT_HOURS
+          value: "1"
+        - name: CLUSTER_AGENT_RESPONSE_KAFKA_TOPIC
+          value: "kt-klovercloud-ca-response"
+        - name: CLUSTER_AGENT_RESPONSE_KAFKA_GROUP_ID
+          value: "cg-klovercloud-ca-response"
+        ports:
+        - containerPort: 8088
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8088
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8088
+          initialDelaySeconds: 30
+          periodSeconds: 10
+      imagePullSecrets:
+        - name: regcred-harbor
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: klovercloud-monitor
+  namespace: klovercloud
+  labels:
+    app: klovercloud-monitor
+spec:
+  ports:
+    - name: http-rest
+      port: 80
+      protocol: TCP
+      targetPort: 8088
+  selector:
+    app: klovercloud-monitor
