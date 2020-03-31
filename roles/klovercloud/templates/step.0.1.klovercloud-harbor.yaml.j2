@@ -5,13 +5,13 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: klovercloud-harbor
-  namespace: klovercloud
+  name: {{ klovercloud_harbor_deployment_name }}
+  namespace: {{ klovercloud_namespace }}
 spec:
-  replicas: 1
+  replicas: {{ klovercloud_harbor_deployment_replica }}
   selector:
     matchLabels:
-      app: klovercloud-harbor
+      app: {{ klovercloud_harbor_deployement_app_label }}
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -21,51 +21,53 @@ spec:
   template:
     metadata:
       labels:
-        app: klovercloud-harbor
+        app: {{ klovercloud_harbor_deployement_app_label }}
     spec:
       terminationGracePeriodSeconds: 60
       containers:
-        - name: klovercloud-harbor
+        - name: {{ klovercloud_harbor_deployement_app_label }}
           imagePullPolicy: Always
-          image: container-registry.klovercloud.com/klovercloud/klovercloud-harbor:latest
+          image: {{ klovercloud_harbor_image }}
+{% if profile  == "prod" %}
           resources:
             requests:
-              cpu: 200m
-              memory: 350Mi
+              cpu: {{ klovercloud_harbor_cpu_request }}
+              memory: {{ klovercloud_harbor_memory_request }}
             limits:
-              cpu: 350m
-              memory: 512Mi
+              cpu: {{ klovercloud_harbor_cpu_limit }}
+              memory: {{ klovercloud_harbor_memory_limit }}
+{% endif %}
           env:
             - name: RUN_MODE
               value: "PRODUCTION"
             - name: DATABASE_CONNECTION_STR
-              value: "mongodb://mongoAdmin:abc123@mongodb:27017"
+              value: {{ klovercloud_harbor_db_connection_str }}
             - name: DATABASE_NAME
-              value: "klovercloud_harbor"
+              value: {{ klovercloud_harbor_db_name }}
             - name: HARBOR_SERVICE_URL
-              value: "https://container-registry.klovercloud.com"
+              value: "https://{{ klovercloud_harbor_ingress_host }}"
             - name: HARBOR_ADMIN_AUTH_TOKEN
-              value: "Basic YWRtaW46RG9ja2VyQEtsb3ZlcjIwMTkh"
+              value: "Basic  {{ (klovercloud_harbor_admin + ':' + klovercloud_harbor_admin_password) | b64encode }} "
             - name: PROJECT_QUOTAS_COUNT_LIMIT
-              value: "20"
+              value: {{ klovercloud_harbor_project_quotas_count_limit }}
             - name: PROJECT_QUOTAS_STORAGE_LIMIT
-              value: "10000000000"
+              value: {{ klovercloud_harbor_project_quotas_storage_limit }}
           ports:
-            - containerPort: 8085
+            - containerPort: {{ klovercloud_harbor_container_port }}
           readinessProbe:
             httpGet:
               path: /
-              port: 8085
+              port: {{ klovercloud_harbor_container_port }}
             initialDelaySeconds: 30
             periodSeconds: 10
           livenessProbe:
             httpGet:
               path: /
-              port: 8085
+              port: {{ klovercloud_harbor_container_port }}
             initialDelaySeconds: 30
             periodSeconds: 10
       imagePullSecrets:
-        - name: regcred-harbor
+        - name: {{ klovercloud_image_pulling_secret }}
 
 
 ---
@@ -75,15 +77,15 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: klovercloud-harbor
-  namespace: klovercloud
+  name: {{ klovercloud_harbor_service_name }}
+  namespace: {{ klovercloud_namespace }}
   labels:
-    app: klovercloud-harbor
+    app: {{ klovercloud_harbor_deployement_app_label }}
 spec:
   ports:
     - name: http-rest
-      port: 80
+      port: {{ klovercloud_harbor_service_port }}
       protocol: TCP
-      targetPort: 8085
+      targetPort: {{ klovercloud_harbor_service_target_ports }}
   selector:
-    app: klovercloud-harbor
+    app: {{ klovercloud_harbor_deployement_app_label }}
