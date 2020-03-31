@@ -106,7 +106,7 @@ klovercloud_ci_memory_limit: 1536Mi
 klovercloud_ci_containers_port: 8084
 klovercloud_ci_tecknology: TEKTON
 
-klovercloud_ci_image: container-registry.klovercloud.com/klovercloud/klovercloud-ci:1.1.0
+klovercloud_ci_image: klovercloud/service:ci
 klovercloud_ci_mongo_service_name: mongodb-internal-kc
 klovercloud_ci_mongo_external_name: mongodb.klovercloud.svc.cluster.local
 klovercloud_ci_db_connection_str: mongodb://mongoAdmin:abc123@mongodb-internal-kc:27017
@@ -228,7 +228,7 @@ klovercloud_listener_cpu_limit: 1000m
 klovercloud_listener_memory_limit: 1000Mi
 klovercloud_listener_deployment_name: klovercloud-listener
 klovercloud_listener_app_label: klovercloud-listener
-klovercloud_listener_image: container-registry.klovercloud.com/klovercloud/klovercloud-listener:latest
+klovercloud_listener_image: klovercloud/service:listener
 klovercloud_listener_container_port1: 8080
 klovercloud_listener_container_port2: 8081
 klovercloud_listener_service_port: 80
@@ -255,7 +255,7 @@ klovercloud_management_cpu_limit: 750m
 klovercloud_management_memory_limit: 786Mi
 klovercloud_management_deployment_name: klovercloud-management
 klovercloud_management_service_name: klovercloud-management
-klovercloud_management_image: container-registry.klovercloud.com/klovercloud/klovercloud-management:latest
+klovercloud_management_image: klovercloud/service:management
 klovercloud_management_app_label: klovercloud-management
 klovercloud_management_cluster_resource_limit_factor_cpu: 0.6
 klovercloud_management_cluster_resource_limit_factor_memory: 0.8
@@ -290,7 +290,7 @@ klovercloud_facade_tls_secret: facade-tls
 klovercloud_facade_host: facade.klovercloud.com
 klovercloud_facade_admin_username: admin@klovercloud.com
 klovercloud_facade_admin_password: hello123
-klovercloud_facade_image: container-registry.klovercloud.com/klovercloud/klovercloud-facade:latest
+klovercloud_facade_image: klovercloud/service:facade
 klovercloud_facade_api_access_token: abcxyz
 
 ####### klovercloud pipeline #######
@@ -298,7 +298,7 @@ klovercloud_pipeline_replica: 1
 klovercloud_pipeline_deployment_name: klovercloud-pipeline
 klovercloud_pipeline_app_label: klovercloud-pipeline
 klovercloud_pipeline_service_name:  klovercloud-pipeline-internal-kc
-klovercloud_pipeline_image: container-registry.klovercloud.com/klovercloud/klovercloud-pipeline:latest
+klovercloud_pipeline_image: klovercloud/service:pipeline
 
 klovercloud_pipeline_cpu_request: 500m
 klovercloud_pipeline_memory_request: 756Mi
@@ -457,7 +457,7 @@ klovercloud_harbor_registry_ctl_container_port: 8080
 klovercloud_harbor_deployment_name: klovercloud-harbor
 klovercloud_harbor_deployment_replica: 1
 klovercloud_harbor_deployement_app_label: klovercloud-harbor
-klovercloud_harbor_image: container-registry.klovercloud.com/klovercloud/klovercloud-harbor:latest
+klovercloud_harbor_image: klovercloud/service:harbor
 
 klovercloud_harbor_cpu_request: 200m
 klovercloud_harbor_memory_request: 350Mi
@@ -468,6 +468,50 @@ klovercloud_harbor_db_name: klovercloud_harbor
 klovercloud_harbor_project_quotas_count_limit: 20
 klovercloud_harbor_project_quotas_storage_limit: 10000000000
 klovercloud_harbor_container_port: 8085
-klovercloud_harbor_service_name: klovercloud-harbor\
+klovercloud_harbor_service_name: klovercloud-harbor
 klovercloud_harbor_service_port: 80
 klovercloud_harbor_service_target_port: 8085
+
+
+####### Klovercloud monitor #######
+
+klovercloud_monitor_deployment_name: klovercloud-monitor
+klovercloud_monitor_deployment_replica: 1
+klovercloud_monitor_deployment_pod_feed_kafka_topic: kt-klovercloud-ca-deployment-pod-feed
+klovercloud_monitor_deployment_pod_feed_kafka_group_id: cg-klovercloud-ca-deployment-pod-feed
+klovercloud_monitor_deployment_pod_feed_cleanup_timeout_hours: 1
+klovercloud_monitor_deployment_cluster_agent_response_kafka_topic: kt-klovercloud-ca-response
+klovercloud_monitor_deployment_cluster_agent_response_kafka_group_id: cg-klovercloud-ca-response
+klovercloud_monitor_app_label: klovercloud-monitor
+klovercloud_monitor_image: klovercloud/service:monitor
+klovercloud_monitor_cpu_request: 200m
+klovercloud_monitor_memory_request: 350Mi
+klovercloud_monitor_cpu_limit: 350m
+klovercloud_monitor_memory_limit: 512Mi
+klovercloud_monitor_db_name: klovercloud_monitor
+
+klovercloud_monitor_container_port: 8088
+
+
+klovercloud_monitor_service_name: klovercloud-monitor
+klovercloud_monitor_service_port: 80
+klovercloud_monitor_service_target_port: 8088
+
+####### Klovercloud database #######
+
+klovercloud_database_deployment_name: klovercloud-database
+klovercloud_database_app_label: klovercloud-database
+
+klovercloud_database_deployment_replica: 1
+klovercloud_database_deployment_image: klovercloud/service:database
+klovercloud_database_service_name: klovercloud-database
+klovercloud_database_service_port: 80
+klovercloud_database_container_port: 8095
+klovercloud_database_service_target_port: 8095
+klovercloud_database_cpu_request: 200m
+klovercloud_database_memory_request: 350Mi
+klovercloud_database_cpu_limit: 350m
+klovercloud_database_memory_limit: 512Mi
+klovercloud_database_db_name: klovercloud_database
+
+

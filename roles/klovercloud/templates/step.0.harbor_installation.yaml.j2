@@ -389,7 +389,7 @@ spec:
         - name: HTTPS_PROXY
           value: ""
         - name: NO_PROXY
-          value: "{{ klovercloud_harbor_portal_service_name }},{{ klovercloud_harbor_jobservice_service_name }},klover-alpha-v1-harbor-database,klover-alpha-v1-harbor-chartmuseum,klover-alpha-v1-harbor-clair,klover-alpha-v1-harbor-notary-server,klover-alpha-v1-harbor-notary-signer,klover-alpha-v1-harbor-registry,klover-alpha-v1-harbor-portal,127.0.0.1,localhost,.local,.internal"
+          value: "{{ klovercloud_harbor_portal_service_name }},{{ klovercloud_harbor_jobservice_service_name }},{{ klovercloud_harbor_database_service_name }},{{ klovercloud_harbor_chartmuseum_service_name }},{{ klovercloud_harbor_clair_service_name }},{{ klovercloud_harbor_notary_server_service_name }},{{ klovercloud_harbor_notary_signer_service_name }},{{ klovercloud_harbor_registry_service_name }},{{ klovercloud_harbor_portal_service_name }},127.0.0.1,localhost,.local,.internal"
         ports:
         - containerPort: {{ klovercloud_harbor_clair_container_port }}
         volumeMounts:
@@ -549,7 +549,7 @@ data:
   CLAIR_HEALTH_CHECK_SERVER_URL: "http://{{ klovercloud_harbor_clair_service_name }}:6061"
   HTTP_PROXY: ""
   HTTPS_PROXY: ""
-  NO_PROXY: "{{ klovercloud_harbor_portal_service_name }},{{ klovercloud_harbor_jobservice_service_name }},klover-alpha-v1-harbor-database,klover-alpha-v1-harbor-chartmuseum,klover-alpha-v1-harbor-clair,klover-alpha-v1-harbor-notary-server,klover-alpha-v1-harbor-notary-signer,klover-alpha-v1-harbor-registry,klover-alpha-v1-harbor-portal,127.0.0.1,localhost,.local,.internal"
+  NO_PROXY: "{{ klovercloud_harbor_portal_service_name }},{{ klovercloud_harbor_jobservice_service_name }},{{ klovercloud_harbor_database_service_name }},{{ klovercloud_harbor_chartmuseum_service_name }},{{ klovercloud_harbor_clair_service_name }},{{ klovercloud_harbor_notary_server_service_name }},{{ klovercloud_harbor_notary_signer_service_name }},{{ klovercloud_harbor_registry_service_name }},{{ klovercloud_harbor_portal_service_name }},127.0.0.1,localhost,.local,.internal"
 
 ---
 
@@ -1042,7 +1042,7 @@ spec:
           - name: HTTPS_PROXY
             value: ""
           - name: NO_PROXY
-            value: "{{ klovercloud_harbor_portal_service_name }},{{ klovercloud_harbor_jobservice_service_name }},klover-alpha-v1-harbor-database,klover-alpha-v1-harbor-chartmuseum,klover-alpha-v1-harbor-clair,klover-alpha-v1-harbor-notary-server,klover-alpha-v1-harbor-notary-signer,klover-alpha-v1-harbor-registry,klover-alpha-v1-harbor-portal,127.0.0.1,localhost,.local,.internal"
+            value: "{{ klovercloud_harbor_portal_service_name }},{{ klovercloud_harbor_jobservice_service_name }},{{ klovercloud_harbor_database_service_name }},{{ klovercloud_harbor_chartmuseum_service_name }},{{ klovercloud_harbor_clair_service_name }},{{ klovercloud_harbor_notary_server_service_name }},{{ klovercloud_harbor_notary_signer_service_name }},{{ klovercloud_harbor_registry_service_name }},{{ klovercloud_harbor_portal_service_name }},127.0.0.1,localhost,.local,.internal"
         ports:
         - containerPort: {{ klovercloud_harbor_jobservice_service_container_port }}
         volumeMounts:
@@ -1548,7 +1548,7 @@ spec:
         args: ["serve", "/etc/registry/config.yml"]
         envFrom:
         - secretRef:
-            name: "klover-alpha-v1-harbor-registry"
+            name: {{ klovercloud_harbor_registry_secret_name }}
         ports:
         - containerPort: {{ klovercloud_harbor_registry_container_port1 }}
         - containerPort: {{ klovercloud_harbor_registry_container_port2 }}
@@ -1580,7 +1580,7 @@ spec:
         args: ["serve", "/etc/registry/config.yml"]
         envFrom:
         - secretRef:
-            name: "klover-alpha-v1-harbor-registry"
+            name: {{ klovercloud_harbor_registry_secret_name }}
         env:
           - name: CORE_SECRET
             valueFrom:

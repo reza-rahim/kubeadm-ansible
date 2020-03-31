@@ -3,13 +3,13 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: klovercloud-database
-  namespace: klovercloud
+  name: {{ klovercloud_database_deployment_name }}
+  namespace: {{ klovercloud_namespace }}
 spec:
-  replicas: 1
+  replicas: {{ klovercloud_database_deployment_replica }}
   selector:
     matchLabels:
-      app: klovercloud-database
+      app: {{ klovercloud_database_app_label }}
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -19,31 +19,33 @@ spec:
   template:
     metadata:
       labels:
-        app: klovercloud-database
+        app: {{ klovercloud_database_app_label }}
     spec:
       terminationGracePeriodSeconds: 60
       containers:
-        - name: klovercloud-database
+        - name: {{ klovercloud_database_deployment_name }}
           imagePullPolicy: Always
-          image: container-registry.klovercloud.com/klovercloud/klovercloud-database:latest
+          image: {{ klovercloud_database_deployment_image }}
+{% if profile  == "prod" %}
           resources:
             requests:
-              cpu: 200m
-              memory: 350Mi
+              cpu: {{ klovercloud_database_cpu_request }}
+              memory: {{ klovercloud_database_memory_request }}
             limits:
-              cpu: 350m
-              memory: 512Mi
+              cpu: {{ klovercloud_database_cpu_limit }}
+              memory: {{ klovercloud_database_memory_limit }}
+{% endif %}
           env:
             - name: RUN_MODE
-              value: "PRODUCTION"
+              value: {{ klovercloud_developer_alias }}
             - name: DATABASE_CONNECTION_STR
-              value: "mongodb://USERNAME:PASSWORD@MONGODB_SERVICE_NAME:PORT"
+              value: "mongodb://{{ klovercloud_mongo_root_username }}:{{ klovercloud_mongodd_root_password }}@{{ klovercloud_mongodb_service_name }}:{{ klovercloud_mongodb_service_port }}"
             - name: DATABASE_NAME
-              value: "klovercloud_database"
+              value: {{ klovercloud_database_db_name }}
             - name: KAFKA_PRODUCER_BOOTSTRAP_SERVER
-              value: "kafka:9092"
+              value: "{{ klovercloud_kafka_service_name }}:{{ klovercloud_kafka_service_port }}"
             - name: MANAGEMENT_SERVICE_URL
-              value: "http://klovercloud-management/"
+              value: "http://{{ klovercloud_management_service_name }}/"
             - name: USE_STORAGE_CLASS
               value: "true"
             - name: STORAGE_CLASS_NAME
@@ -53,38 +55,38 @@ spec:
             - name: METRICS_ENABLED
               value: "true"
           ports:
-            - containerPort: 8095
+            - containerPort: {{ klovercloud_database_container_port }}
           readinessProbe:
             httpGet:
               path: /health
-              port: 8095
+              port: {{ klovercloud_database_container_port }}
             initialDelaySeconds: 30
             periodSeconds: 10
           livenessProbe:
             httpGet:
               path: /health
-              port: 8095
+              port: {{ klovercloud_database_container_port }}
             initialDelaySeconds: 30
             periodSeconds: 10
       imagePullSecrets:
-        - name: regcred-harbor
+        - name: {{ klovercloud_image_pulling_secret }}
 
 ---
 
 apiVersion: v1
 kind: Service
 metadata:
-  name: klovercloud-database
-  namespace: klovercloud
+  name: {{ klovercloud_database_service_name }}
+  namespace: {{ klovercloud_namespace }}
   labels:
-    app: klovercloud-database
+    app: {{ klovercloud_database_app_label }}
 spec:
   ports:
     - name: http-rest
-      port: 80
+      port: {{ klovercloud_database_service_port }}
       protocol: TCP
-      targetPort: 8095
+      targetPort: {{ klovercloud_database_service_target_port }}
   selector:
-    app: klovercloud-database
+    app: {{ klovercloud_database_app_label }}
 
 
