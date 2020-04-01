@@ -1,4 +1,4 @@
-profile: dev
+profile: prod
 kube_master_lb: 10.20.0.13
 
 docker_ce_ubuntu: 18.06.2~ce~3-0~ubuntu
@@ -44,20 +44,52 @@ cassandra_heap_newsize: 100M
 ####### cortex #####
 cortex_version: v0.4.0
 cortex_date: 2017-03-01
+cortec_chunk_start_day: 2020-03-20
 cortex_taint: storage
 cortex_cassandra: cassandra.cassandra.svc.cluster.local
-cortex_ingester: 3
-cortex_querier: 3
-cortex_distributor: 1
-cortex_queryfrontend: 2
-cortex_nginx: 1
+
 cortex_memcached_replica: 1
 cortex_memcached_index_read_replica: 1
-cortex_memcached_index_write: 1
-cortex_ingester_replica: 1
+cortex_memcached_index_write_replica: 1
+cortex_memcached_limit_cpu: 500m
+cortex_memcached_limit_mem: 1Gi
+cortex_memcached_req_cpu: 500m
+cortex_memcached_req_mem: 1Gi 
+cortex_memcached_limit_cpu: 500m
+
+cortex_ingester_replica: 3
+cortex_ingester_limit_cpu: 1000m
+cortex_ingester_limit_mem: 1Gi
+cortex_ingester_req_cpu: 1000m
+cortex_ingester_req_mem: 1Gi 
+
 cortex_distributor_replica: 1
+cortex_distributor_limit_cpu: 1000m
+cortex_distributor_limit_mem: 1Gi
+cortex_distributor_req_cpu: 1000m
+cortex_distributor_req_mem: 1Gi
+
+cortex_querier_replica: 1
+cortex_querier_limit_cpu: 1000m
+cortex_querier_limit_mem: 1Gi
+cortex_querier_req_cpu: 1000m
+cortex_querier_req_mem: 1Gi 
+
 cortex_query_frontend_replica: 1
+cortex_queryfrontend_limit_cpu: 1000m
+cortex_queryfrontend_limit_mem: 1Gi
+cortex_queryfrontend_req_cpu: 1000m
+cortex_queryfrontend_req_mem: 1Gi 
+
 cortex_nginx_replica: 1
+cortex_nginx_limit_cpu: 500m
+cortex_nginx_limit_mem: 500Mi
+cortex_nginx_req_cpu: 500m
+cortex_nginx_req_mem: 500Mi 
+
+
+
+cortex_nginx: 1
 
 ####### Loki  ######
 loki_version: v0.4.0

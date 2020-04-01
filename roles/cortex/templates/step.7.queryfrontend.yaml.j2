@@ -50,13 +50,13 @@ spec:
         prometheus.io/scrape: "true"
         sidecar.istio.io/inject: "false"
     spec:
-     {% if profile  == "prod" %}
+     {% if cortex_taint is defined and profile  == "prod" %}
 
       tolerations:
         - effect: NoSchedule
           key: dedicated
           operator: Equal
-          value: storage
+          value: {{ cortex_taint }}
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -65,7 +65,7 @@ spec:
               - key: dedicated
                 operator: In
                 values:
-                - storage
+                - {{ cortex_taint }}
       {% endif %}
 
       containers:
@@ -89,10 +89,10 @@ spec:
 
         resources:
          limits:
-           cpu: 1
+           cpu: {{ cortex_queryfrontend_limit_cpu }}
          requests:
-           cpu: 1
-           memory: 1Gi
+           cpu: {{ cortex_queryfrontend_req_cpu }} 
+           memory: {{ cortex_queryfrontend_req_mem }}
 
  {% endif %}
 

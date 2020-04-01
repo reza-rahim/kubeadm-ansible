@@ -2,11 +2,7 @@
 - hosts: kube-master
   become: yes
   roles:
-     - storage
-     - klovercloud
-     #- monitoring
-     #- cassandra
-     #- cortex
-     #- loki
-     #- klovercloud
+     - klovercloud_resources
+     - klovercloud_services
+
 

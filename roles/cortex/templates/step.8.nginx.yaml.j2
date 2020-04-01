@@ -91,7 +91,7 @@ spec:
       annotations:
         prometheus.io.scrape: "false"
     spec:
-{% if profile  == "prod" %}
+{% if  cortex_taint is defined and profile  == "prod" %}
 
       tolerations:
         - effect: NoSchedule
@@ -119,6 +119,17 @@ spec:
         volumeMounts:
         - name: config-volume
           mountPath: /etc/nginx
+{% if profile  == "prod" %}
+
+        resources:
+         limits:
+           cpu: {{ cortex_nginx_limit_cpu }}
+         requests:
+           cpu: {{ cortex_nginx_req_cpu }}
+           memory: {{ cortex_nginx_req_mem }}
+
+ {% endif %}
+
       volumes:
         - name: config-volume
           configMap:

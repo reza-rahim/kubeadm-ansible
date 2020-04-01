@@ -48,11 +48,13 @@ spec:
         prometheus.io/scrape: "true"
         sidecar.istio.io/inject: "false"
     spec:
+ {% if cortex_taint is defined and profile  == "prod" %}
+
       tolerations:
         - effect: NoSchedule
           key: dedicated
           operator: Equal
-          value: storage
+          value: {{ cortex_taint }}
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -61,26 +63,31 @@ spec:
               - key: dedicated
                 operator: In
                 values:
-                - storage
+                - {{ cortex_taint }}
+{% endif %}
+
       containers:
       - name: distributor
-        image: quay.io/cortexproject/cortex:v0.4.0
+        image: quay.io/cortexproject/cortex:{{ cortex_version }}
         imagePullPolicy: IfNotPresent
         args:
         - -target=distributor
         #- -log.level=debug
         - -server.http-listen-port=80
-        #- -distributor.replication-factor=3
         - -config.file=/etc/cortex/config/config.yaml
         ports:
         - containerPort: 80
           name: http
-        #resources:
-        # limits:
-        #   cpu: 4
-        # requests:
-        #   cpu: 4
-        #   memory: 4Gi
+{% if profile  == "prod" %}
+
+        resources:
+         limits:
+           cpu: {{ cortex_distributor_limit_cpu }}
+         requests:
+           cpu: {{ cortex_distributor_req_cpu }}
+           memory: {{ cortex_distributor_req_mem }}
+ {% endif %}
+
         volumeMounts:
         - mountPath: /etc/cortex/config
           name: cortex
