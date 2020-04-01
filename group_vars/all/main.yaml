@@ -168,6 +168,7 @@ klovercloud_mongodb_replica_set_key: admin123
 klovercloud_mongodd_root_password: admin123
 klovercloud_mongo_auth_db_name: admin
 klovercloud_mongo_root_username: root
+klovercloud_mongo_admin_username: mongoAdmin
 
 ####### klovercloud kafka #######
 klovercloud_kafka_replica: 1
@@ -513,5 +514,34 @@ klovercloud_database_memory_request: 350Mi
 klovercloud_database_cpu_limit: 350m
 klovercloud_database_memory_limit: 512Mi
 klovercloud_database_db_name: klovercloud_database
+
+
+####### Klovercloud dns manager #######
+
+klovercloud_dns_manager_deployment_name: klovercloud-dns-manager
+klovercloud_dns_manager_image: klovercloud/service:klovercloud-dns-manager
+
+klovercloud_dns_manager_cpu_request: 200m
+klovercloud_dns_manager_memory_request: 350Mi
+klovercloud_dns_manager_cpu_limit: 350m
+klovercloud_dns_manager_memory_limit: 512Mi
+
+klovercloud_dns_manager_app_label: klovercloud-dns-manager
+
+klovercloud_dns_manager_deployment_replica: 1 
+
+klovercloud_dns_manager_dns_technology: route53
+klovercloud_dns_manager_server_port: 8080
+klovercloud_dns_manager_database_name: klovercloud_dns_manager
+klovercloud_dns_manager_coredns_redis_host: 144.91.94.105:30379
+klovercloud_dns_manager_coredns_redis_pass: privateredis
+klovercloud_dns_manager_aws_access_key_id: AKIARWFZ27L6WKBJENU4
+klovercloud_dns_manager_aws_secret_access_key: 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 
+klovercloud_dns_manager_container_port: 8080
+klovercloud_dns_manager_service_name: klovercloud-dns-manager
+klovercloud_dns_manager_service_port: 80
+klovercloud_dns_manager_service_target_port: 8080
+
+
 
 

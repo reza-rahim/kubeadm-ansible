@@ -1,0 +1,82 @@
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: klovercloud-log-manager
+  namespace: klovercloud
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: klovercloud-log-manager
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0
+  minReadySeconds: 25
+  template:
+    metadata:
+      labels:
+        app: klovercloud-log-manager
+    spec:
+      terminationGracePeriodSeconds: 60
+      containers:
+      - name: klovercloud-log-manager
+        imagePullPolicy: Always
+        image: container-registry.klovercloud.com/klovercloud/klovercloud-log-manager:latest
+        resources:
+          requests:
+            cpu: 250m
+            memory: 350Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+        env:
+        - name: DEVELOPER_ALIAS
+          value: "klovercloud"
+        - name: RUN_MODE
+          value: "PRODUCTION"
+        - name: USER_NAME
+          value: "loki-admin"
+        - name: PASSWORD
+          value: "Dev@Klover2019!"
+        - name: LOKI_URL
+          value: "https://loki.klovercloud.io/"
+        - name: LOKIWS_URL
+          value: "ws://loki.klovercloud.io/"
+        ports:
+        - containerPort: 8086
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8086
+          initialDelaySeconds: 60
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8086
+          initialDelaySeconds: 60
+          periodSeconds: 10
+      imagePullSecrets:
+        - name: harbor-regcred
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: klovercloud-log-manager
+  namespace: klovercloud
+  labels:
+    app: klovercloud-log-manager
+spec:
+  ports:
+    - name: http-rest
+      port: 80
+      protocol: TCP
+      targetPort: 8086
+  selector:
+    app: klovercloud-log-manager

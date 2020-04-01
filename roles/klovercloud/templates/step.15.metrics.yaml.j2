@@ -1,0 +1,78 @@
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: klovercloud-metrics
+  namespace: klovercloud
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: klovercloud-metrics
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 50%
+      maxUnavailable: 50%
+  minReadySeconds: 25
+  template:
+    metadata:
+      labels:
+        app: klovercloud-metrics
+    spec:
+      terminationGracePeriodSeconds: 60
+      containers:
+        - name: klovercloud-metrics
+          imagePullPolicy: Always
+          image: container-registry.klovercloud.com/klovercloud/klovercloud-metrics:latest
+          resources:
+            requests:
+              cpu: 200m
+              memory: 350Mi
+            limits:
+              cpu: 350m
+              memory: 512Mi
+          env:
+            - name: RUN_MODE
+              value: "PRODUCTION"
+            - name: DATABASE_CONNECTION_STR
+              value: "mongodb://mongoAdmin:abc123@mongodb:27017"
+            - name: DATABASE_NAME
+              value: "klovercloud_metrics"
+            - name: PROMETHEUS_BASE_URL
+              value: "http://monitoring-prometheus-server-internal-kc"
+          ports:
+            - containerPort: 8087
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8087
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8087
+            initialDelaySeconds: 30
+            periodSeconds: 10
+      imagePullSecrets:
+        - name: regcred-harbor
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: klovercloud-metrics
+  namespace: klovercloud
+  labels:
+    app: klovercloud-metrics
+spec:
+  ports:
+    - name: http-rest
+      port: 80
+      protocol: TCP
+      targetPort: 8087
+  selector:
+    app: klovercloud-metrics

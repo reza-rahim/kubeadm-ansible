@@ -356,6 +356,7 @@
   with_items:
      - { src: 'step.11.monitor.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/apps/step.11.monitor.yaml'  } 
      - { src: 'step.12.klovercloud-database.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/apps/step.12.klovercloud-database.yaml'  } 
+     - { src: 'step.13.dns_manager.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/apps/step.13.dns_manager.yaml'  } 
   when: >
     inventory_hostname == "kube-master-0"
   register: result
@@ -367,6 +368,11 @@
 
 - name:  
   shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/apps/step.12.klovercloud-database.yaml;
+  when: >
+    inventory_hostname == "kube-master-0" 
+
+- name:  
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/apps/step.13.dns_manager.yaml;
   when: >
     inventory_hostname == "kube-master-0" 
 
