@@ -3,13 +3,13 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: klovercloud-metrics
-  namespace: klovercloud
+  name: {{ klovercloud_metrics_deployment_name }}
+  namespace: {{ klovercloud_namespace }}
 spec:
-  replicas: 1
+  replicas: {{ klovercloud_metrics_deployment_replica }}
   selector:
     matchLabels:
-      app: klovercloud-metrics
+      app: {{ klovercloud_metrics_app_label }}
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -19,60 +19,62 @@ spec:
   template:
     metadata:
       labels:
-        app: klovercloud-metrics
+        app: {{ klovercloud_metrics_app_label }}
     spec:
       terminationGracePeriodSeconds: 60
       containers:
-        - name: klovercloud-metrics
+        - name: {{ klovercloud_metrics_deployment_name }}
           imagePullPolicy: Always
-          image: container-registry.klovercloud.com/klovercloud/klovercloud-metrics:latest
+          image: {{ klovercloud_metrics_image }}
+{% if profile  == "prod" %}
           resources:
             requests:
-              cpu: 200m
-              memory: 350Mi
+              cpu: {{ klovercloud_metrics_cpu_request }}
+              memory: {{ klovercloud_metrics_memory_request }}
             limits:
-              cpu: 350m
-              memory: 512Mi
+              cpu: {{ klovercloud_metrics_cpu_limit }}
+              memory: {{ klovercloud_metrics_memory_limit }}
+{% endif %}
           env:
             - name: RUN_MODE
               value: "PRODUCTION"
             - name: DATABASE_CONNECTION_STR
-              value: "mongodb://mongoAdmin:abc123@mongodb:27017"
+              value: "mongodb://{{ klovercloud_mongo_admin_username }}:{{ klovercloud_mongodd_root_password }}@{{ klovercloud_mongodb_service_name }}:{{ klovercloud_mongodb_service_port }}"
             - name: DATABASE_NAME
-              value: "klovercloud_metrics"
+              value: {{ klovercloud_metrics_db_name }}
             - name: PROMETHEUS_BASE_URL
-              value: "http://monitoring-prometheus-server-internal-kc"
+              value: {{ klovercloud_prometheus_base_url }}
           ports:
-            - containerPort: 8087
+            - containerPort: {{ klovercloud_metrics_container_port }}
           readinessProbe:
             httpGet:
               path: /health
-              port: 8087
+              port: {{ klovercloud_metrics_container_port }}
             initialDelaySeconds: 30
             periodSeconds: 10
           livenessProbe:
             httpGet:
               path: /health
-              port: 8087
+              port: {{ klovercloud_metrics_container_port }}
             initialDelaySeconds: 30
             periodSeconds: 10
       imagePullSecrets:
-        - name: regcred-harbor
+        - name: {{ klovercloud_image_pulling_secret }}
 
 ---
 
 apiVersion: v1
 kind: Service
 metadata:
-  name: klovercloud-metrics
-  namespace: klovercloud
+  name: {{ klovercloud_metrics_service_name }}
+  namespace: {{ klovercloud_namespace }}
   labels:
-    app: klovercloud-metrics
+    app: {{ klovercloud_metrics_app_label }}
 spec:
   ports:
     - name: http-rest
-      port: 80
+      port: {{ klovercloud_metrics_service_port }}
       protocol: TCP
-      targetPort: 8087
+      targetPort: {{ klovercloud_metrics_service_target_port }}
   selector:
-    app: klovercloud-metrics
+    app: {{ klovercloud_metrics_app_label }}

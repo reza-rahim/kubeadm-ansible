@@ -55,7 +55,7 @@ cortex_memcached_limit_cpu: 500m
 cortex_memcached_limit_mem: 1Gi
 cortex_memcached_req_cpu: 500m
 cortex_memcached_req_mem: 1Gi 
-cortex_memcached_limit_cpu: 500m
+
 
 cortex_ingester_replica: 3
 cortex_ingester_limit_cpu: 1000m
@@ -104,7 +104,9 @@ loki_ingester_replica: 3
 loki_querier_replica: 3
 loki_distributor_replica: 3
 loki_query-frontend_replica: 2
-
+loki_username: loki-admin
+loki_password: Dev@Klover2019!
+loki_url: loki.klovercloud.io
 
 #######  klovercloud common ####### 
 klovercloud_super_admin_username: admin-listener@klovercloud.com
@@ -573,6 +575,48 @@ klovercloud_dns_manager_container_port: 8080
 klovercloud_dns_manager_service_name: klovercloud-dns-manager
 klovercloud_dns_manager_service_port: 80
 klovercloud_dns_manager_service_target_port: 8080
+
+
+####### Klovercloud log manager #######
+
+klovercloud_log_manager_deployment_name: klovercloud-log-manage
+klovercloud_log_manager_image: klovercloud/service:klovercloud-log-manager
+klovercloud_log_manager_app_label: klovercloud-log-manage
+klovercloud_log_manager_deployment_replica: 1
+
+klovercloud_log_manager_cpu_request: 250m
+klovercloud_log_manager_memory_request: 350Mi
+klovercloud_log_manager_cpu_limit: 500m
+klovercloud_log_manager_memory_limit: 512Mi
+
+klovercloud_log_manager_container_port: 8086
+klovercloud_log_manager_service_name: klovercloud-log-manager
+klovercloud_log_manager_service_port: 80
+klovercloud_log_manager_service_target_port: 8086
+
+
+####### Klovercloud metrics #######
+
+klovercloud_metrics_deployment_name: klovercloud-metrics
+klovercloud_metrics_image: klovercloud/service:klovercloud-metrics
+klovercloud_metrics_app_label: klovercloud-metrics
+klovercloud_metrics_deployment_replica: 1
+
+
+klovercloud_metrics_cpu_request: 200m
+klovercloud_metrics_memory_request: 350Mi
+klovercloud_metrics_cpu_limit: 350m
+klovercloud_metrics_memory_limit: 512Mi
+klovercloud_metrics_db_name: klovercloud_metrics
+
+klovercloud_metrics_container_port: 8087
+klovercloud_metrics_service_name: klovercloud-metrics
+klovercloud_metrics_service_port: 80
+klovercloud_metrics_service_target_port: 8087
+
+
+
+klovercloud_prometheus_base_url: http://monitoring-prometheus-server-internal-kc
 
 
 
