@@ -620,4 +620,43 @@ klovercloud_prometheus_base_url: http://monitoring-prometheus-server-internal-kc
 
 
 
+####### klovercloud rook ceph #######
 
+klovercloud_rook_ceph_namespace: rook-ceph
+klovercloud_rook_ceph_my_store_service_name: rook-ceph-rgw-my-store-service
+klovercloud_rook_ceph_my_store_app_label: rook-ceph-rgw
+klovercloud_rook_ceph_my_store_rook_cluster_label: rook-ceph
+klovercloud_rook_ceph_my_store_rook_object_store_label: my-store 
+klovercloud_rook_ceph_my_store_service_port: 80 
+klovercloud_rook_ceph_my_store_service_target_port: 80
+
+
+####### klovercloud object storage #######
+
+klovercloud_rook_ceph_object_storage_deployment_name: klovercloud-object-storage
+klovercloud_rook_ceph_object_storage_app_label: klovercloud-object-storage
+klovercloud_rook_ceph_object_storage_deployment_replica: 1
+
+klovercloud_rook_ceph_object_storage_image: klovercloud/service:klovercloud-object-storage
+
+klovercloud_rook_ceph_object_storage_cpu_request: 200m
+klovercloud_rook_ceph_object_storage_memory_request: 350Mi
+klovercloud_rook_ceph_object_storage_cpu_limit: 350m
+klovercloud_rook_ceph_object_storage_memory_limit: 512Mi
+klovercloud_rook_ceph_object_storage_db_name: klovercloud_object-storage
+klovercloud_rook_ceph_object_storage_end_point: https://object-storage.klovercloud.io/
+  
+klovercloud_rook_ceph_object_storage_ingress_name: object-storage-ingress
+klovercloud_rook_ceph_object_storage_ingress_host: object-storage.klovercloud.com
+klovercloud_rook_ceph_object_storage_ingress_secret: object-storage-tls
+
+klovercloud_rook_ceph_object_storage_user_id: abc
+klovercloud_rook_ceph_object_storage_user_display_name: klovercloud-object-storgae-admin-admin
+klovercloud_rook_ceph_object_storage_access_key: abc
+klovercloud_rook_ceph_object_storage_secret_key: abc
+
+klovercloud_rook_ceph_object_storage_container_port: 8092
+klovercloud_rook_ceph_object_storage_service_name: klovercloud-object-storage
+klovercloud_rook_ceph_object_storage_service_port: 80
+klovercloud_rook_ceph_object_storage_service_target_port: 8092 
+  

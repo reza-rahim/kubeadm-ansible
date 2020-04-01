@@ -19,3 +19,25 @@ spec:
        - http01:
            ingress:
              class: nginx
+
+---
+
+apiVersion: cert-manager.io/v1alpha2
+kind: Issuer
+metadata:
+  name: {{ klovercloud_cert_issuer_name }}
+  namespace: {{ klovercloud_rook_ceph_namespace }}
+spec:
+  acme:
+       # The ACME server URL
+       server: {{ acme_server }}
+       # Email address used for ACME registration
+       email: {{ acme_email }}
+       # Name of a secret used to store the ACME account private key
+       privateKeySecretRef:
+         name: {{ private_key_secret_ref_name }}
+       # Enable the HTTP-01 challenge provider
+       solvers:
+       - http01:
+           ingress:
+             class: nginx

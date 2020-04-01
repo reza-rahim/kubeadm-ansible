@@ -28,24 +28,25 @@
   ignore_errors: yes
 
 
+- name: Create namespace for rook ceph
+  shell: kubectl create ns {{ klovercloud_rook_ceph_namespace }};
+  when: >
+    groups['kube-master'].index(inventory_hostname) == 0 
+  ignore_errors: yes
+
 # reset facts
 
-- name: reset klovercloud_super_admin_username and klovercloud_super_admin_password
+- name: reset variables
   set_fact:
     klovercloud_super_admin_username: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
     klovercloud_super_admin_password: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
-
-- name: reset klovercloud_harbor_admin_auth_token
-  set_fact:
     klovercloud_harbor_admin_auth_token: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
-
-
-- name: reset klovercloud_harbor_admin_password, klovercloud_harbor_postgresql_password and klovercloud_harbor_clair_db_password
-  set_fact:
     klovercloud_harbor_admin_password: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
     klovercloud_harbor_postgresql_password: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
     klovercloud_harbor_clair_db_password: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
-
+    klovercloud_rook_ceph_object_storage_user_id: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
+    klovercloud_rook_ceph_object_storage_access_key: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
+    klovercloud_rook_ceph_object_storage_secret_key: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
 
 
 # copy decriptors
