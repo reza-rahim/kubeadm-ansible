@@ -199,8 +199,8 @@
     status_code: 200
     headers:
       Content-Type: "text/plain"
-      Authorization: "Basic  {{ (klovercloud_nexus_default_super_admin_username + ':' + klovercloud_nexus_default_super_admin_password) | b64encode }}"
-    body: "{{klovercloud_nexus_super_admin_password}}"
+      Authorization: "Basic  {{ klovercloud_nexus_default_super_admin_username }}:{{ klovercloud_nexus_default_super_admin_password }}"
+    body: "{{ klovercloud_nexus_super_admin_password }}"
 
 # deploy Kafka
 
