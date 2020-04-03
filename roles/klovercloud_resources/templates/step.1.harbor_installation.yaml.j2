@@ -15,7 +15,7 @@ spec:
        email: {{ klovercloud_harbor_cert_issuer_email }}
        # Name of a secret used to store the ACME account private key
        privateKeySecretRef:
-         name: {{ {{ klovercloud_harbor_cert_issuer_name }} }}
+         name: {{ klovercloud_harbor_cert_issuer_name }}
        # Enable the HTTP-01 challenge provider
        solvers:
        - http01:
