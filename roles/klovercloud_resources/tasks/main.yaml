@@ -192,7 +192,7 @@
     method: PUT
     return_content: yes
     status_code: 200
-    user: admin
+    username: admin
     password: "{{klovercloud_nexus_default_super_admin_password}}"
     headers:
       Content-Type: "text/plain"
