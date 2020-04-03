@@ -233,7 +233,7 @@ spec:
       volumes:
       - name: chartmuseum-data
         persistentVolumeClaim:
-          claimName: {{ {{ klovercloud_harbor_chartmuseum_pvc_name }} }}
+          claimName: {{ klovercloud_harbor_chartmuseum_pvc_name }}
 
 
 
@@ -512,7 +512,7 @@ data:
     XSRFExpire = 3600
   DATABASE_TYPE: "postgresql"
   POSTGRESQL_HOST: {{ klovercloud_harbor_database_service_name }}
-  POSTGRESQL_PORT: {{ klovercloud_harbor_database_service_port }}
+  POSTGRESQL_PORT: "{{ klovercloud_harbor_database_service_port }}"
   POSTGRESQL_USERNAME: "postgres"
   POSTGRESQL_DATABASE: "registry"
   POSTGRESQL_SSLMODE: "disable"
@@ -529,7 +529,7 @@ data:
   ADMIRAL_URL: "NA"
   WITH_CLAIR: "true"
   CLAIR_DB_HOST: {{ klovercloud_harbor_database_service_name }}
-  CLAIR_DB_PORT: {{ klovercloud_harbor_database_service_port }}
+  CLAIR_DB_PORT: "{{ klovercloud_harbor_database_service_port }}"
   CLAIR_DB_USERNAME: "postgres"
   CLAIR_DB: "postgres"
   CLAIR_DB_SSLMODE: "disable"

@@ -64,7 +64,8 @@
      - { src: 'step.2.mongodb.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.2.mongodb.yaml'  }  
      - { src: 'step.0.1.admin_secret.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.0.1.admin_secret.yaml'  }  
      - { src: 'step.0.2.cert_issuer.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.0.2.cert_issuer.yaml'  }
-     - { src: 'step.4.nexus.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.4.nexus.yaml'  } 
+     - { src: 'step.3.0.nexus_operator.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.3.0.nexus_operator.yaml'  } 
+     - { src: 'step.3.1.nexus.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.3.1.nexus.yaml'  } 
      - { src: 'step.4.kafka.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.4.kafka.yaml'  } 
   when: >
     groups['kube-master'].index(inventory_hostname) == 0  
@@ -114,10 +115,10 @@
     groups['kube-master'].index(inventory_hostname) == 0   
 
 
-- name: wait for pods to come up
-  shell: kubectl get pods -n {{ klovercloud_harbor_namespace }} -o json
-  register: kubectl_get_pods
-  until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
+# - name: wait for pods to come up
+#   shell: kubectl get pods -n {{ klovercloud_harbor_namespace }} -o json
+#   register: kubectl_get_pods
+#   until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
 
 
 - name: 
@@ -132,10 +133,10 @@
     groups['kube-master'].index(inventory_hostname) == 0   
 
 
-- name: wait for pods to come up
-  shell: kubectl get pods -n {{ klovercloud_namespace }} -o json
-  register: kubectl_get_pods
-  until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
+# - name: wait for pods to come up
+#   shell: kubectl get pods -n {{ klovercloud_namespace }} -o json
+#   register: kubectl_get_pods
+#   until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
 
 - name: 
   wait_for:
@@ -143,19 +144,28 @@
 
 # deploy nexus 
 
-- name: Copy nexus descriptors
-  template: src="{{ item.src }}" dest="{{ item.dest }}"
-  with_items:
-     - { src: 'step.3.nexus.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.3.nexus.yaml'  }  
-  when: >
-    groups['kube-master'].index(inventory_hostname) == 0  
-  register: result
 
 - name:  
-  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.3.nexus.yaml;
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.3.0.nexus_operator.yaml;
   when: >
     groups['kube-master'].index(inventory_hostname) == 0   
 
+
+
+- name: wait for pods to come up
+  shell: kubectl get pods -n {{ klovercloud_nexus_namespace }} -o json
+  register: kubectl_get_pods
+  until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
+
+- name: 
+  wait_for:
+    timeout: 30
+
+
+- name:  
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.3.1.nexus.yaml;
+  when: >
+    groups['kube-master'].index(inventory_hostname) == 0
 
 
 - name: wait for pods to come up

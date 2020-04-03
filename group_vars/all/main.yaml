@@ -369,7 +369,7 @@ klovercloud_harbor_redis_service_name: klover-alpha-v1-harbor-redis
 klovercloud_harbor_redis_image: goharbor/redis-photon:v1.10.1
 klovercloud_harbor_redis_service_port: 6379
 klovercloud_harbor_redis_storage: 2Gi
-
+klovercloud_harbor_redis_chart_label: klover-alpha-v1-harbor-redis
 
 klovercloud_harbor_chartmuseum_configmap_name: klover-alpha-v1-harbor-chartmuseum
 klovercloud_harbor_chartmuseum_deployment_name: klover-alpha-v1-harbor-chartmuseum
