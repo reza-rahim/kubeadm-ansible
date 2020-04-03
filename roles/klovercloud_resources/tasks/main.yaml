@@ -199,7 +199,7 @@
     status_code: 200
     headers:
       Content-Type: "text/plain"
-      Authorization: Basic {{ (klovercloud_nexus_default_super_admin_password + ':' + klovercloud_nexus_default_super_admin_password) | b64encode }}"
+      Authorization: "Basic YWRtaW46ZThjMzljMTQtZTJlNC00NWQ0LWI4OWYtZjY2MTdkZjZkODQy"
     force_basic_auth: yes
     body: "{{klovercloud_nexus_super_admin_password}}"
 
