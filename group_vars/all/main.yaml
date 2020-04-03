@@ -237,6 +237,7 @@ klovercloud_nexus_memory_request: 2Gi
 klovercloud_nexus_cpu_limit: 1000m
 klovercloud_nexus_memory_limit: 4Gi
 klovercloud_nexus_default_super_admin_password: abc
+klovercloud_nexus_default_super_admin_username: admin
 klovercloud_nexus_super_admin: admin
 klovercloud_nexus_super_admin_password: admin
 klovercloud_nexus_operator_name: nexus-operator
