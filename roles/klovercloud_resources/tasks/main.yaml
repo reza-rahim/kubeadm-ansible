@@ -241,7 +241,7 @@
 #   when: job_status.items[0].status.failed == 1
 
 - name: wait for pods to come up
-  shell: kubectl get pods - {{ klovercloud_kafka_app_label }} -n {{ klovercloud_namespace }} -o json
+  shell: kubectl get pods -l {{ klovercloud_kafka_app_label }} -n {{ klovercloud_namespace }} -o json
   register: kubectl_get_pods
   until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
   ignore_errors: yes
@@ -253,7 +253,7 @@
 - name: wait for pods to come up
   shell: kubectl get pods -n {{ klovercloud_namespace }} -o json
   register: kubectl_get_pods
-  until: kubectl get pods - {{ klovercloud_kafka_app_label }} -n {{ klovercloud_namespace }} -o json
+  until: kubectl get pods -l {{ klovercloud_kafka_app_label }} -n {{ klovercloud_namespace }} -o json
   
  
 
