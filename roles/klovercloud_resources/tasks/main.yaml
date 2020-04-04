@@ -200,7 +200,7 @@
 
 - name: Wait Until Job Is Done
   k8s_facts:
-    name: {{ klovercloud_zookeeper_deployment_name }}
+    name: "{{ klovercloud_zookeeper_deployment_name }}"
     kind: Deployment
     namespace: {{ klovercloud_namespace }}
   register: job_status
@@ -211,7 +211,7 @@
 
 - name: Get Final Job Status
   k8s_facts:
-    name: {{ klovercloud_zookeeper_deployment_name }}
+    name: "{{ klovercloud_zookeeper_deployment_name }}"
     kind: Deployment
     namespace: {{ klovercloud_namespace }}
   register: job_status
