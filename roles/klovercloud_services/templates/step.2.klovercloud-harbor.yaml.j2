@@ -49,7 +49,7 @@ spec:
             - name: HARBOR_ADMIN_AUTH_TOKEN
               value: "Basic  {{ (klovercloud_harbor_admin + ':' + klovercloud_harbor_admin_password) | b64encode }} "
             - name: PROJECT_QUOTAS_COUNT_LIMIT
-              value: {{ klovercloud_harbor_project_quotas_count_limit }}
+              value: "{{ klovercloud_harbor_project_quotas_count_limit }}"
             - name: PROJECT_QUOTAS_STORAGE_LIMIT
               value: {{ klovercloud_harbor_project_quotas_storage_limit }}
           ports:
