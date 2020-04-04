@@ -51,7 +51,7 @@ spec:
             - name: PROJECT_QUOTAS_COUNT_LIMIT
               value: "{{ klovercloud_harbor_project_quotas_count_limit }}"
             - name: PROJECT_QUOTAS_STORAGE_LIMIT
-              value: {{ klovercloud_harbor_project_quotas_storage_limit }}
+              value: "{{ klovercloud_harbor_project_quotas_storage_limit }}"
           ports:
             - containerPort: {{ klovercloud_harbor_container_port }}
           readinessProbe:
