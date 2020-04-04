@@ -87,7 +87,7 @@
 
 # Create issuer
 
-- name:  
+- name: Create issuer
   shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.0.2.cert_issuer.yaml;
   when: >
     groups['kube-master'].index(inventory_hostname) == 0 
@@ -109,7 +109,7 @@
 
 # Install harbor
 
-- name:  
+- name: Install harbor
   shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.1.harbor_installation.yaml;
   when: >
     groups['kube-master'].index(inventory_hostname) == 0   
@@ -127,7 +127,7 @@
 
 # deploy mongo db 
 
-- name:  
+- name: deploy mongo db  
   shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.2.mongodb.yaml;
   when: >
     groups['kube-master'].index(inventory_hostname) == 0   
@@ -145,7 +145,7 @@
 # deploy nexus 
 
 
-- name:  
+- name:  deploy nexus operator deployment descriptor
   shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.3.0.nexus_operator.yaml;
   when: >
     groups['kube-master'].index(inventory_hostname) == 0   
@@ -162,7 +162,7 @@
     timeout: 60
 
 
-- name:  
+- name:  deploy nexus
   shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.3.1.nexus.yaml;
   when: >
     groups['kube-master'].index(inventory_hostname) == 0
@@ -181,47 +181,29 @@
   shell: kubectl cp {{klovercloud_nexus_cr}}-0:/nexus-data/admin.password /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/admin.password -n nexus
 
 
-
 - name: 
   set_fact:
     klovercloud_nexus_default_super_admin_password: "{{ lookup('file', '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/admin.password') }}"
 
 
-- name:
-  debug: 
-    msg: " {{ klovercloud_nexus_default_super_admin_password }}"
-
-
-- name: 
-  shell: kubectl -n {{ klovercloud_nexus_namespace }} exec -it $(kubectl -n {{ klovercloud_nexus_namespace }} get pod -l "app={{ klovercloud_nexus_app_label }}" -o jsonpath='{.items[0].metadata.name}') -- bash -c "curl -u admin:{{ klovercloud_nexus_default_super_admin_password }} -X PUT \"http://localhost:8081/service/rest/beta/security/users/admin/change-password\"  --header \"Content-Type= text/plain\"  --data-raw admin"
-
 - name: Request to reset admin pass of nexus
-  uri:
-    url: http://{{klovercloud_nexus_ingress_host}}/service/rest/beta/security/users/{{klovercloud_nexus_super_admin}}/change-password
-    method: PUT
-    return_content: yes
-    status_code: 200
-    headers:
-      Content-Type: "text/plain"
-      Authorization: Basic {{ (klovercloud_nexus_default_super_admin_password + ':' + klovercloud_nexus_default_super_admin_password) | b64encode }}"
-    force_basic_auth: yes
-    body: "{{klovercloud_nexus_super_admin_password}}"
+  shell: kubectl -n {{ klovercloud_nexus_namespace }} exec -it $(kubectl -n {{ klovercloud_nexus_namespace }} get pod -l "app={{ klovercloud_nexus_app_label }}" -o jsonpath='{.items[0].metadata.name}') -- bash -c "curl -u admin:{{ klovercloud_nexus_default_super_admin_password }} -X PUT \"http://localhost:{{ klovercloud_nexus_operator_service_port }}/service/rest/beta/security/users/admin/change-password\"  --header \"Content-Type= text/plain\"  --data-raw admin"
+  ignore_errors: yes
 
 # deploy Kafka
 
-- name:  
+- name: deploy Kafka
   shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.4.kafka.yaml;
   when: >
     groups['kube-master'].index(inventory_hostname) == 0   
 
-#jq
 
 - name: wait for pods to come up
   shell: kubectl get pods -n {{ klovercloud_namespace }} -o json
   register: kubectl_get_pods
   until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
 
-- name: 
+- name: sleep 20 seconds
   wait_for:
     timeout: 20
  
