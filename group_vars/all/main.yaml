@@ -554,7 +554,7 @@ klovercloud_database_db_name: klovercloud_database
 ####### Klovercloud dns manager #######
 
 klovercloud_dns_manager_deployment_name: klovercloud-dns-manager
-klovercloud_dns_manager_image: klovercloud/service:klovercloud-dns-manager
+klovercloud_dns_manager_image: klovercloud/service:dns-manager
 
 klovercloud_dns_manager_cpu_request: 200m
 klovercloud_dns_manager_memory_request: 350Mi
@@ -581,7 +581,7 @@ klovercloud_dns_manager_service_target_port: 8080
 ####### Klovercloud log manager #######
 
 klovercloud_log_manager_deployment_name: klovercloud-log-manage
-klovercloud_log_manager_image: klovercloud/service:klovercloud-log-manager
+klovercloud_log_manager_image: klovercloud/service:log-manager
 klovercloud_log_manager_app_label: klovercloud-log-manage
 klovercloud_log_manager_deployment_replica: 1
 
@@ -599,7 +599,7 @@ klovercloud_log_manager_service_target_port: 8086
 ####### Klovercloud metrics #######
 
 klovercloud_metrics_deployment_name: klovercloud-metrics
-klovercloud_metrics_image: klovercloud/service:klovercloud-metrics
+klovercloud_metrics_image: klovercloud/service:metrics
 klovercloud_metrics_app_label: klovercloud-metrics
 klovercloud_metrics_deployment_replica: 1
 
@@ -638,7 +638,7 @@ klovercloud_rook_ceph_object_storage_deployment_name: klovercloud-object-storage
 klovercloud_rook_ceph_object_storage_app_label: klovercloud-object-storage
 klovercloud_rook_ceph_object_storage_deployment_replica: 1
 
-klovercloud_rook_ceph_object_storage_image: klovercloud/service:klovercloud-object-storage
+klovercloud_rook_ceph_object_storage_image: klovercloud/service:object-storage
 
 klovercloud_rook_ceph_object_storage_cpu_request: 200m
 klovercloud_rook_ceph_object_storage_memory_request: 350Mi
