@@ -202,7 +202,7 @@
   k8s_facts:
     name: "{{ klovercloud_zookeeper_deployment_name }}"
     kind: Deployment
-    namespace: {{ klovercloud_namespace }}
+    namespace: "{{ klovercloud_namespace }}"
   register: job_status
   until: job_status.resources[0].status.active != 1
   retries: 10
@@ -213,7 +213,7 @@
   k8s_facts:
     name: "{{ klovercloud_zookeeper_deployment_name }}"
     kind: Deployment
-    namespace: {{ klovercloud_namespace }}
+    namespace: "{{ klovercloud_namespace }}"
   register: job_status
 
 - fail:
