@@ -203,7 +203,7 @@
    definition: "{{ lookup('file', '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.4.kafka.yaml') }}"
    wait: yes
    wait_timeout: 300
-  wait_condition:
+   wait_condition:
     type: Complete
     status: True
 
