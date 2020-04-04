@@ -9,7 +9,7 @@
     groups['kube-master'].index(inventory_hostname) == 0  
 
 
-- name: Copy harbor installation, klovercloud-harbor descriptors
+- name: Copy descriptors
   template: src="{{ item.src }}" dest="{{ item.dest }}"
   with_items:
      - { src: 'step.1.klovercloud-ci.v1.1.0.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.1.klovercloud-ci.v1.1.0.yaml'  } 
