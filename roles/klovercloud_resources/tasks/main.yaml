@@ -204,7 +204,7 @@
     kind: Deployment
     namespace: "{{ klovercloud_namespace }}"
   register: job_status
-  until: job_status.resources[0].status.active != 1
+  until: job_status.items[0].status.active != 1
   retries: 10
   delay: 10
   ignore_errors: yes
@@ -218,7 +218,7 @@
 
 - fail:
     msg: "Job Has Been Failed!"
-  when: job_status.resources[0].status.failed == 1
+  when: job_status.items[0].status.failed == 1
 
 # - name: wait for pods to come up
 #   shell: kubectl get pods -n {{ klovercloud_namespace }} -o json
