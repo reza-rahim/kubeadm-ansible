@@ -74,8 +74,20 @@
 
 # Create secrets
 
-- name: Create secret to pull images from registry
+- name: Create secret to pull images from registry for tekton ns
   shell: kubectl create secret docker-registry  {{ klovercloud_image_pulling_secret }} --docker-server={{ klovercloud_registry_url }} --docker-username={{ klovercloud_registry_username }} --docker-password={{ klovercloud_registry_password }} --docker-email={{ klovercloud_registry_email }} -n {{ klovercloud_ci_namespace }};
+  when: >
+    groups['kube-master'].index(inventory_hostname) == 0   
+  ignore_errors: yes
+
+- name: Create secret to pull images from registry klovercloud ns
+  shell: kubectl create secret docker-registry  {{ klovercloud_image_pulling_secret }} --docker-server={{ klovercloud_registry_url }} --docker-username={{ klovercloud_registry_username }} --docker-password={{ klovercloud_registry_password }} --docker-email={{ klovercloud_registry_email }} -n {{ klovercloud_namespace }};
+  when: >
+    groups['kube-master'].index(inventory_hostname) == 0   
+  ignore_errors: yes
+
+- name: Create secret to pull images from registry klovercloud ns
+  shell: kubectl create secret docker-registry  {{ klovercloud_image_pulling_secret }} --docker-server={{ klovercloud_registry_url }} --docker-username={{ klovercloud_registry_username }} --docker-password={{ klovercloud_registry_password }} --docker-email={{ klovercloud_registry_email }} -n {{ klovercloud_harbor_namespace }};
   when: >
     groups['kube-master'].index(inventory_hostname) == 0   
   ignore_errors: yes
