@@ -40,7 +40,7 @@
 
 
 - name: wait for pods to come up
-  shell:  kubectl get pods -l app={{ klovercloud_ci_app_label }} -n {{ klovercloud_harbor_namespace }} -o json
+  shell:  kubectl get pods -l app={{ klovercloud_ci_app_label }} -n {{ klovercloud_ci_namespace }} -o json
   register: kubectl_get_pods
   until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
   ignore_errors: yes
@@ -50,7 +50,7 @@
     timeout: 20
 
 - name: wait for pods to come up
-  shell:  kubectl get pods -l app={{ klovercloud_ci_app_label }} -n {{ klovercloud_harbor_namespace }} -o json
+  shell:  kubectl get pods -l app={{ klovercloud_ci_app_label }} -n {{ klovercloud_ci_namespace }} -o json
   register: kubectl_get_pods
   until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
   
