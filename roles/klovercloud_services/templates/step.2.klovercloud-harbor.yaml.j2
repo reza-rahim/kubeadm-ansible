@@ -86,6 +86,6 @@ spec:
     - name: http-rest
       port: {{ klovercloud_harbor_service_port }}
       protocol: TCP
-      targetPort: {{ klovercloud_harbor_service_target_ports }}
+      targetPort: {{ klovercloud_harbor_service_target_port }}
   selector:
     app: {{ klovercloud_harbor_deployement_app_label }}

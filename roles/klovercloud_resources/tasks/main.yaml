@@ -156,11 +156,16 @@
   shell: kubectl get pods -n {{ klovercloud_nexus_namespace }} -o json
   register: kubectl_get_pods
   until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
+  ignore_errors: yes
 
 - name: 
   wait_for:
     timeout: 60
 
+- name: wait for pods to come up
+  shell: kubectl get pods -n {{ klovercloud_nexus_namespace }} -o json
+  register: kubectl_get_pods
+  until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
 
 - name:  deploy nexus
   shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.3.1.nexus.yaml;
@@ -172,10 +177,16 @@
   shell: kubectl get pods -n {{ klovercloud_nexus_namespace }} -o json
   register: kubectl_get_pods
   until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
+  ignore_errors: yes
 
 - name: 
   wait_for:
     timeout: 90
+
+- name: wait for pods to come up
+  shell: kubectl get pods -n {{ klovercloud_nexus_namespace }} -o json
+  register: kubectl_get_pods
+  until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
 
 - name: copy admin.password file from pod
   shell: kubectl cp {{klovercloud_nexus_cr}}-0:/nexus-data/admin.password /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/admin.password -n nexus
@@ -243,7 +254,6 @@
   shell: kubectl get pods -n {{ klovercloud_namespace }} -o json
   register: kubectl_get_pods
   until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
-  ignore_errors: yes
   
  
 
