@@ -49,6 +49,10 @@
     klovercloud_rook_ceph_object_storage_secret_key: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
 
 
+- debug:
+    msg: username {{ klovercloud_super_admin_username }} password {{ klovercloud_super_admin_password }}
+
+
 # copy decriptors
 
 - name: Creates /etc/kubernetes/kubeadm directory
@@ -71,6 +75,7 @@
     groups['kube-master'].index(inventory_hostname) == 0  
   register: result
   
+
 
 # Create secrets
 
