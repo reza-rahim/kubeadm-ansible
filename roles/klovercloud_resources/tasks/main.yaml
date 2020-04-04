@@ -192,33 +192,42 @@
 
 # deploy Kafka
 
+# - name: deploy Kafka
+#   shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.4.kafka.yaml;
+#   when: >
+#     groups['kube-master'].index(inventory_hostname) == 0   
+
 - name: deploy Kafka
-  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.4.kafka.yaml;
-  when: >
-    groups['kube-master'].index(inventory_hostname) == 0   
+  k8s:
+   state: present
+   definition: "{{ lookup('file', '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.4.kafka.yaml') }}"
+   wait: yes
+   wait_timeout: 300
+  wait_condition:
+    type: Complete
+    status: True
 
+# - name: Wait Until Job Is Done
+#   k8s_info:
+#     name: "{{ klovercloud_zookeeper_deployment_name }}"
+#     kind: Deployment
+#     namespace: "{{ klovercloud_namespace }}"
+#   register: job_status
+#   until: job_status.items[0].status.active != 1
+#   retries: 10
+#   delay: 10
+#   ignore_errors: yes
 
-- name: Wait Until Job Is Done
-  k8s_info:
-    name: "{{ klovercloud_zookeeper_deployment_name }}"
-    kind: Deployment
-    namespace: "{{ klovercloud_namespace }}"
-  register: job_status
-  until: job_status.items[0].status.active != 1
-  retries: 10
-  delay: 10
-  ignore_errors: yes
+# - name: Get Final Job Status
+#   k8s_info:
+#     name: "{{ klovercloud_zookeeper_deployment_name }}"
+#     kind: Deployment
+#     namespace: "{{ klovercloud_namespace }}"
+#   register: job_status
 
-- name: Get Final Job Status
-  k8s_info:
-    name: "{{ klovercloud_zookeeper_deployment_name }}"
-    kind: Deployment
-    namespace: "{{ klovercloud_namespace }}"
-  register: job_status
-
-- fail:
-    msg: "Job Has Been Failed!"
-  when: job_status.items[0].status.failed == 1
+# - fail:
+#     msg: "Job Has Been Failed!"
+#   when: job_status.items[0].status.failed == 1
 
 # - name: wait for pods to come up
 #   shell: kubectl get pods -n {{ klovercloud_namespace }} -o json
