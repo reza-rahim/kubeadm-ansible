@@ -270,8 +270,8 @@ klovercloud_listener_container_port2: 8081
 klovercloud_listener_service_port: 80
 klovercloud_listener_target_port: 8080
 klovercloud_listener_service_name: klovercloud-listener
-klovercloud_listener_metrics_sevice_port: 80
-klovercloud_listener_metrics_sevice_target_port: 8080
+klovercloud_listener_metrics_sevice_port: 8081
+klovercloud_listener_metrics_sevice_target_port: 8081
 klovercloud_listener_ingress_name: klovercloud-listener
 klovercloud_listener_ingress_host: listener.klovercloud.com
 
