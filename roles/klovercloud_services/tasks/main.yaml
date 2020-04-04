@@ -116,7 +116,7 @@
       Content-Type: "application/json"
     body: "{ \"username\": \"{{ klovercloud_super_admin_username }}\",\"password\": \"{{ klovercloud_super_admin_password }}\"}" 
   register: login_result
-  until: login_result.json.success == true
+  until: login_result.success == true
   retries: 10
   delay: 10
 
