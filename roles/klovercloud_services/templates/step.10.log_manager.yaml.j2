@@ -41,9 +41,9 @@ spec:
         - name: RUN_MODE
           value: "PRODUCTION"
         - name: USER_NAME
-          value: {{ loki_username }}
+          value: "{{ loki_username }}"
         - name: PASSWORD
-          value: {{ loki_password }}
+          value: "{{ loki_password }}"
         - name: LOKI_URL
           value: "https://{{ loki_url }}/"
         - name: LOKIWS_URL

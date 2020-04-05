@@ -41,15 +41,15 @@ spec:
             - name: DATABASE_CONNECTION_STR
               value: "mongodb://{{ klovercloud_mongo_admin_username }}:{{ klovercloud_mongodd_root_password }}@{{ klovercloud_mongodb_service_name }}:{{ klovercloud_mongodb_service_port }}"
             - name: DATABASE_NAME
-              value: {{ klovercloud_rook_ceph_object_storage_db_name }}
+              value: "{{ klovercloud_rook_ceph_object_storage_db_name }}"
             - name: MANAGEMENT_SERVICE_URL
               value: "http://{{ klovercloud_management_service_name }}/"
             - name: OBJECT_STORAGE_ENDPOINT
-              value: {{ klovercloud_rook_ceph_object_storage_end_point }}
+              value: "{{ klovercloud_rook_ceph_object_storage_end_point }}"
             - name: OBJECT_STORAGE_ADMIN_USER_ACCESS_KEY
-              value: {{ klovercloud_rook_ceph_object_storage_access_key }}
+              value: "{{ klovercloud_rook_ceph_object_storage_access_key }}"
             - name: OBJECT_STORAGE_ADMIN_USER_SECRET_KEY
-              value: {{ klovercloud_rook_ceph_object_storage_secret_key }}
+              value: "{{ klovercloud_rook_ceph_object_storage_secret_key }}"
           ports:
             - containerPort: {{ klovercloud_rook_ceph_object_storage_container_port }}
           readinessProbe:

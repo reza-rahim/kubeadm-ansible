@@ -41,21 +41,21 @@ spec:
         - name: RUN_MODE
           value: "PRODUCTION"
         - name: DNS_TECHNOLOGY
-          value: {{ klovercloud_dns_manager_dns_technology }}
+          value: "{{ klovercloud_dns_manager_dns_technology }}"
         - name: SERVER_PORT
           value: {{ klovercloud_dns_manager_server_port }}
         - name: DATABASE_CONNECTION_STRING
           value: "mongodb://{{ klovercloud_mongo_admin_username }}:{{ klovercloud_mongodd_root_password }}@{{ klovercloud_mongodb_service_name }}:{{ klovercloud_mongodb_service_port }}"
         - name: DATABASE_NAME
-          value: {{ klovercloud_dns_manager_database_name }}
+          value: "{{ klovercloud_dns_manager_database_name }}"
         - name: COREDNS_REDIS_HOST
-          value: {{ klovercloud_dns_manager_coredns_redis_host }}
+          value: "{{ klovercloud_dns_manager_coredns_redis_host }}"
         - name: COREDNS_REDIS_PASS
-          value: {{ klovercloud_dns_manager_coredns_redis_pass }}
+          value: "{{ klovercloud_dns_manager_coredns_redis_pass }}"
         - name: AWS_ACCESS_KEY_ID
-          value: {{ klovercloud_dns_manager_aws_access_key_id }}
+          value: "{{ klovercloud_dns_manager_aws_access_key_id }}"
         - name: AWS_SECRET_ACCESS_KEY
-          value: {{ klovercloud_dns_manager_aws_secret_access_key }}
+          value: "{{ klovercloud_dns_manager_aws_secret_access_key }}"
         ports:
         - containerPort: {{ klovercloud_dns_manager_container_port }}
         readinessProbe:

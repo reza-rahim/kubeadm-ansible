@@ -41,7 +41,7 @@ spec:
             - name: DATABASE_CONNECTION_STR
               value: "mongodb://{{ klovercloud_mongo_root_username }}:{{ klovercloud_mongodd_root_password }}@{{ klovercloud_mongodb_service_name }}:{{ klovercloud_mongodb_service_port }}"
             - name: DATABASE_NAME
-              value: {{ klovercloud_database_db_name }}
+              value: "{{ klovercloud_database_db_name }}"
             - name: KAFKA_PRODUCER_BOOTSTRAP_SERVER
               value: "{{ klovercloud_kafka_service_name }}:{{ klovercloud_kafka_service_port }}"
             - name: MANAGEMENT_SERVICE_URL

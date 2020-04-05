@@ -49,19 +49,19 @@ spec:
         - name: DATABASE_CONNECTION_STR
           value: "mongodb://{{ klovercloud_mongo_root_username }}:{{ klovercloud_mongodd_root_password }}@{{ klovercloud_mongodb_service_name }}:{{ klovercloud_mongodb_service_port }}"
         - name: DATABASE_NAME
-          value: {{ klovercloud_monitor_db_name }}
+          value: "{{ klovercloud_monitor_db_name }}"
         - name: KAFKA_BROKER
           value: "{{ klovercloud_kafka_service_name }}:{{ klovercloud_kafka_service_port }}"
         - name: DEPLOYMENT_POD_FEED_KAFKA_TOPIC
-          value: {{ klovercloud_monitor_deployment_pod_feed_kafka_topic }}
+          value: "{{ klovercloud_monitor_deployment_pod_feed_kafka_topic }}"
         - name: DEPLOYMENT_POD_FEED_KAFKA_GROUP_ID
-          value: {{ klovercloud_monitor_deployment_pod_feed_kafka_group_id }}
+          value: "{{ klovercloud_monitor_deployment_pod_feed_kafka_group_id }}"
         - name: DEPLOYMENT_POD_FEED_CLEANUP_TIMEOUT_HOURS
-          value: {{ klovercloud_monitor_deployment_pod_feed_cleanup_timeout_hours }}
+          value: "{{ klovercloud_monitor_deployment_pod_feed_cleanup_timeout_hours }}"
         - name: CLUSTER_AGENT_RESPONSE_KAFKA_TOPIC
-          value: {{ klovercloud_monitor_deployment_cluster_agent_response_kafka_topic }}
+          value: "{{ klovercloud_monitor_deployment_cluster_agent_response_kafka_topic }}"
         - name: CLUSTER_AGENT_RESPONSE_KAFKA_GROUP_ID
-          value: {{ klovercloud_monitor_deployment_cluster_agent_response_kafka_group_id }}
+          value: "{{ klovercloud_monitor_deployment_cluster_agent_response_kafka_group_id }}"
         ports:
         - containerPort: {{ klovercloud_monitor_container_port }}
         readinessProbe:

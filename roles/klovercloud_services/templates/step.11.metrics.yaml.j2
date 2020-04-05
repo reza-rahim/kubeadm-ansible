@@ -41,9 +41,9 @@ spec:
             - name: DATABASE_CONNECTION_STR
               value: "mongodb://{{ klovercloud_mongo_admin_username }}:{{ klovercloud_mongodd_root_password }}@{{ klovercloud_mongodb_service_name }}:{{ klovercloud_mongodb_service_port }}"
             - name: DATABASE_NAME
-              value: {{ klovercloud_metrics_db_name }}
+              value: "{{ klovercloud_metrics_db_name }}"
             - name: PROMETHEUS_BASE_URL
-              value: {{ klovercloud_prometheus_base_url }}
+              value: "{{ klovercloud_prometheus_base_url }}"
           ports:
             - containerPort: {{ klovercloud_metrics_container_port }}
           readinessProbe:
