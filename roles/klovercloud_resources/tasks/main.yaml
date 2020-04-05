@@ -38,8 +38,8 @@
 
 - name: reset variables
   set_fact:
-    klovercloud_super_admin_username: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
-    klovercloud_super_admin_password: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
+   # klovercloud_super_admin_username: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
+   # klovercloud_super_admin_password: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
     klovercloud_harbor_admin_auth_token: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
     klovercloud_harbor_admin_password: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
     klovercloud_harbor_postgresql_password: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
@@ -271,6 +271,8 @@
   shell:  kubectl get pods -l app={{ klovercloud_kafka_app_label }} -n {{ klovercloud_namespace }} -o json
   register: kubectl_get_pods
   until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
+
+
   
  
 

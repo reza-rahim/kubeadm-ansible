@@ -2,7 +2,8 @@
 - hosts: kube-master
   become: yes
   roles:
-     - klovercloud_resources
+  # klovercloud-cluster
+   #  - klovercloud_resources
      - klovercloud_services
 
 

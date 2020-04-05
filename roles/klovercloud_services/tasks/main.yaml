@@ -106,8 +106,9 @@
   ignore_errors: yes
 
 - name: Login to listener service as admin user
+  shell: kubectl -n {{ klovercloud_namespace }} exec -it $(kubectl -n {{ klovercloud_namespace }} get pod -l "app={{ klovercloud_listener_app_label }}" -o jsonpath='{.items[0].metadata.name}') -- bin/sh
   uri:
-    url: http://{{klovercloud_listener_ingress_host}}/api/auth/login
+    url: http://localhost:{{klovercloud_listener_container_port1}}/api/auth/login
     method: POST
     return_content: yes
     status_code: 200
@@ -116,6 +117,24 @@
       Content-Type: "application/json"
     body: "{ \"username\": \"{{ klovercloud_super_admin_username }}\",\"password\": \"{{ klovercloud_super_admin_password }}\"}" 
   register: login_result
+
+- name:
+  debug: 
+    msg: '{{ login_result }}'"
+
+# - name: Login to listener service as admin user
+#   uri:
+#     url: http://{{klovercloud_listener_ingress_host}}/api/auth/login
+#     method: POST
+#     return_content: yes
+#     status_code: 200
+#     body_format: json
+#     headers:
+#       Content-Type: "application/json"
+#     body: "{ \"username\": \"{{ klovercloud_super_admin_username }}\",\"password\": \"{{ klovercloud_super_admin_password }}\"}" 
+#   register: login_result
+
+  
   #until: login_result.token == true
   retries: 10
   delay: 10
