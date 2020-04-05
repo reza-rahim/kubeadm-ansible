@@ -115,7 +115,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: klovercloud-pipeline
+  name: {{ klovercloud_pipeline_service_name }}
   namespace: {{ klovercloud_namespace }}
   labels:
     app: {{ klovercloud_pipeline_app_label }}

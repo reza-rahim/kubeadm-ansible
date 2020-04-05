@@ -43,45 +43,45 @@ spec:
         - name: DEVELOPER_ALIAS
           value: {{ klovercloud_developer_alias }}
         - name: MONGO_SERVER
-          value: {{ klovercloud_mongodb_service_name }}
+          value: "{{ klovercloud_mongodb_service_name }}"
         - name: MONGO_PORT
-          value: {{ klovercloud_mongodb_service_port }}
+          value: "{{ klovercloud_mongodb_service_port }}"
         - name: MONGO_AUTH_DATABASE
-          value: {{ klovercloud_mongo_auth_db_name }}
+          value: "{{ klovercloud_mongo_auth_db_name }}"
         - name: MONGO_USERNAME
-          value: {{ klovercloud_mongo_root_username }}
+          value: "{{ klovercloud_mongo_root_username }}"
         - name: MONGO_PASSWORD
-          value: {{ klovercloud_mongodd_root_password }}
+          value: "{{ klovercloud_mongodd_root_password }}"
         - name: KAFKA_SERVER
-          value: {{ klovercloud_kafka_io_kompose_service }}
+          value: "{{ klovercloud_kafka_io_kompose_service }}"
         - name: KAFKA_PORT
-          value: {{ klovercloud_kafka_service_port }}
+          value: "{{ klovercloud_kafka_service_port }}"
         - name: KLOVERCLOUD_FACADE_SERVICE_NAME
-          value: {{ klovercloud_facade_service_name }}
+          value: "{{ klovercloud_facade_service_name }}"
         - name: KLOVERCLOUD_FACADE_SERVICE_API_ACCESS_TOKEN
-          value: {{ klovercloud_facade_api_access_token }}
+          value: "{{ klovercloud_facade_api_access_token }}"
         - name: CONNECT_TO_KLOVERCLOUD_FACADE_WEB_SOCKET
           value: "false"
         - name: KLOVERCLOUD_PIPELINE_SERVICE_NAME
-          value: "klovercloud-pipeline"
+          value: "{{ klovercloud_pipeline_service_name }}"
         - name: KLOVERCLOUD_LISTENER_SERVICE_NAME
-          value: {{ klovercloud_listener_service_name }}
+          value: "{{ klovercloud_listener_service_name }}"
         - name: KLOVERCLOUD_LISTENER_SERVICE_API_ACCESS_TOKEN
-          value: {{ klovercloud_api_access_token }}
+          value: "{{ klovercloud_api_access_token }}"
         - name: KLOVERCLOUD_OBJECT_STORAGE_SERVICE_NAME
-          value: "klovercloud-object-storage"
+          value: "{{ klovercloud_rook_ceph_object_storage_service_name}} "
         - name: KLOVERCLOUD_HARBOR_SERVICE_NAME
-          value: "klovercloud-harbor"
+          value: "{{ klovercloud_harbor_service_name }}"
         - name: KLOVERCLOUD_CI_SERVICE_NAME
-          value: {{ klovercloud_management_ci_service_name }}
+          value: "{{ klovercloud_management_ci_service_name }}"
         - name: CI_TECHNOLOGY
-          value: {{ klovercloud_ci_tecknology }}
+          value: "{{ klovercloud_ci_tecknology }}"
         - name: CLUSTER_RESOURCE_LIMIT_FACTOR_CPU
-          value: {{ klovercloud_management_cluster_resource_limit_factor_cpu }}
+          value: "{{ klovercloud_management_cluster_resource_limit_factor_cpu }}"
         - name: CLUSTER_RESOURCE_LIMIT_FACTOR_MEMORY
-          value: {{ klovercloud_management_cluster_resource_limit_factor_memory }}
+          value: "{{ klovercloud_management_cluster_resource_limit_factor_memory }}"
         - name: CLUSTER_RESOURCE_LIMIT_FACTOR_STORAGE
-          value: {{ klovercloud_management_cluster_resource_limit_factor_storage }}
+          value: "{{ klovercloud_management_cluster_resource_limit_factor_storage }}"
         ports:
         - containerPort: {{ klovercloud_management_container_port1 }}
         - containerPort: {{ klovercloud_management_container_port2 }}
