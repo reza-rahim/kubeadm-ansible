@@ -43,7 +43,7 @@ spec:
         - name: DNS_TECHNOLOGY
           value: "{{ klovercloud_dns_manager_dns_technology }}"
         - name: SERVER_PORT
-          value: {{ klovercloud_dns_manager_server_port }}
+          value: "{{ klovercloud_dns_manager_server_port }}"
         - name: DATABASE_CONNECTION_STRING
           value: "mongodb://{{ klovercloud_mongo_admin_username }}:{{ klovercloud_mongodd_root_password }}@{{ klovercloud_mongodb_service_name }}:{{ klovercloud_mongodb_service_port }}"
         - name: DATABASE_NAME
