@@ -301,9 +301,9 @@ klovercloud_management_cluster_resource_limit_factor_storage: 0.6
 klovercloud_management_container_port1: 8080
 klovercloud_management_container_port2: 8081
 klovercloud_management_service_port: 80
-klovercloud_management_target_port: 80
-klovercloud_management_metrics_port: 80
-klovercloud_management_metrics_target_port: 80
+klovercloud_management_target_port: 8080
+klovercloud_management_metrics_port: 8081
+klovercloud_management_metrics_target_port: 8081
 klovercloud_management_ci_service_name: klovercloud-ci-internal-kc
 klovercloud_management_ci_external_service_name: klovercloud-ci.tekton.svc.cluster.local
 klovercloud_management_ci_service_port: 80
