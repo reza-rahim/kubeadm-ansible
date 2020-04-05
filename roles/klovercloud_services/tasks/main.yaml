@@ -134,6 +134,9 @@
 #   when: login_result.json.success == true
 
 - debug:
+    msg: api_access_token= {{ api_access_token }}
+
+- debug:
     msg: api_access_token= {{ api_access_token.stdout | from_json }}
 
 - name: reset api_access_token
