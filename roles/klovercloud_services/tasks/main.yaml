@@ -118,9 +118,9 @@
     body: "{ \"username\": \"{{ klovercloud_super_admin_username }}\",\"password\": \"{{ klovercloud_super_admin_password }}\"}" 
   register: login_result
 
-- name:
-  debug: 
-    msg: '{{ login_result }}'"
+
+- debug:
+    msg: logi_result= {{ login_result }}
 
 # - name: Login to listener service as admin user
 #   uri:
