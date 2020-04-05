@@ -111,7 +111,7 @@
 
 
 - debug:
-    msg: logi_result= {{ login_result }}
+    msg: logi_result= {{ login_result}}.token
 
 - name: reset klovercloud_api_access_token
   set_fact:
