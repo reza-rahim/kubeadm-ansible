@@ -106,7 +106,7 @@
   ignore_errors: yes
 
 - name: Login to listener service as admin user
-  shell: kubectl -n {{ klovercloud_namespace }} exec -it $(kubectl -n {{ klovercloud_namespace }} get pod -l "app={{ klovercloud_listener_app_label }}" -o jsonpath='{.items[0].metadata.name}') -- bin/sh -c "curl --location --request POST http://localhost:8080/api/auth/login  --header \"Content-Type: application/json\"  --data-raw '{ \"username\": \"NPHOgToi\", \"password\": \"onhZruhF\" }' "
+  shell: kubectl -n "{{ klovercloud_namespace }}" exec -it $(kubectl -n "{{ klovercloud_namespace }}" get pod -l "app={{ klovercloud_listener_app_label }}" -o jsonpath='{.items[0].metadata.name}') -- bin/sh -c "curl --location --request POST http://localhost:8080/api/auth/login  --header \"Content-Type: application/json\"  --data-raw '{ \"username\": \"NPHOgToi\", \"password\": \"onhZruhF\" }' "
   # uri:
   #   url: http://localhost:{{klovercloud_listener_container_port1}}/api/auth/login
   #   method: POST
