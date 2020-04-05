@@ -115,7 +115,7 @@
 
 - name: reset klovercloud_api_access_token
   set_fact:
-    klovercloud_api_access_token: "{{ login_result.json.token }}"
+    klovercloud_api_access_token: {{ login_result.json.token }}
 
 - debug:
     msg: klovercloud_api_access_token= {{ klovercloud_api_access_token }}
