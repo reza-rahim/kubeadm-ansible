@@ -203,9 +203,13 @@
   shell: kubectl -n {{ klovercloud_namespace }} exec -it $(kubectl -n {{ klovercloud_namespace }} get pod -l "app={{ klovercloud_facade_app_label }}" -o jsonpath='{.items[0].metadata.name}') -- bin/sh -c "curl -X POST 'http://localhost:{{ klovercloud_facade_container_port1 }}/api/user'  -H 'Content-Type:application/json' -H 'x-auth-token:{{ facade_login_result.token }}' -d '{\"firstName\":\"{{ klovercloud_service_firstname }}\",\"lastName\":\"{{ klovercloud_service_lastname }}\",\"username\":\"{{ klovercloud_service_username }}\,\"userType\":\"{{ klovercloud_service_usertype }}\,\"authorities\":[ \"ROLE_AGENT_SERVICE\"]}'"
   register: service_user
 
+- debug:
+    msg: service_user= {{ service_user }}
+  ignore_errors: yes
+
 - name: reset service_user
   set_fact:
-    facade_login_result: "{{ service_user.stdout | from_json }}"
+    service_user: "{{ service_user.stdout | from_json }}"
   ignore_errors: yes
   # uri:
   #   url: http://{{klovercloud_facade_host}}/api/user
