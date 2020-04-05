@@ -195,7 +195,7 @@
 
 
 - debug:
-    msg: facade_login_result= {{ facade_login_result }}
+    msg: facade_login_result= {{ facade_login_result.token }}
   ignore_errors: yes
 
 
