@@ -107,50 +107,33 @@
 
 - name: Login to listener service as admin user
   shell: kubectl -n {{ klovercloud_namespace }} exec -it $(kubectl -n {{ klovercloud_namespace }} get pod -l "app={{ klovercloud_listener_app_label }}" -o jsonpath='{.items[0].metadata.name}') -- bin/sh -c "curl -X POST 'http://localhost:8080/api/auth/login'  -H 'Content-Type:application/json'  -d '{\"username\":\"NPHOgToi\",\"password\":\"onhZruhF\"}'"
-  # uri:
-  #   url: http://localhost:{{klovercloud_listener_container_port1}}/api/auth/login
-  #   method: POST
-  #   return_content: yes
-  #   status_code: 200
-  #   body_format: json
-  #   headers:
-  #     Content-Type: "application/json"
-  #   body: "{ \"username\": \"{{ klovercloud_super_admin_username }}\",\"password\": \"{{ klovercloud_super_admin_password }}\"}" 
   register: login_result
 
 
 - debug:
     msg: logi_result= {{ login_result }}
 
-# - name: Login to listener service as admin user
+
+- name: Create an API Access Token when login request returns token
+  shell: kubectl -n {{ klovercloud_namespace }} exec -it $(kubectl -n {{ klovercloud_namespace }} get pod -l "app={{ klovercloud_listener_app_label }}" -o jsonpath='{.items[0].metadata.name}') -- bin/sh -c "curl -X POST 'http://localhost:8080/api/api-access-token'  -H 'Content-Type:application/json,x-auth-token:{{ login_result }}.json.token'"
+  register: api_access_token
+
+# - name: Create an API Access Token when login request returns token
 #   uri:
-#     url: http://{{klovercloud_listener_ingress_host}}/api/auth/login
+#     url: http://{{klovercloud_listener_ingress_host}}/api/api-access-token
 #     method: POST
 #     return_content: yes
 #     status_code: 200
 #     body_format: json
 #     headers:
 #       Content-Type: "application/json"
-#     body: "{ \"username\": \"{{ klovercloud_super_admin_username }}\",\"password\": \"{{ klovercloud_super_admin_password }}\"}" 
-#   register: login_result
+#       x-auth-token: login_result.json.token
+#   register: api_access_token
+#   when: login_result.json.success == true
 
-  
-  #until: login_result.token == true
-  retries: 10
-  delay: 10
+- debug:
+    msg: api_access_token= {{ api_access_token }}
 
-- name: Create an API Access Token when login request returns token
-  uri:
-    url: http://{{klovercloud_listener_ingress_host}}/api/api-access-token
-    method: POST
-    return_content: yes
-    status_code: 200
-    body_format: json
-    headers:
-      Content-Type: "application/json"
-      x-auth-token: login_result.json.token
-  register: api_access_token
-  when: login_result.json.success == true
 
 - name: reset klovercloud_api_access_token
   set_fact:
