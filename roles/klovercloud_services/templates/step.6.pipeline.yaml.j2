@@ -41,15 +41,15 @@ spec:
 {% endif %}
         env:
         - name: MONGO_SERVER
-          value: {{ klovercloud_mongodb_service_name }}
+          value: "{{ klovercloud_mongodb_service_name }}"
         - name: MONGO_PORT
-          value: {{ klovercloud_mongodb_service_port }}
+          value: "{{ klovercloud_mongodb_service_port }}"
         - name: MONGO_AUTH_DATABASE
-          value: {{ klovercloud_mongo_auth_db_name }}
+          value: "{{ klovercloud_mongo_auth_db_name }}"
         - name: MONGO_USERNAME
-          value: {{ klovercloud_mongo_root_username }}
+          value: "{{ klovercloud_mongo_root_username }}"
         - name: MONGO_PASSWORD
-          value: {{ klovercloud_mongodd_root_password }}
+          value: "{{ klovercloud_mongodd_root_password }}"
         - name: JENKINS_SERVER
           value: "35.239.103.165"
         - name: JENKINS_PORT
@@ -59,33 +59,33 @@ spec:
         - name: JENKINS_TOKEN
           value: "1114011c70ca964a1b6f05ebb16ddae103"
         - name: KAFKA_SERVER
-          value: {{ klovercloud_kafka_service_name }}
+          value: "{{ klovercloud_kafka_service_name }}"
         - name: KAFKA_PORT
-          value: {{ klovercloud_kafka_service_port }}
+          value: "{{ klovercloud_kafka_service_port }}"
         - name: KLOVERCLOUD_FACADE_SERVICE_DOMAIN
-          value: {{ klovercloud_facade_host }}
+          value: "{{ klovercloud_facade_host }}"
         - name: KLOVERCLOUD_FACADE_SERVICE_NAME
-          value: {{ klovercloud_facade_service_name }}
+          value: "{{ klovercloud_facade_service_name }}"
         - name: KLOVERCLOUD_FACADE_SERVICE_API_ACCESS_TOKEN
-          value: {{ klovercloud_facade_api_access_token }}
+          value: "{{ klovercloud_facade_api_access_token }}"
         - name: CONNECT_TO_KLOVERCLOUD_FACADE_WEB_SOCKET
           value: "true"
         - name: KLOVERCLOUD_MANAGEMENT_SERVICE_NAME
-          value: {{ klovercloud_management_service_name }}
+          value: "{{ klovercloud_management_service_name }}"
         - name: KLOVERCLOUD_APP_BUILDER_SERVICE_NAME
           value: "klovercloud-app-builder"
         - name: KLOVERCLOUD_HARBOR_SERVICE_NAME
-          value: "klovercloud-harbor"
+          value: "{{ klovercloud_harbor_service_name }}"
         - name: KLOVERCLOUD_MONITOR_SERVICE_NAME
-          value: "klovercloud-monitor"
+          value: "{{ klovercloud_monitor_service_name }}"
         - name: KLOVERCLOUD_CI_SERVICE_NAME
-          value: {{ klovercloud_management_ci_service_name }}
+          value: "{{ klovercloud_management_ci_service_name }}"
         - name: KLOVERCLOUD_DNS_MANAGER_SERVICE_NAME
-          value: {{ klovercloud_dns_manager_service }}
+          value: "{{ klovercloud_dns_manager_service }}"
         - name: CI_TECHNOLOGY
-          value: {{ klovercloud_ci_tecknology }}
+          value: "{{ klovercloud_ci_tecknology }}"
         - name: DEFAULT_INGRESS_DOMAIN
-          value: {{ klovercloud_default_ingress_domain }}
+          value: "{{ klovercloud_default_ingress_domain }}"
         ports:
         - containerPort: {{ klovercloud_pipeline_container_port1 }}
         - containerPort: {{ klovercloud_pipeline_container_port2 }}
@@ -122,12 +122,12 @@ metadata:
 spec:
   ports:
   - name: http-rest
-    port: 80
+    port: {{ klovercloud_pipeline_service_port }}
     protocol: TCP
-    targetPort: 8080
+    targetPort: {{ klovercloud_pipeline_service_target_port }}
   - name: http-metrics
-    port: 8081
+    port: {{ klovercloud_pipeline_service_metrics_port }}
     protocol: TCP
-    targetPort: 8081
+    targetPort: {{ klovercloud_pipeline_service_metrics_target_port }}
   selector:
     app: {{ klovercloud_pipeline_app_label }}

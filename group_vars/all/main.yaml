@@ -336,6 +336,10 @@ klovercloud_pipeline_replica: 1
 klovercloud_pipeline_deployment_name: klovercloud-pipeline
 klovercloud_pipeline_app_label: klovercloud-pipeline
 klovercloud_pipeline_service_name: klovercloud-pipeline 
+klovercloud_pipeline_service_port: 80
+klovercloud_pipeline_service_target_port: 8080
+klovercloud_pipeline_service_metrics_port: 8081
+klovercloud_pipeline_service_metrics_target_port: 8081
 klovercloud_pipeline_service_internal_name: klovercloud-pipeline-internal-kc
 klovercloud_pipeline_image: klovercloud/service:pipeline
 
