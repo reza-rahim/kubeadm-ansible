@@ -111,7 +111,7 @@
 
 
 - debug:
-    msg: logi_result= login_result.token
+    msg: logi_result=  "{{ hosts_json.login_result.data | map(attribute='token') | select('string')}}"
 
 - name: reset klovercloud_api_access_token
   set_fact:
