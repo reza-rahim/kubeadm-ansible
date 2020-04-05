@@ -193,6 +193,10 @@
     facade_login_result: "{{ facade_login_result.stdout | from_json }}"
   ignore_errors: yes
 
+- name: reset facade_login_result
+  set_fact:
+    facade_login_result: "{{ facade_login_result.stdout | from_json }}"
+  ignore_errors: yes
 
 - debug:
     msg: facade_login_result= {{ facade_login_result.token }}
@@ -214,7 +218,7 @@
 
 
 - name: Request to create a facade Service access token
-  shell: kubectl -n {{ klovercloud_namespace }} exec -it $(kubectl -n {{ klovercloud_namespace }} get pod -l "app={{ klovercloud_facade_app_label }}" -o jsonpath='{.items[0].metadata.name}') -- bin/sh -c "curl -X POST 'http://localhost:{{ klovercloud_facade_container_port1 }}/api/api-access-token'  -H 'Content-Type:application/json' -H 'x-auth-token:{{ facade_login_result.token }}' -d '{\"userId\":\"{{ service_user.data }}\"}'"
+  shell: kubectl -n {{ klovercloud_namespace }} exec -it $(kubectl -n {{ klovercloud_namespace }} get pod -l "app={{ klovercloud_facade_app_label }}" -o jsonpath='{.items[0].metadata.name}') -- bin/sh -c "curl -X POST 'http://localhost:{{ klovercloud_facade_container_port1 }}/api/api-access-token'  -H 'Content-Type:application/json' -H 'x-auth-token:{{ facade_login_result.token }}' -d '{\"userId\":\"5e89c357093eb7000125d730\"}'"
   register: facade_api_access_token
 
 - name: reset facade_api_access_token
