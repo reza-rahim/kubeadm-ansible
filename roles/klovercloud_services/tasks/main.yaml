@@ -113,9 +113,13 @@
 - debug:
     msg: logi_result= {{ login_result }}
 
+- name: reset klovercloud_api_access_token
+  set_fact:
+    klovercloud_api_access_token: login_result.json.data
+
 
 - name: Create an API Access Token when login request returns token
-  shell: kubectl -n {{ klovercloud_namespace }} exec -it $(kubectl -n {{ klovercloud_namespace }} get pod -l "app={{ klovercloud_listener_app_label }}" -o jsonpath='{.items[0].metadata.name}') -- bin/sh -c "curl -X POST 'http://localhost:8080/api/api-access-token'  -H 'Content-Type:application/json' -H 'x-auth-token:{{ login_result }}.json.token'"
+  shell: kubectl -n {{ klovercloud_namespace }} exec -it $(kubectl -n {{ klovercloud_namespace }} get pod -l "app={{ klovercloud_listener_app_label }}" -o jsonpath='{.items[0].metadata.name}') -- bin/sh -c "curl -X POST 'http://localhost:8080/api/api-access-token'  -H 'Content-Type:application/json' -H 'x-auth-token:{{ klovercloud_api_access_token }}'"
   register: api_access_token
 
 # - name: Create an API Access Token when login request returns token
