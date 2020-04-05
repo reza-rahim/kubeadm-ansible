@@ -194,6 +194,11 @@
   ignore_errors: yes
 
 
+- debug:
+    msg: facade_login_result= {{ facade_login_result }}
+  ignore_errors: yes
+
+
 - name: Request to create a Service User using facade login token
   shell: kubectl -n {{ klovercloud_namespace }} exec -it $(kubectl -n {{ klovercloud_namespace }} get pod -l "app={{ klovercloud_facade_app_label }}" -o jsonpath='{.items[0].metadata.name}') -- bin/sh -c "curl -X POST 'http://localhost:{{ klovercloud_facade_container_port1 }}/api/user'  -H 'Content-Type:application/json' -H 'x-auth-token:{{ facade_login_result.token }}' -d '{\"firstName\":\"{{ klovercloud_service_firstname }}\",\"lastName\":\"{{ klovercloud_service_lastname }}\",\"username\":\"{{ klovercloud_service_username }}\,\"userType\":\"{{ klovercloud_service_usertype }}\,\"authorities\":[ \"ROLE_AGENT_SERVICE\"]}'"
   register: service_user
