@@ -1,5 +1,5 @@
-profile: prod
-kube_master_lb: 10.20.0.13
+profile: dev
+kube_master_lb: 62.171.168.77
 
 docker_ce_ubuntu: 18.06.2~ce~3-0~ubuntu
 docker_ce_redhat: 18.09.9
@@ -10,7 +10,7 @@ redhat_k8_version: 1.15.10-0
 
 ##### nginx ingress ########
 nginx_ingress_controller_version: 0.29.0
-nginx_ingress_controller_replicas: 2
+nginx_ingress_controller_replicas: 1
 ingress_hostname: www.klovercloud.io
 nginx_ingress_http_mgmt: 18080
 ingress_limit_cpu: 1000m
@@ -23,12 +23,13 @@ ingress_request_mem: 2Gi
 cortex_endpoint: http://cortex-nginx.cortex.svc.cluster.local:80/api/prom/push
 
 ####### Ceph ######
-ceph_mon: 3
+ceph_mon: 2
 osdsPerDevice: 1 # number of OSD per device 
+#storage_taint: storage
 
 ###### cassandra #######
 cassandra_endpoint:  cassandra.cassandra.svc.cluster.local
-cassandra_replicas: 3
+cassandra_replicas: 1
 cassandra_storage: 5Gi
 cassandra_strorage_class: rook-ceph-block-ec
 cassandra_taint: storage 
@@ -96,13 +97,13 @@ loki_version: v0.4.0
 loki_date: 2017-03-01
 loki_taint: storage
 l_cassandra: cassandra.cassandra.svc.cluster.local
-loki_memcached_frontend_replica: 3
-loki_memcached_index_queries_replica: 3
-loki_memcached_index_writes_replica: 3
+loki_memcached_frontend_replica: 1
+loki_memcached_index_queries_replica: 1
+loki_memcached_index_writes_replica: 1
 loki_ingester_replica: 3
-loki_querier_replica: 3
-loki_distributor_replica: 3
-loki_query-frontend_replica: 2
+loki_querier_replica: 1
+loki_distributor_replica: 1
+loki_query-frontend_replica: 1
 loki_username: loki-admin
 loki_password: Dev@Klover2019!
 loki_url: loki.klovercloud.io
