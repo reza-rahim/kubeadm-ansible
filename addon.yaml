@@ -3,7 +3,7 @@
   become: yes
   roles:
   # klovercloud-cluster
-   #  - klovercloud_resources
+     - klovercloud_resources
      - klovercloud_services
 
 
