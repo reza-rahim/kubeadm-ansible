@@ -96,7 +96,6 @@ loki_version: v0.4.0
 loki_date: 2017-03-01
 loki_taint: storage
 l_cassandra: cassandra.cassandra.svc.cluster.local
-loki_memcached_replica: 3
 loki_memcached_frontend_replica: 3
 loki_memcached_index_queries_replica: 3
 loki_memcached_index_writes_replica: 3
@@ -663,8 +662,54 @@ klovercloud_rook_ceph_object_storage_user_display_name: klovercloud-object-storg
 klovercloud_rook_ceph_object_storage_access_key: abc
 klovercloud_rook_ceph_object_storage_secret_key: abc
 
+
 klovercloud_rook_ceph_object_storage_container_port: 8092
 klovercloud_rook_ceph_object_storage_service_name: klovercloud-object-storage
 klovercloud_rook_ceph_object_storage_service_port: 80
 klovercloud_rook_ceph_object_storage_service_target_port: 8092 
   
+
+####### loki #####
+loki_version: v0.4.0
+loki_date: 2017-03-01
+cortec_chunk_start_day: 2020-03-20
+loki_taint: storage
+loki_cassandra: cassandra.cassandra.svc.cluster.local
+
+loki_memcached_replica: 1
+loki_memcached_index_read_replica: 1
+loki_memcached_index_write_replica: 1
+loki_memcached_limit_cpu: 500m
+loki_memcached_limit_mem: 1Gi
+loki_memcached_req_cpu: 500m
+loki_memcached_req_mem: 1Gi
+
+loki_ingester_replica: 3
+loki_ingester_limit_cpu: 1000m
+loki_ingester_limit_mem: 1Gi
+loki_ingester_req_cpu: 1000m
+loki_ingester_req_mem: 1Gi
+
+loki_distributor_replica: 1
+loki_distributor_limit_cpu: 1000m
+loki_distributor_limit_mem: 1Gi
+loki_distributor_req_cpu: 1000m
+loki_distributor_req_mem: 1Gi
+
+loki_querier_replica: 1
+loki_querier_limit_cpu: 1000m
+loki_querier_limit_mem: 1Gi
+loki_querier_req_cpu: 1000m
+loki_querier_req_mem: 1Gi
+
+loki_query_frontend_replica: 1
+loki_queryfrontend_limit_cpu: 1000m
+loki_queryfrontend_limit_mem: 1Gi
+loki_queryfrontend_req_cpu: 1000m
+loki_queryfrontend_req_mem: 1Gi
+
+loki_nginx_replica: 1
+loki_nginx_limit_cpu: 500m
+loki_nginx_limit_mem: 500Mi
+loki_nginx_req_cpu: 500m
+loki_nginx_req_mem: 500Mi

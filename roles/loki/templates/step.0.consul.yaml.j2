@@ -304,6 +304,23 @@ spec:
               matchLabels:
                 name: consul
             topologyKey: kubernetes.io/hostname
+{% if cortex_taint is defined and profile  == "prod" %}
+
+      tolerations:
+        - effect: NoSchedule
+          key: dedicated
+          operator: Equal
+          value: {{ loki_taint }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: dedicated
+                operator: In
+                values:
+                - {{ loki_taint }}
+ {% endif %}
       containers:
       - args:
         - agent

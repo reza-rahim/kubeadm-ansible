@@ -74,7 +74,7 @@ spec:
         imagePullPolicy: IfNotPresent
         args:
         - -target=querier
-        - -log.level=debug
+        #- -log.level=debug
         - -server.http-listen-port=80
         - -config.file=/etc/cortex/config/config.yaml
         ports:

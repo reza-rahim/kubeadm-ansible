@@ -1,0 +1,50 @@
+---
+
+- name: Creates /etc/kubernetes/kubeadm directory
+  file: path=/etc/kubernetes/kubeadm/loki  recurse=yes state=directory
+  when: >
+    groups['kube-master'].index(inventory_hostname) == 0 
+
+- name: Copy kube config files
+  template: src="{{ item.src }}" dest="{{ item.dest }}"
+  with_items:
+     - { src: 'step.0.consul.yaml.j2', dest: '/etc/kubernetes/kubeadm/loki/step.0.consul.yaml'  }  
+     - { src: 'step.1.memcached.yaml.j2', dest: '/etc/kubernetes/kubeadm/loki/step.1.memcached.yaml'  }  
+     - { src: 'step.2.config.yaml.j2', dest: '/etc/kubernetes/kubeadm/loki/step.2.config.yaml'  }  
+     - { src: 'step.3.table-manager.yaml.j2', dest: '/etc/kubernetes/kubeadm/loki/step.3.table-manager.yaml'  }  
+     - { src: 'step.4.ingester.yaml.j2', dest: '/etc/kubernetes/kubeadm/loki/step.4.ingester.yaml'  }  
+     - { src: 'step.5.querier.yaml.j2', dest: '/etc/kubernetes/kubeadm/loki/step.5.querier.yaml'  }  
+     - { src: 'step.6.distributor.yaml.j2', dest: '/etc/kubernetes/kubeadm/loki/step.6.distributor.yaml'  }  
+     - { src: 'step.7.queryfrontend.yaml.j2', dest: '/etc/kubernetes/kubeadm/loki/step.7.queryfrontend.yaml'  }  
+     - { src: 'step.8.nginx.yaml.j2', dest: '/etc/kubernetes/kubeadm/loki/step.8.nginx.yaml'  }  
+     - { src: 'step.9.grafana-dep.yaml.j2', dest: '/etc/kubernetes/kubeadm/loki/step.9.grafana-dep.yaml'  }  
+  when: >
+    groups['kube-master'].index(inventory_hostname) == 0 
+  register: result
+
+- name:  label and storage loki  box
+  shell: sh /etc/kubernetes/kubeadm/loki/taint.sh;
+  when: >
+    groups['kube-master'].index(inventory_hostname) == 0 
+  ignore_errors: yes
+
+- name:  create loki namespace
+  shell: kubectl create ns loki;
+  when: >
+    groups['kube-master'].index(inventory_hostname) == 0 
+  ignore_errors: yes
+
+- name: create loki 
+  shell: kubectl apply -n loki -f /etc/kubernetes/kubeadm/loki/step.0.consul.yaml; \
+         kubectl apply -n loki -f /etc/kubernetes/kubeadm/loki/step.1.memcached.yaml; \
+         kubectl apply -n loki -f /etc/kubernetes/kubeadm/loki/step.2.config.yaml; \
+         kubectl apply -n loki -f /etc/kubernetes/kubeadm/loki/step.3.table-manager.yaml; \
+         kubectl apply -n loki -f /etc/kubernetes/kubeadm/loki/step.4.ingester.yaml; \
+         kubectl apply -n loki -f /etc/kubernetes/kubeadm/loki/step.5.querier.yaml; \
+         kubectl apply -n loki -f /etc/kubernetes/kubeadm/loki/step.6.distributor.yaml; \
+         kubectl apply -n loki -f /etc/kubernetes/kubeadm/loki/step.7.queryfrontend.yaml; \
+         kubectl apply -n loki -f /etc/kubernetes/kubeadm/loki/step.8.nginx.yaml; \
+         kubectl apply -n loki -f /etc/kubernetes/kubeadm/loki/step.9.grafana-dep.yaml;
+  when: >
+    groups['kube-master'].index(inventory_hostname) == 0 
+  ignore_errors: yes
