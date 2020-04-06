@@ -215,7 +215,7 @@
 
 
 - name: Request to reset admin pass of nexus
-  shell: kubectl -n {{ klovercloud_nexus_namespace }} exec -it $(kubectl -n {{ klovercloud_nexus_namespace }} get pod -l "app={{ klovercloud_nexus_app_label }}" -o jsonpath='{.items[0].metadata.name}') -- bash -c "curl -u admin:{{ klovercloud_nexus_default_super_admin_password }} -X PUT \"http://localhost:{{ klovercloud_nexus_operator_service_port }}/service/rest/beta/security/users/admin/change-password\"  --header \"Content-Type= text/plain\"  --data-raw admin"
+  shell: kubectl -n {{ klovercloud_nexus_namespace }} exec -it $(kubectl -n {{ klovercloud_nexus_namespace }} get pod -l "app={{ klovercloud_nexus_app_label }}" -o jsonpath='{.items[0].metadata.name}') -- bash -c "curl -u admin:{{ klovercloud_nexus_default_super_admin_password }} -X PUT 'http://localhost:{{ klovercloud_nexus_operator_service_port }}/service/rest/beta/security/users/admin/change-password' -H 'Content-Type:text/plain'  --data-raw admin"
   ignore_errors: yes
 
 # deploy Kafka
