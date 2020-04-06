@@ -105,15 +105,30 @@ spec:
         ports:
         - containerPort: 11211
           name: client
-{% if profile  == "prod" %}
+{% if loki_taint is defined and if profile  == "prod" %}
 
         resources:
           limits:
-            cpu: "3"
-            memory: 6Gi
+            cpu: {{ loki_memcached_limit_cpu }}
+            memory: {{ loki_memcached_limit_mem }
           requests:
-            cpu: 500m
-            memory: 5016Mi
+            cpu: {{ loki_memcached_req_cpu }}
+            memory: {{ loki_memcached_req_mem }}
+
+        tolerations:
+        - effect: NoSchedule
+          key: dedicated
+          operator: Equal
+          value: {{ loki_taint }}
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: dedicated
+                  operator: In
+                  values:
+                  - {{ loki_taint }}
  {% endif %}
 
       - args:
@@ -163,15 +178,29 @@ spec:
         - containerPort: 11211
           name: client
 
-{% if profile  == "prod" %}
+{%  if loki_taint is defined and  if profile  == "prod" %}
 
         resources:
           limits:
-            cpu: "3"
-            memory: 1536Mi
+            cpu: {{ loki_memcached_limit_cpu }}
+            memory: {{ loki_memcached_limit_mem }
           requests:
-            cpu: 500m
-            memory: 1329Mi
+            cpu: {{ loki_memcached_req_cpu }}
+            memory: {{ loki_memcached_req_mem }}
+        tolerations:
+        - effect: NoSchedule
+          key: dedicated
+          operator: Equal
+          value: {{ loki_taint }}
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: dedicated
+                  operator: In
+                  values:
+                  - {{ loki_taint }}
  {% endif %}
 
       - args:
@@ -221,15 +250,29 @@ spec:
         - containerPort: 11211
           name: client
 
-{% if profile  == "prod" %}
+{%  if loki_taint is defined and if profile  == "prod" %}
 
         resources:
           limits:
-            cpu: "3"
-            memory: 1536Mi
+            cpu: {{ loki_memcached_limit_cpu }}
+            memory: {{ loki_memcached_limit_mem }
           requests:
-            cpu: 500m
-            memory: 1329Mi
+            cpu: {{ loki_memcached_req_cpu }}
+            memory: {{ loki_memcached_req_mem }}
+        tolerations:
+        - effect: NoSchedule
+          key: dedicated
+          operator: Equal
+          value: {{ loki_taint }}
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: dedicated
+                  operator: In
+                  values:
+                  - {{ loki_taint }}
  {% endif %}
 
       - args:
@@ -278,17 +321,31 @@ spec:
         ports:
         - containerPort: 11211
           name: client
-{% if profile  == "prod" %}
+
+{% if loki_taint is defined and if profile  == "prod" %}
 
         resources:
           limits:
-            cpu: "3"
-            memory: 1536Mi
+            cpu: {{ loki_memcached_limit_cpu }}
+            memory: {{ loki_memcached_limit_mem }
           requests:
-            cpu: 500m
-            memory: 1329Mi
-
-{% endif %}
+            cpu: {{ loki_memcached_req_cpu }}
+            memory: {{ loki_memcached_req_mem }}
+        tolerations:
+        - effect: NoSchedule
+          key: dedicated
+          operator: Equal
+          value: {{ loki_taint }}
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: dedicated
+                  operator: In
+                  values:
+                  - {{ loki_taint }}
+ {% endif %}
 
       - args:
         - --memcached.address=localhost:11211

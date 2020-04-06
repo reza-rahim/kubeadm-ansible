@@ -2,11 +2,11 @@
 - hosts: kube-master
   become: yes
   roles:
-     #- nginx-ingress
+     - nginx-ingress
      #- storage
      #- monitoring
      #- cassandra
-     - cortex
+     #- cortex
      #- loki
      #- klovercloud
 
