@@ -12,6 +12,15 @@
     groups['kube-master'].index(inventory_hostname) == 0 and
     command_result.rc != 0
 
+- name: Check if bridge-nf-call-iptables exists
+  stat: 
+    path: "/proc/sys/net/bridge/bridge-nf-call-iptables"
+  register: set_bridge
+
+- name: Change bridge-nf-call-iptables value to 1 if 0
+  command: "echo 1 > /proc/sys/net/bridge/bridge-nf-call-iptables"
+  when: set_bridge.stat.exists == true
+
 - name: Copy kube config files
   template: src="{{ item.src }}" dest="{{ item.dest }}"
   with_items:

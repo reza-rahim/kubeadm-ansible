@@ -35,9 +35,11 @@
 - name: Disable SELinux
   selinux:
     state: disabled
+  ignore_errors: yes
 
 - name: Disable SELinux
   shell: setenforce 0
+  ignore_errors: yes
 
 - name: ansible create docker.service.d
   file:
