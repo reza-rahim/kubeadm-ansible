@@ -61,7 +61,7 @@ spec:
         - name: IS_K8
           value: "True"
         - name: DATABASE_CONNECTION_STR
-          value: {{ klovercloud_ci_db_connection_str }}
+          value: "mongodb://{{ klovercloud_mongo_root_username }}:{{ klovercloud_mongodb_root_password }}@mongodb-internal-kc:{{ klovercloud_mongodb_service_port }}"
         - name: DATABASE_NAME
           value: {{ klovercloud_ci_db_name }}
         - name: WEBSOCKET_SERVER_URL

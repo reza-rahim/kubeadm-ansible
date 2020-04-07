@@ -201,7 +201,7 @@ klovercloud_mongodb_metrics_node_port: 32206
 klovercloud_mongodb_image: docker.io/bitnami/mongodb:4.2.3-debian-10-r31
 klovercloud_mongodb_exporter_image: docker.io/bitnami/mongodb-exporter:0.10.0-debian-10-r27
 klovercloud_mongodb_replica_set_key: admin123
-klovercloud_mongodd_root_password: admin123
+klovercloud_mongodb_root_password: admin123
 klovercloud_mongo_auth_db_name: admin
 klovercloud_mongo_root_username: root
 klovercloud_mongo_admin_username: mongoAdmin

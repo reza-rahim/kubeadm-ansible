@@ -25,7 +25,7 @@ spec:
       containers:
       - name: {{ klovercloud_log_manager_deployment_name }}
         imagePullPolicy: Always
-        image: klovercloud_log_manager_image
+        image: {{ klovercloud_log_manager_image }}
 {% if profile  == "prod" %}
         resources:
           requests:

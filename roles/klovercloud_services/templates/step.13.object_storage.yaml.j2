@@ -39,7 +39,7 @@ spec:
             - name: RUN_MODE
               value: "PRODUCTION"
             - name: DATABASE_CONNECTION_STR
-              value: "mongodb://{{ klovercloud_mongo_admin_username }}:{{ klovercloud_mongodd_root_password }}@{{ klovercloud_mongodb_service_name }}:{{ klovercloud_mongodb_service_port }}"
+              value: "mongodb://{{ klovercloud_mongo_root_username }}:{{ klovercloud_mongodb_root_password }}@{{ klovercloud_mongodb_service_name }}:{{ klovercloud_mongodb_service_port }}"
             - name: DATABASE_NAME
               value: "{{ klovercloud_rook_ceph_object_storage_db_name }}"
             - name: MANAGEMENT_SERVICE_URL
@@ -65,7 +65,7 @@ spec:
             initialDelaySeconds: 30
             periodSeconds: 10
       imagePullSecrets:
-        - name: regcred-harbor
+        - name: {{ klovercloud_image_pulling_secret }}
 
 
 ---
