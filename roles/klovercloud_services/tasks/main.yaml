@@ -1,5 +1,23 @@
 ---
 
+# reset facts values
+
+- name: reset variables
+  set_fact:
+    klovercloud_super_admin_password: "{{ lookup('file', '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/klovercloud_super_admin_password.txt') }}"
+    klovercloud_harbor_admin_auth_token: "{{ lookup('file', '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/klovercloud_harbor_admin_auth_token.txt') }}"
+    klovercloud_harbor_admin_password: "{{ lookup('file', '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/klovercloud_harbor_admin_password.txt') }}"
+    klovercloud_harbor_postgresql_password: "{{ lookup('file', '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/klovercloud_harbor_postgresql_password.txt') }}"
+    klovercloud_harbor_clair_db_password: "{{ lookup('file', '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/klovercloud_harbor_clair_db_password.txt') }}"
+    klovercloud_rook_ceph_object_storage_user_id: "{{ lookup('file', '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/klovercloud_rook_ceph_object_storage_user_id.txt') }}"
+    klovercloud_rook_ceph_object_storage_access_key: "{{ lookup('file', '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/klovercloud_rook_ceph_object_storage_access_key.txt') }}"
+    klovercloud_rook_ceph_object_storage_secret_key: "{{ lookup('file', '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/klovercloud_rook_ceph_object_storage_secret_key.txt') }}"
+   
+  
+- debug:
+    msg: username {{ klovercloud_super_admin_username }} password {{ klovercloud_super_admin_password }}
+
+
 
 # copy decriptors
 
@@ -47,6 +65,10 @@
   until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
   ignore_errors: yes
 
+- name: wait for pods to get ready
+  shell: kubectl wait --for=condition=ready -l "app={{ klovercloud_harbor_deployement_app_label }}" -n {{ klovercloud_namespace }}
+  register: kubectl_get_pods
+
 # deploy listener
 
 - name:  
@@ -70,6 +92,10 @@
   register: kubectl_get_pods
   until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
   ignore_errors: yes
+
+- name: wait for pods to get ready
+  shell: kubectl wait --for=condition=ready -l "app={{ klovercloud_listener_app_label }}" -n {{ klovercloud_namespace }}
+  register: kubectl_get_pods
 
 - name: Login to listener service as admin user
   shell: kubectl -n {{ klovercloud_namespace }} exec -it $(kubectl -n {{ klovercloud_namespace }} get pod -l "app={{ klovercloud_listener_app_label }}" -o jsonpath='{.items[0].metadata.name}') -- bin/sh -c "curl -X POST 'http://localhost:{{ klovercloud_listener_container_port1 }}/api/auth/login'  -H 'Content-Type:application/json'  -d '{\"username\":\"{{ klovercloud_super_admin_username }}\",\"password\":\"{{ klovercloud_super_admin_password }}\"}'"
@@ -105,6 +131,10 @@
   ignore_errors: yes
   # when: api_access_token.json.success == true
 
+- copy:
+    content: "{{ klovercloud_api_access_token }}"
+    dest: "/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/klovercloud_api_access_token.txt"
+    force: yes
 
 - debug:
     msg: klovercloud_api_access_token= {{ klovercloud_api_access_token }}
@@ -112,6 +142,11 @@
 
 
 # deploy management
+
+- name: reset variables
+  set_fact:
+    klovercloud_api_access_token: "{{ lookup('file', '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/klovercloud_api_access_token.txt') }}"
+    
 
 - name:  
   shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.4.management.yaml;
@@ -127,12 +162,17 @@
   wait_for:
     timeout: 60
 
-
+- name: wait for pods to get ready
+  shell: kubectl wait --for=condition=ready -l "app={{ klovercloud_management_app_label }}" -n {{ klovercloud_namespace }}
+  register: kubectl_get_pods
 
 
 # deploy facade
 
-
+- name: reset variables
+  set_fact:
+    klovercloud_api_access_token: "{{ lookup('file', '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/klovercloud_api_access_token.txt') }}"
+    
 
 - name: Copy descriptors
   template: src="{{ item.src }}" dest="{{ item.dest }}"
@@ -165,6 +205,10 @@
   register: kubectl_get_pods
   until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
   ignore_errors: yes
+
+- name: wait for pods to get ready
+  shell: kubectl wait --for=condition=ready -l "app={{ klovercloud_facade_app_label }}" -n {{ klovercloud_namespace }}
+  register: kubectl_get_pods
 
 - name: Login to facade service as super admin user
   shell: kubectl -n {{ klovercloud_namespace }} exec -it $(kubectl -n {{ klovercloud_namespace }} get pod -l "app={{ klovercloud_facade_app_label }}" -o jsonpath='{.items[0].metadata.name}') -- bin/sh -c "curl -X POST 'http://localhost:{{ klovercloud_facade_container_port1 }}/api/auth/login'  -H 'Content-Type:application/json'  -d '{\"username\":\"{{ klovercloud_super_admin_username }}\",\"password\":\"{{ klovercloud_super_admin_password }}\"}'"
@@ -215,6 +259,15 @@
 - name: reset klovercloud_facade_api_access_token
   set_fact:
     klovercloud_facade_api_access_token: "{{ facade_api_access_token.data }}"
+
+- copy:
+    content: "{{ klovercloud_facade_api_access_token }}"
+    dest: "/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/klovercloud_facade_api_access_token.txt"
+    force: yes
+
+- name: reset variables
+  set_fact:
+    klovercloud_facade_api_access_token: "{{ lookup('file', '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/klovercloud_facade_api_access_token.txt') }}"
   
 - name: Copy descriptors
   template: src="{{ item.src }}" dest="{{ item.dest }}"
@@ -231,6 +284,8 @@
   when: >
     groups['kube-master'].index(inventory_hostname) == 0  
   register: result
+
+
 
 
 # deploy pipeline

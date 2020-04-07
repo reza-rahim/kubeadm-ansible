@@ -34,21 +34,64 @@
     groups['kube-master'].index(inventory_hostname) == 0 
   ignore_errors: yes
 
-# reset facts
+  # Re-generate passwrds and tokens
+
+- copy:
+    content: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
+    dest: "/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/klovercloud_super_admin_password.txt"
+    force: no
+
+- copy:
+    content: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
+    dest: "/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/klovercloud_harbor_admin_auth_token.txt"
+    force: no
+
+- copy:
+    content: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
+    dest: "/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/klovercloud_harbor_admin_password.txt"
+    force: no
+
+- copy:
+    content: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
+    dest: "/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/klovercloud_harbor_postgresql_password.txt"
+    force: no
+
+- copy:
+    content: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
+    dest: "/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/klovercloud_harbor_clair_db_password.txt"
+    force: no
+
+- copy:
+    content: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
+    dest: "/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/klovercloud_rook_ceph_object_storage_user_id.txt"
+    force: no
+
+- copy:
+    content: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
+    dest: "/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/klovercloud_rook_ceph_object_storage_access_key.txt"
+    force: no
+
+- copy:
+    content: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
+    dest: "/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/klovercloud_rook_ceph_object_storage_secret_key.txt"
+    force: no
+
+
+
+# reset facts values
 
 - name: reset variables
   set_fact:
-   # klovercloud_super_admin_username: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
-   # klovercloud_super_admin_password: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
-    klovercloud_harbor_admin_auth_token: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
-    klovercloud_harbor_admin_password: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
-    klovercloud_harbor_postgresql_password: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
-    klovercloud_harbor_clair_db_password: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
-    klovercloud_rook_ceph_object_storage_user_id: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
-    klovercloud_rook_ceph_object_storage_access_key: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
-    klovercloud_rook_ceph_object_storage_secret_key: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
-
-
+    klovercloud_super_admin_password: "{{ lookup('file', '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/klovercloud_super_admin_password.txt') }}"
+    klovercloud_harbor_admin_auth_token: "{{ lookup('file', '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/klovercloud_harbor_admin_auth_token.txt') }}"
+    klovercloud_harbor_admin_password: "{{ lookup('file', '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/klovercloud_harbor_admin_password.txt') }}"
+    klovercloud_harbor_postgresql_password: "{{ lookup('file', '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/klovercloud_harbor_postgresql_password.txt') }}"
+    klovercloud_harbor_clair_db_password: "{{ lookup('file', '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/klovercloud_harbor_clair_db_password.txt') }}"
+    klovercloud_rook_ceph_object_storage_user_id: "{{ lookup('file', '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/klovercloud_rook_ceph_object_storage_user_id.txt') }}"
+    klovercloud_rook_ceph_object_storage_access_key: "{{ lookup('file', '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/klovercloud_rook_ceph_object_storage_access_key.txt') }}"
+    klovercloud_rook_ceph_object_storage_secret_key: "{{ lookup('file', '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/klovercloud_rook_ceph_object_storage_secret_key.txt') }}"
+   
+  
 - debug:
     msg: username {{ klovercloud_super_admin_username }} password {{ klovercloud_super_admin_password }}
 
@@ -179,10 +222,9 @@
   wait_for:
     timeout: 60
 
-- name: wait for pods to come up
-  shell: kubectl get pods -n {{ klovercloud_nexus_namespace }} -o json
+- name: wait for pods to get ready
+  shell: kubectl wait --for=condition=ready -l "name={{ klovercloud_nexus_operator_name }}" -n {{ klovercloud_nexus_namespace }}
   register: kubectl_get_pods
-  until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
 
 - name:  deploy nexus
   shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.3.1.nexus.yaml;

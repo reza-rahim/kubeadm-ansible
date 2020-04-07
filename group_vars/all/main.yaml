@@ -356,7 +356,7 @@ klovercloud_pipeline_container_port2: 8081
 klovercloud_harbor_namespace: harbor
 klovercloud_harbor_cert_issuer_name: letsencrypt-prod
 klovercloud_harbor_cert_issuer_email: user@klovercloud.com
-klovercloud_harbor_admin: admin
+klovercloud_harbor_admin: klovercloud
 klovercloud_harbor_admin_password: Dev@Klover2019!
 klovercloud_harbor_postgresql_password: Dev@Klover2019!
 klovercloud_harbor_clair_db_password: Dev@Klover2019!
