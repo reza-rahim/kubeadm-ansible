@@ -12,19 +12,9 @@
 - name: Copy descriptors
   template: src="{{ item.src }}" dest="{{ item.dest }}"
   with_items:
-     - { src: 'step.1.klovercloud-ci.v1.1.0.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.1.klovercloud-ci.v1.1.0.yaml'  } 
      - { src: 'step.2.klovercloud-harbor.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.2.klovercloud-harbor.yaml'  } 
      - { src: 'step.3.listener.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.3.listener.yaml'  } 
      - { src: 'step.4.management.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.4.management.yaml'  } 
-     - { src: 'step.5.facade.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.5.facade.yaml'  } 
-     - { src: 'step.6.pipeline.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.6.pipeline.yaml'  } 
-     - { src: 'step.7.monitor.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.7.monitor.yaml'  } 
-     - { src: 'step.8.klovercloud-database.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.8.klovercloud-database.yaml'  } 
-     - { src: 'step.9.dns_manager.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.9.dns_manager.yaml'  }
-     - { src: 'step.10.log_manager.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.10.log_manager.yaml'  }
-     - { src: 'step.11.metrics.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.11.metrics.yaml'  } 
-     - { src: 'step.12.my_store.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.12.my_store.yaml'  } 
-     - { src: 'step.13.object_storage.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.13.object_storage.yaml'  } 
   when: >
     groups['kube-master'].index(inventory_hostname) == 0  
   register: result
@@ -137,7 +127,21 @@
   wait_for:
     timeout: 10
 
+
+
+
 # deploy facade
+
+
+
+- name: Copy descriptors
+  template: src="{{ item.src }}" dest="{{ item.dest }}"
+  with_items:
+      - { src: 'step.5.facade.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.5.facade.yaml'  } 
+  when: >
+    groups['kube-master'].index(inventory_hostname) == 0  
+  register: result
+
 
 
 - name:  
@@ -154,7 +158,7 @@
 
 - name: 
   wait_for:
-    timeout: 10
+    timeout: 300
 
 - name: wait for pods to come up
   shell: kubectl get pods -l app={{ klovercloud_facade_app_label }} -n {{ klovercloud_namespace }} -o json
@@ -212,7 +216,21 @@
   set_fact:
     klovercloud_facade_api_access_token: facade_api_access_token.data
   
-  
+- name: Copy descriptors
+  template: src="{{ item.src }}" dest="{{ item.dest }}"
+  with_items:
+     - { src: 'step.1.klovercloud-ci.v1.1.0.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.1.klovercloud-ci.v1.1.0.yaml'  } 
+     - { src: 'step.6.pipeline.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.6.pipeline.yaml'  } 
+     - { src: 'step.7.monitor.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.7.monitor.yaml'  } 
+     - { src: 'step.8.klovercloud-database.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.8.klovercloud-database.yaml'  } 
+     - { src: 'step.9.dns_manager.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.9.dns_manager.yaml'  }
+     - { src: 'step.10.log_manager.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.10.log_manager.yaml'  }
+     - { src: 'step.11.metrics.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.11.metrics.yaml'  } 
+     - { src: 'step.12.my_store.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.12.my_store.yaml'  } 
+     - { src: 'step.13.object_storage.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.13.object_storage.yaml'  } 
+  when: >
+    groups['kube-master'].index(inventory_hostname) == 0  
+  register: result
 
 
 # deploy pipeline
