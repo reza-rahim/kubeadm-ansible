@@ -109,6 +109,8 @@
 - debug:
     msg: klovercloud_api_access_token= {{ klovercloud_api_access_token }}
   ignore_errors: yes
+
+
 # deploy management
 
 - name:  
@@ -123,7 +125,7 @@
 
 - name: 
   wait_for:
-    timeout: 10
+    timeout: 60
 
 
 
