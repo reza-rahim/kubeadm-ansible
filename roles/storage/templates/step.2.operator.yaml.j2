@@ -64,6 +64,8 @@ spec:
         app: rook-ceph-operator
     spec:
       serviceAccountName: rook-ceph-system
+{% if storage_taint is defined and profile  == "prod" %}
+
       tolerations:
         - effect: NoSchedule
           key: dedicated
@@ -78,6 +80,8 @@ spec:
                 operator: In
                 values:
                 - storage
+{% endif %}
+
       containers:
       - name: rook-ceph-operator
         image: rook/ceph:master

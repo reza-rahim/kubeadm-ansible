@@ -3,6 +3,13 @@
   become: yes
   roles:
   # klovercloud-cluster
-     - klovercloud_resources
-     - klovercloud_services
+     #- nginx-ingress
+     - storage
+     #- monitoring
+     #- cassandra
+     #- cortex
+     #- loki
+     #- klovercloud
+     #- klovercloud_resources
+     #- klovercloud_services
 
