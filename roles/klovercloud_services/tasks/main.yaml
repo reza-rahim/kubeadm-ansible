@@ -19,8 +19,6 @@
     groups['kube-master'].index(inventory_hostname) == 0  
   register: result
 
-
-
   
 
 
@@ -214,7 +212,7 @@
 
 - name: reset klovercloud_facade_api_access_token
   set_fact:
-    klovercloud_facade_api_access_token: facade_api_access_token.data
+    klovercloud_facade_api_access_token: "{{ facade_api_access_token.data }}"
   
 - name: Copy descriptors
   template: src="{{ item.src }}" dest="{{ item.dest }}"
