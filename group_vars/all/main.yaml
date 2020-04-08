@@ -669,6 +669,15 @@ klovercloud_rook_ceph_object_storage_service_name: klovercloud-object-storage
 klovercloud_rook_ceph_object_storage_service_port: 80
 klovercloud_rook_ceph_object_storage_service_target_port: 8092 
   
+####### radosgw-exporter #####
+
+radosgw_exporter_deployment_name: radosgw-exporter
+radosgw_exporter_deployment_replica: 1
+radosgw_exporter_image: shaekhhasan/radosgw_usage_exporter:latest
+radosgw_exporter_app_label: radosgw
+radosgw_exporter_container_port: 9242
+
+
 
 ####### loki #####
 loki_version: v0.4.0

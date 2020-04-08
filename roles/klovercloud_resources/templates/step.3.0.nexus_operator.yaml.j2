@@ -79,7 +79,7 @@ rules:
   - update
   - watch
 - apiGroups:
-  - monitoring.coreos.com
+  - monitoring.coreos.io
   resources:
   - servicemonitors
   verbs:
@@ -107,7 +107,7 @@ rules:
   verbs:
   - get
 - apiGroups:
-  - app.klovercloud.com
+  - app.klovercloud.io
   resources:
   - '*'
   verbs:
@@ -184,10 +184,10 @@ spec:
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
-  name: nexus.app.klovercloud.com
+  name: nexus.app.klovercloud.io
   namespace: {{ klovercloud_nexus_namespace }}  
 spec:
-  group: app.klovercloud.com
+  group: app.klovercloud.io
   names:
     kind: Nexus
     listKind: NexusList

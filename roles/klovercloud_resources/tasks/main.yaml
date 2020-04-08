@@ -103,6 +103,7 @@
   when: >
     groups['kube-master'].index(inventory_hostname) == 0  
 
+# temp=$(kubectl get secret regcred-dh -n tekton -o json | jq -r '.data.".dockerconfigjson"' )
 
 - name: Copy descriptors
   template: src="{{ item.src }}" dest="{{ item.dest }}"
@@ -114,6 +115,7 @@
      - { src: 'step.3.0.nexus_operator.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.3.0.nexus_operator.yaml'  } 
      - { src: 'step.3.1.nexus.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.3.1.nexus.yaml'  } 
      - { src: 'step.4.kafka.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.4.kafka.yaml'  } 
+     - { src: 'step.5.radosgw_exporter.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.5.radosgw_exporter.yaml'  } 
   when: >
     groups['kube-master'].index(inventory_hostname) == 0  
   register: result
@@ -315,9 +317,12 @@
   until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
 
 
-  
+# deploy radosgw exporter
+
  
-
-
+- name: deploy radosgw exporter
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.5.radosgw_exporter.yaml;
+  when: >
+    groups['kube-master'].index(inventory_hostname) == 0   
 
 
