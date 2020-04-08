@@ -4,12 +4,12 @@
   roles:
   # klovercloud-cluster
      #- nginx-ingress
-     - storage
+     #- storage
      #- monitoring
      #- cassandra
      #- cortex
      #- loki
      #- klovercloud
      #- klovercloud_resources
-     #- klovercloud_services
+     - klovercloud_services
 

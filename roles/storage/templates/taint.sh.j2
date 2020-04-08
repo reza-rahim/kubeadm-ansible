@@ -6,8 +6,8 @@
 {% for host in groups['kube-storage'] %} kubectl taint nodes {{ host }} dedicated={{ storage_taint }}:NoSchedule ;  {% endfor %}
 {% endmacro -%}
 
-{{ label() }} 
 
 {% if profile  == "prod" %}
+  {{ label() }} 
   {{ taint() }}
 {% endif %}
