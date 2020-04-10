@@ -1,5 +1,5 @@
 profile: prod
-kube_master_lb: 10.20.0.13
+kube_master_lb: 10.20.0.10
 
 docker_ce_ubuntu: 18.06.2~ce~3-0~ubuntu
 docker_ce_redhat: 18.09.9
@@ -33,7 +33,6 @@ cassandra_storage: 5Gi
 cassandra_strorage_class: rook-ceph-block-ec
 cassandra_taint: storage 
 cassandra_password: admin1234
-cassandra_taint: storage
 cassandra_limit_cpu: 1000m
 cassandra_limit_mem: 500Mi
 cassandra_request_cpu: 1000m
@@ -45,7 +44,7 @@ cassandra_heap_newsize: 100M
 ####### cortex #####
 cortex_version: v0.4.0
 cortex_date: 2017-03-01
-cortec_chunk_start_day: 2020-03-20
+cortex_chunk_start_day: 2020-03-20
 cortex_taint: storage
 cortex_cassandra: cassandra.cassandra.svc.cluster.local
 
@@ -56,7 +55,6 @@ cortex_memcached_limit_cpu: 500m
 cortex_memcached_limit_mem: 1Gi
 cortex_memcached_req_cpu: 500m
 cortex_memcached_req_mem: 1Gi 
-cortex_memcached_limit_cpu: 500m
 
 cortex_ingester_replica: 3
 cortex_ingester_limit_cpu: 1000m
@@ -92,24 +90,12 @@ cortex_nginx_req_mem: 500Mi
 
 cortex_nginx: 1
 
-####### Loki  ######
-loki_version: v0.4.0
-loki_date: 2017-03-01
-loki_taint: storage
-l_cassandra: cassandra.cassandra.svc.cluster.local
-loki_memcached_frontend_replica: 3
-loki_memcached_index_queries_replica: 3
-loki_memcached_index_writes_replica: 3
-loki_ingester_replica: 3
-loki_querier_replica: 3
-loki_distributor_replica: 3
-loki_query-frontend_replica: 2
 
 
 ####### loki #####
 loki_version: v0.4.0
 loki_date: 2017-03-01
-cortec_chunk_start_day: 2020-03-20
+loki_chunk_start_day: 2020-03-20
 loki_taint: storage
 loki_cassandra: cassandra.cassandra.svc.cluster.local
 

@@ -1,5 +1,5 @@
 #!/bin/bash
-export kube_master=$(cat inventory.ini | grep -A1 '\[kube-master\]' | grep -v '\[kube-master\]')
+export kube_master=$(cat inventory.ini | grep -A1 '\[kube_master\]' | grep -v '\[kube_master\]')
 
 mkdir -p /var/klovercloud.com/cache  
 mount -t tmpfs -o size=1M,mode=0755 tmpfs /var/klovercloud.com/cache
