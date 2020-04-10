@@ -1,5 +1,13 @@
 ## kubeadm-ansible
 
+####
+```bash
+#install ansible
+
+yum remove   ansible-2.9.6-1.el7  
+
+```
+
 #### SSH passwordless 
 ```bash
 ssh-keygen -t rsa -N ''
