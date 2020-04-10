@@ -23,7 +23,7 @@ EOF
 #### lookback device 
 ```bash
 
-dd if=/dev/zero of=/root/virtual_hard_drive.bin bs=1M count=10
+dd if=/dev/zero of=/root/virtual_hard_drive.bin bs=5GB count=1
 mknod /dev/sdb b 7 500
 losetup /dev/sdb /root/virtual_hard_drive.bin 
 
