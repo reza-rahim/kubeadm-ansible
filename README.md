@@ -27,6 +27,7 @@ yum --showduplicates list kubeadm
 ```
 
 ```bash
+## ceph
 https://github.com/rook/rook.github.io/blob/master/docs/rook/master/ceph-quickstart.md#deploy-the-rook-operator
 ```
 ### helm
