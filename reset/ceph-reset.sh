@@ -13,3 +13,10 @@ ssh kube-master-0 kubectl delete namespace rook-ceph
 ssh skube-storage-0 'bash -c "rm -rf /var/lib/rook; sgdisk --zap-all /dev/sdb;  sgdisk --zap-all /dev/sdc;  ls /dev/mapper/ceph-* | xargs -I% -- dmsetup remove %; rm -rf /dev/ceph-*";  rm -rf /var/lib/rook;'
 ssh skube-storage-1 'bash -c "rm -rf /var/lib/rook; sgdisk --zap-all /dev/sdb;  sgdisk --zap-all /dev/sdc;  ls /dev/mapper/ceph-* | xargs -I% -- dmsetup remove %; rm -rf /dev/ceph-*"; rm -rf /var/lib/rook;'
 ssh skube-storage-2 'bash -c "rm -rf /var/lib/rook; sgdisk --zap-all /dev/sdb;  sgdisk --zap-all /dev/sdc;  ls /dev/mapper/ceph-* | xargs -I% -- dmsetup remove %; rm -rf /dev/ceph-*"; rm -rf /var/lib/rook;'
+
+
+##  yum install jq
+##  kubectl get ns rook-ceph -o json | jq '.spec.finalizers=[]' > ns-without-finalizers.json
+##  kubectl proxy &
+##  curl -X PUT http://localhost:8001/api/v1/namespaces/rook-ceph/finalize -H "Content-Type: application/json" --data-binary @ns-without-finalizers.json
+
