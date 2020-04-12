@@ -7,8 +7,8 @@
 {% macro taint() -%}
 {% for host in groups['kube-storage'] %} kubectl taint nodes {{ host }} dedicated={{ cassandra_taint }}:NoSchedule ;  {% endfor %}
 
-{{ label() }} 
 
 {% if profile  == "prod" %}
+  {{ label() }} 
   {{ taint() }}
 {% endif %}

@@ -28,6 +28,7 @@ ceph_mon: 3
 osdsPerDevice: 1 # number of OSD per device 
 ceph_version: v14.2.7
 rbdMirroring: 3
+storage_taint: storage
 
 ###### cassandra #######
 cassandra_endpoint:  cassandra.cassandra.svc.cluster.local
