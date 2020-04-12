@@ -20,21 +20,16 @@ Host *
   ForwardAgent yes
 EOF
 ```
-#### lookback device 
+
 ```bash
-
-dd if=/dev/zero of=/root/virtual_hard_drive.bin bs=5GB count=1
-mknod /dev/sdb b 7 500
-losetup /dev/sdb /root/virtual_hard_drive.bin 
-
+#list kubeadm version
+yum --showduplicates list kubeadm 
 ```
-#### Delete storage node ###
 
 ```bash
-1 . comment out the storage creation part in terraform and terraform apply
-2 . 
-
-
+## ceph
+https://github.com/rook/rook.github.io/blob/master/docs/rook/master/ceph-quickstart.md#deploy-the-rook-operator
+```
 ### helm
 
 ```bash
