@@ -25,6 +25,10 @@ EOF
 #list kubeadm version
 yum --showduplicates list kubeadm 
 ```
+
+```bash
+https://github.com/rook/rook.github.io/blob/master/docs/rook/master/ceph-quickstart.md#deploy-the-rook-operator
+```
 ### helm
 
 ```bash
