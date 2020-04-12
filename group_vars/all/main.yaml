@@ -1,12 +1,13 @@
 profile: prod
-kube_master_lb: 10.20.0.10
+kube_master_lb: 10.20.0.8
 
 docker_ce_ubuntu: 18.06.2~ce~3-0~ubuntu
-docker_ce_redhat: 18.09.9
-containerd: 1.2.10
+
+docker_ce_redhat: 19.03.8
+containerd: 1.2.13
 
 ubunutu_k8_version: 1.15.6-00
-redhat_k8_version: 1.15.10-0
+redhat_k8_version: 1.16.8-0  
 
 ##### nginx ingress ########
 nginx_ingress_controller_version: 0.29.0
@@ -25,6 +26,8 @@ cortex_endpoint: http://cortex-nginx.cortex.svc.cluster.local:80/api/prom/push
 ####### Ceph ######
 ceph_mon: 3
 osdsPerDevice: 1 # number of OSD per device 
+ceph_version: v14.2.7
+rbdMirroring: 3
 
 ###### cassandra #######
 cassandra_endpoint:  cassandra.cassandra.svc.cluster.local
