@@ -392,7 +392,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: "2Gi"
+      storage: {{ monitoring_alertmanager_pvc }}
 ---
 # Source: prometheus/templates/server-pvc.yaml
 apiVersion: v1
@@ -410,7 +410,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: "8Gi"
+      storage: {{ prometheus_pvc }}
 ---
 # Source: prometheus/charts/kube-state-metrics/templates/clusterrole.yaml
 apiVersion: rbac.authorization.k8s.io/v1beta1
@@ -841,7 +841,7 @@ spec:
       serviceAccountName: monitoring-prometheus-node-exporter
       containers:
         - name: prometheus-node-exporter
-          image: "prom/node-exporter:v0.18.1"
+          image: "prom/node-exporter:{{ monitoring_node_exporter }}"
           imagePullPolicy: "IfNotPresent"
           args:
             - --path.procfs=/host/proc
@@ -976,7 +976,7 @@ spec:
 
 
         imagePullPolicy: IfNotPresent
-        image: "quay.io/coreos/kube-state-metrics:v1.9.5"
+        image: "quay.io/coreos/kube-state-metrics:{{ monitoring_kube_state_metrics }}"
         ports:
         - containerPort: 8080
         livenessProbe:
@@ -1022,7 +1022,7 @@ spec:
       serviceAccountName: monitoring-prometheus-alertmanager
       containers:
         - name: prometheus-alertmanager
-          image: "prom/alertmanager:v0.20.0"
+          image: "prom/alertmanager:{{ monitoring_alertmanager }}"
           imagePullPolicy: "IfNotPresent"
           env:
             - name: POD_IP
@@ -1107,7 +1107,7 @@ spec:
       serviceAccountName: monitoring-prometheus-pushgateway
       containers:
         - name: prometheus-pushgateway
-          image: "prom/pushgateway:v1.0.1"
+          image: "prom/pushgateway:{{ monitoring_pushgateway }}"
           imagePullPolicy: "IfNotPresent"
           args:
           ports:
@@ -1173,10 +1173,10 @@ spec:
               readOnly: true
 
         - name: prometheus-server
-          image: "prom/prometheus:v2.16.0"
+          image: "prom/prometheus:{{ prometheus_image }}"
           imagePullPolicy: "IfNotPresent"
           args:
-            - --storage.tsdb.retention.time=15d
+            - --storage.tsdb.retention.time={{ prometheus_retention_time }}
             - --config.file=/etc/config/prometheus.yml
             - --storage.tsdb.path=/data
             - --web.console.libraries=/etc/prometheus/console_libraries
