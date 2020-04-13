@@ -27,15 +27,17 @@
     groups['kube_master'].index(inventory_hostname) == 0    
   ignore_errors: yes
 
-- name:  
+- name: creating ceph cluster ... 
   shell: kubectl apply -f /etc/kubernetes/kubeadm/storage/step.1.common.yaml; sleep 15; \
          kubectl apply -f /etc/kubernetes/kubeadm/storage/step.2.operator.yaml; sleep 15; \ 
          kubectl apply -f /etc/kubernetes/kubeadm/storage/step.3.cluster.yaml; sleep 15;  \
          kubectl apply -f /etc/kubernetes/kubeadm/storage/step.4.object.yaml; sleep 5; \
          kubectl apply -f /etc/kubernetes/kubeadm/storage/step.5.object-user.yaml; sleep 5; \ 
-         kubectl apply -f /etc/kubernetes/kubeadm/storage/step.6.toolbox.yaml; sleep 5; \ 
-         kubectl apply -f /etc/kubernetes/kubeadm/storage/step.7.StorageClass.yaml; sleep 5; \ 
-         kubectl apply -f /etc/kubernetes/kubeadm/storage/step.8.StorageClassEC.yaml;
+         kubectl apply -f /etc/kubernetes/kubeadm/storage/step.6.toolbox.yaml; sleep 5;  
   when: >
     groups['kube_master'].index(inventory_hostname) == 0    
   ignore_errors: yes
+
+- name: creating storage class ...
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/storage/step.7.StorageClass.yaml; \
+         kubectl apply -f /etc/kubernetes/kubeadm/storage/step.8.StorageClassEC.yaml;

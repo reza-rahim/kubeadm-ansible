@@ -307,7 +307,12 @@ spec:
         #   value: "role=storage-node; storage=rook, ceph"
         # (Optional) CEPH CSI plugin tolerations list. Put here list of taints you want to tolerate in YAML format.
         # CSI plugins need to be started on all the nodes where the clients need to mount the storage.
-        # - name: CSI_PLUGIN_TOLERATIONS
+        - name: CSI_PLUGIN_TOLERATIONS
+          value: |
+             - effect: NoSchedule
+               key: dedicated
+               operator: Equal
+               value: storage
         #     - effect: NoExecute
         #   value: |
         #     - effect: NoSchedule
