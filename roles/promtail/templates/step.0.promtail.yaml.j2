@@ -36,13 +36,12 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: promtail
-  namespace: loki
+  namespace: promtail
 ---
 apiVersion: v1
 data:
   promtail.yml: |
     clients:
-      #- url: http://loki:password@gateway.loki.svc/loki/api/v1/push
       - url: {{ loki_gateway_url }}
     scrape_configs:
       - job_name: kubernetes-pods-name
