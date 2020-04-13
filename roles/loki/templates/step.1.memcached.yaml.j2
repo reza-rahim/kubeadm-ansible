@@ -1,0 +1,360 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: memcached
+  name: memcached
+spec:
+  clusterIP: None
+  ports:
+  - name: memcached-client
+    port: 11211
+    targetPort: 11211
+  - name: exporter-http-metrics
+    port: 9150
+    targetPort: 9150
+  selector:
+    name: memcached
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: memcached-frontend
+  name: memcached-frontend
+spec:
+  clusterIP: None
+  ports:
+  - name: memcached-client
+    port: 11211
+    targetPort: 11211
+  - name: exporter-http-metrics
+    port: 9150
+    targetPort: 9150
+  selector:
+    name: memcached-frontend
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: memcached-index-queries
+  name: memcached-index-queries
+spec:
+  clusterIP: None
+  ports:
+  - name: memcached-client
+    port: 11211
+    targetPort: 11211
+  - name: exporter-http-metrics
+    port: 9150
+    targetPort: 9150
+  selector:
+    name: memcached-index-queries
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: memcached-index-writes
+  name: memcached-index-writes
+spec:
+  clusterIP: None
+  ports:
+  - name: memcached-client
+    port: 11211
+    targetPort: 11211
+  - name: exporter-http-metrics
+    port: 9150
+    targetPort: 9150
+  selector:
+    name: memcached-index-writes
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: memcached
+spec:
+  replicas: {{ loki_memcached_replica }}
+  selector:
+    matchLabels:
+      name: memcached
+  serviceName: memcached
+  template:
+    metadata:
+      labels:
+        name: memcached
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                name: memcached
+            topologyKey: kubernetes.io/hostname
+      containers:
+      - args:
+        - -m 4096
+        - -I 2m
+        - -c 1024
+        - -v
+        image: memcached:1.5.17-alpine
+        imagePullPolicy: IfNotPresent
+        name: memcached
+        ports:
+        - containerPort: 11211
+          name: client
+{% if loki_taint is defined and profile  == "prod" %}
+
+        resources:
+          limits:
+            cpu: {{ loki_memcached_limit_cpu }}
+            memory: {{ loki_memcached_limit_mem }}
+          requests:
+            cpu: {{ loki_memcached_req_cpu }}
+            memory: {{ loki_memcached_req_mem }}
+
+        tolerations:
+        - effect: NoSchedule
+          key: dedicated
+          operator: Equal
+          value: {{ loki_taint }}
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: dedicated
+                  operator: In
+                  values:
+                  - {{ loki_taint }}
+ {% endif %}
+
+      - args:
+        - --memcached.address=localhost:11211
+        - --web.listen-address=0.0.0.0:9150
+        image: prom/memcached-exporter:v0.6.0
+        imagePullPolicy: IfNotPresent
+        name: exporter
+        ports:
+        - containerPort: 9150
+          name: http-metrics
+  updateStrategy:
+    type: RollingUpdate
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: memcached-frontend
+spec:
+  replicas: {{ loki_memcached_frontend_replica }}
+  selector:
+    matchLabels:
+      name: memcached-frontend
+  serviceName: memcached-frontend
+  template:
+    metadata:
+      labels:
+        name: memcached-frontend
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                name: memcached-frontend
+            topologyKey: kubernetes.io/hostname
+      containers:
+      - args:
+        - -m 1024
+        - -I 5m
+        - -c 1024
+        - -v
+        image: memcached:1.5.17-alpine
+        imagePullPolicy: IfNotPresent
+        name: memcached
+        ports:
+        - containerPort: 11211
+          name: client
+
+{%  if loki_taint is defined and profile  == "prod" %}
+
+        resources:
+          limits:
+            cpu: {{ loki_memcached_limit_cpu }}
+            memory: {{ loki_memcached_limit_mem }}
+          requests:
+            cpu: {{ loki_memcached_req_cpu }}
+            memory: {{ loki_memcached_req_mem }}
+        tolerations:
+        - effect: NoSchedule
+          key: dedicated
+          operator: Equal
+          value: {{ loki_taint }}
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: dedicated
+                  operator: In
+                  values:
+                  - {{ loki_taint }}
+ {% endif %}
+
+      - args:
+        - --memcached.address=localhost:11211
+        - --web.listen-address=0.0.0.0:9150
+        image: prom/memcached-exporter:v0.6.0
+        imagePullPolicy: IfNotPresent
+        name: exporter
+        ports:
+        - containerPort: 9150
+          name: http-metrics
+  updateStrategy:
+    type: RollingUpdate
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: memcached-index-queries
+spec:
+  replicas: {{ loki_memcached_index_queries_replica }}
+  selector:
+    matchLabels:
+      name: memcached-index-queries
+  serviceName: memcached-index-queries
+  template:
+    metadata:
+      labels:
+        name: memcached-index-queries
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                name: memcached-index-queries
+            topologyKey: kubernetes.io/hostname
+      containers:
+      - args:
+        - -m 1024
+        - -I 5m
+        - -c 1024
+        - -v
+        image: memcached:1.5.17-alpine
+        imagePullPolicy: IfNotPresent
+        name: memcached
+        ports:
+        - containerPort: 11211
+          name: client
+
+{%  if loki_taint is defined and  profile  == "prod" %}
+
+        resources:
+          limits:
+            cpu: {{ loki_memcached_limit_cpu }}
+            memory: {{ loki_memcached_limit_mem }}
+          requests:
+            cpu: {{ loki_memcached_req_cpu }}
+            memory: {{ loki_memcached_req_mem }}
+        tolerations:
+        - effect: NoSchedule
+          key: dedicated
+          operator: Equal
+          value: {{ loki_taint }}
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: dedicated
+                  operator: In
+                  values:
+                  - {{ loki_taint }}
+ {% endif %}
+
+      - args:
+        - --memcached.address=localhost:11211
+        - --web.listen-address=0.0.0.0:9150
+        image: prom/memcached-exporter:v0.6.0
+        imagePullPolicy: IfNotPresent
+        name: exporter
+        ports:
+        - containerPort: 9150
+          name: http-metrics
+  updateStrategy:
+    type: RollingUpdate
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: memcached-index-writes
+spec:
+  replicas: {{ loki_memcached_index_writes_replica }}
+  selector:
+    matchLabels:
+      name: memcached-index-writes
+  serviceName: memcached-index-writes
+  template:
+    metadata:
+      labels:
+        name: memcached-index-writes
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                name: memcached-index-writes
+            topologyKey: kubernetes.io/hostname
+      containers:
+      - args:
+        - -m 1024
+        - -I 1m
+        - -c 1024
+        - -v
+        image: memcached:1.5.17-alpine
+        imagePullPolicy: IfNotPresent
+        name: memcached
+        ports:
+        - containerPort: 11211
+          name: client
+
+{% if loki_taint is defined and  profile  == "prod" %}
+
+        resources:
+          limits:
+            cpu: {{ loki_memcached_limit_cpu }}
+            memory: {{ loki_memcached_limit_mem }}
+          requests:
+            cpu: {{ loki_memcached_req_cpu }}
+            memory: {{ loki_memcached_req_mem }}
+        tolerations:
+        - effect: NoSchedule
+          key: dedicated
+          operator: Equal
+          value: {{ loki_taint }}
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: dedicated
+                  operator: In
+                  values:
+                  - {{ loki_taint }}
+ {% endif %}
+
+      - args:
+        - --memcached.address=localhost:11211
+        - --web.listen-address=0.0.0.0:9150
+        image: prom/memcached-exporter:v0.6.0
+        imagePullPolicy: IfNotPresent
+        name: exporter
+        ports:
+        - containerPort: 9150
+          name: http-metrics
+  updateStrategy:
+    type: RollingUpdate

@@ -1,0 +1,90 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: ingester
+  name: ingester
+spec:
+  ports:
+  - name: ingester-http-metrics
+    port: 80
+    targetPort: 80
+  - name: ingester-grpc
+    port: 9095
+    targetPort: 9095
+  selector:
+    name: ingester
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ingester
+spec:
+  minReadySeconds: 60
+  replicas: {{ loki_ingester_replica }}
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      name: ingester
+  strategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+  template:
+    metadata:
+      annotations:
+        config_hash: 4f80cdaf0db655fa4b3b3cd15c0a0f44
+      labels:
+        name: ingester
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                name: ingester
+            topologyKey: kubernetes.io/hostname
+      containers:
+      - args:
+        - -config.file=/etc/loki/config/config.yaml
+        #- -limits.per-user-override-config=/etc/loki/overrides/overrides.yaml
+        - -target=ingester
+        image: grafana/loki:v1.3.0
+        imagePullPolicy: IfNotPresent
+        name: ingester
+        ports:
+        - containerPort: 80
+          name: http-metrics
+        - containerPort: 9095
+          name: grpc
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 80
+          initialDelaySeconds: 15
+          timeoutSeconds: 1
+ {% if profile  == "prod" %}
+
+        resources:
+         limits:
+           cpu: "2"
+           memory: 10Gi
+         requests:
+           cpu: "1"
+           memory: 5Gi
+ {% endif %}
+
+        volumeMounts:
+        - mountPath: /etc/loki/config
+          name: loki
+        - mountPath: /etc/loki/overrides
+          name: overrides
+      terminationGracePeriodSeconds: 4800
+      volumes:
+      - configMap:
+          name: loki
+        name: loki
+      - configMap:
+          name: overrides
+        name: overrides

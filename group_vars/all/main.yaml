@@ -1,4 +1,4 @@
-profile: prod
+profile: dev
 kube_master_lb: 10.20.0.8
 
 docker_ce_ubuntu: 18.06.2~ce~3-0~ubuntu
@@ -90,11 +90,11 @@ cortex_nginx_limit_mem: 500Mi
 cortex_nginx_req_cpu: 500m
 cortex_nginx_req_mem: 500Mi 
 
-
-
 cortex_nginx: 1
 
 
+#### promtail ####
+loki_gateway_url: http://gateway.loki.svc/loki/api/v1/push
 
 ####### loki #####
 loki_version: v0.4.0
@@ -104,8 +104,9 @@ loki_taint: storage
 loki_cassandra: cassandra.cassandra.svc.cluster.local
 
 loki_memcached_replica: 1
-loki_memcached_index_read_replica: 1
-loki_memcached_index_write_replica: 1
+loki_memcached_frontend_replica: 1
+loki_memcached_index_queries_replica: 1
+loki_memcached_index_writes_replica: 1
 loki_memcached_limit_cpu: 500m
 loki_memcached_limit_mem: 1Gi
 loki_memcached_req_cpu: 500m

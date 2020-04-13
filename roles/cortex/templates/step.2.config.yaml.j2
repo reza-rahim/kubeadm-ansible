@@ -81,7 +81,7 @@ data:
     # Use cassandra as storage -for both index store and chunks store.
     schema:
        configs:
-       - from: {{ cortec_chunk_start_day }}
+       - from: {{ cortex_chunk_start_day }}
          store: cassandra
          object_store: cassandra
          schema: v10
