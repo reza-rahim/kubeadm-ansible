@@ -839,6 +839,10 @@ spec:
         heritage: Helm
     spec:
       serviceAccountName: monitoring-prometheus-node-exporter
+      tolerations:
+        # Make sure node-exporter gets scheduled on all nodes.
+        - effect: NoSchedule
+          operator: Exists
       containers:
         - name: prometheus-node-exporter
           image: "prom/node-exporter:{{ monitoring_node_exporter }}"
