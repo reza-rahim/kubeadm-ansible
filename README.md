@@ -38,10 +38,22 @@ kubectl proxy
 http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
 
 ```
+```bash
+##grafana
+kubectl port-forward -n monitoring  $(kubectl get pod -n monitoring  -l app.kubernetes.io/name=grafana   -o jsonpath={.items..metadata.name} ) 3000:3000
+
+### Node Exporter Full dashboard
+https://grafana.com/grafana/dashboards/1860
+https://grafana.com/grafana/dashboards/11455
+```
+
+
 
 ```bash
 ## ceph
 https://github.com/rook/rook.github.io/blob/master/docs/rook/master/ceph-quickstart.md#deploy-the-rook-operator
+
+
 ```
 ### helm
 
