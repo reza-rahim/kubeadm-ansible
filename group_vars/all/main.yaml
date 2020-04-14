@@ -56,7 +56,7 @@ cassandra_heap_newsize: 100M
 ####### cortex #####
 cortex_version: v0.4.0
 cortex_date: 2017-04-01
-cortex_chunk_start_day: 2020-04-20
+cortex_chunk_start_day: 2020-04-10
 cortex_taint: storage
 cortex_cassandra: cassandra.cassandra.svc.cluster.local
 
