@@ -45,6 +45,16 @@ kubectl port-forward -n monitoring  $(kubectl get pod -n monitoring  -l app.kube
 ### Node Exporter Full dashboard
 https://grafana.com/grafana/dashboards/1860
 https://grafana.com/grafana/dashboards/11455
+##K8 dashboard
+https://grafana.com/grafana/dashboards/315
+#nginx controller
+https://grafana.com/grafana/dashboards/10187
+#cortex
+https://grafana.com/grafana/dashboards/9820
+
+#loki
+https://github.com/skyscrapers/charts/tree/master/cluster-monitoring/dashboards-extra
+
 ```
 
 

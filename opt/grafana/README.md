@@ -6,6 +6,11 @@ tar xvf grafana-5.0.12.tgz
 
 
 ```bash 
+https://github.com/ceph/ceph/tree/master/monitoring
+```
+
+
+```bash 
 ###In your values.yml file for grafana add the dashboard data to the sidecar:
 
 sidecar:
