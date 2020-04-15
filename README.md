@@ -55,6 +55,8 @@ https://grafana.com/grafana/dashboards/9820
 #loki
 https://github.com/skyscrapers/charts/tree/master/cluster-monitoring/dashboards-extra
 
+#ceph
+https://grafana.com/grafana/dashboards/7056
 ```
 
 
