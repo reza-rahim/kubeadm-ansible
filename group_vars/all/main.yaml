@@ -1,4 +1,5 @@
 profile: dev
+run_mode: PRODUCTION
 kube_master_lb: 62.171.168.77
 
 docker_ce_ubuntu: 18.06.2~ce~3-0~ubuntu
@@ -7,6 +8,7 @@ containerd: 1.2.10
 
 ubunutu_k8_version: 1.15.6-00
 redhat_k8_version: 1.15.10-0
+
 
 ##### nginx ingress ########
 nginx_ingress_controller_version: 0.29.0
@@ -111,7 +113,7 @@ loki_url: loki.klovercloud.io
 #######  klovercloud common ####### 
 #klovercloud_super_admin_username: admin-listener@klovercloud.com
 #klovercloud_super_admin_password: hello123
-klovercloud_super_admin_username: NPHOgToi
+klovercloud_super_admin_username: superadmin@klovercloud.com
 klovercloud_super_admin_password: onhZruhF
 klovercloud_super_admin_secret: klovercloud-super-admin-secret
 klovercloud_dns_manager_service: klovercloud-dns-manager
@@ -131,6 +133,8 @@ klovercloud_service_lastname: user
 klovercloud_service_firstname: klovercloud service
 klovercloud_service_usertype: AGENT_SERVICE
 klovercloud_service_authorities: ROLE_AGENT_SERVICE
+
+
 
 ####### Klovercloud-ci #######
 klovercloud_ci_namespace: tekton
@@ -173,6 +177,8 @@ klovercloud_ci_app_label: klovercloud-ci
 klovercloud_ci_deployment_name: klovercloud-ci
 klovercloud_ci_service_account_name: klovercloud-ci
 
+klovercloud_ci_envar_configmap_name: klovercloud-ci-envar-config
+
 ####### klovercloud mongodb #######
 klovercloud_mongodb_replica: 1
 klovercloud_mongodb_storage: 2000Mi
@@ -201,9 +207,11 @@ klovercloud_mongodb_metrics_node_port: 32206
 klovercloud_mongodb_image: docker.io/bitnami/mongodb:4.2.3-debian-10-r31
 klovercloud_mongodb_exporter_image: docker.io/bitnami/mongodb-exporter:0.10.0-debian-10-r27
 klovercloud_mongodb_replica_set_key: admin123
-klovercloud_mongodb_root_password: admin123
+
 klovercloud_mongo_auth_db_name: admin
+klovercloud_mongodb_secret: klovercloud-mongo-secret
 klovercloud_mongo_root_username: root
+klovercloud_mongodb_root_password: admin123
 klovercloud_mongo_admin_username: mongoAdmin
 
 ####### klovercloud kafka #######
@@ -276,7 +284,7 @@ klovercloud_listener_metrics_sevice_port: 8081
 klovercloud_listener_metrics_sevice_target_port: 8081
 klovercloud_listener_ingress_name: klovercloud-listener
 klovercloud_listener_ingress_host: listener.klovercloud.io
-
+klovercloud_listener_envar_configmap_name: klovercloud-listener-envar-config
 
 ####### klovercloud Cert Issuer #######
 klovercloud_cert_issuer_name: letsencrypt-prod
@@ -308,6 +316,8 @@ klovercloud_management_ci_service_name: klovercloud-ci-internal-kc
 klovercloud_management_ci_external_service_name: klovercloud-ci.tekton.svc.cluster.local
 klovercloud_management_ci_service_port: 80
 
+klovercloud_management_envar_configmap_name: klovercloud-management-envar-config
+
 ####### klovercloud Facade #######
 klovercloud_facade_replica: 1
 klovercloud_facade_deployment_name: klovercloud-facade
@@ -330,8 +340,10 @@ klovercloud_facade_admin_username: admin@klovercloud.com
 klovercloud_facade_admin_password: hello123
 klovercloud_facade_image: klovercloud/service:facade
 klovercloud_facade_api_access_token: abcxyz
+klovercloud_facade_envar_configmap_name: klovercloud-facade-envar-config
 
 ####### klovercloud pipeline #######
+
 klovercloud_pipeline_replica: 1
 klovercloud_pipeline_deployment_name: klovercloud-pipeline
 klovercloud_pipeline_app_label: klovercloud-pipeline
@@ -351,13 +363,17 @@ klovercloud_pipeline_memory_limit: 1024Mi
 klovercloud_pipeline_container_port1: 8080
 klovercloud_pipeline_container_port2: 8081
 
+klovercloud_pipeline_envar_configmap_name: klovercloud-pipeline-envar-config
+
 ####### Klovercloud harbor installation #######
 
 klovercloud_harbor_namespace: harbor
 klovercloud_harbor_cert_issuer_name: letsencrypt-prod
 klovercloud_harbor_cert_issuer_email: user@klovercloud.com
 klovercloud_harbor_admin: klovercloud
+klovercloud_harbor_admin_secret_name: harbor-admin-secret
 klovercloud_harbor_admin_password: Dev@Klover2019!
+klovercloud_harbor_db_secret: harbor-db-secret
 klovercloud_harbor_postgresql_password: Dev@Klover2019!
 klovercloud_harbor_clair_db_password: Dev@Klover2019!
 klovercloud_harbor_admin_auth_token: abcxyz
@@ -515,6 +531,8 @@ klovercloud_harbor_service_name: klovercloud-harbor
 klovercloud_harbor_service_port: 80
 klovercloud_harbor_service_target_port: 8085
 
+klovercloud_harbor_envar_configmap_name: klovercloud-harbor-envar-config
+
 
 ####### Klovercloud monitor #######
 
@@ -537,8 +555,11 @@ klovercloud_monitor_container_port: 8088
 
 
 klovercloud_monitor_service_name: klovercloud-monitor
+
 klovercloud_monitor_service_port: 80
 klovercloud_monitor_service_target_port: 8088
+klovercloud_monitor_envar_configmap_name: klovercloud-monitor-envar-config
+
 
 ####### Klovercloud database #######
 
@@ -556,7 +577,7 @@ klovercloud_database_memory_request: 350Mi
 klovercloud_database_cpu_limit: 350m
 klovercloud_database_memory_limit: 512Mi
 klovercloud_database_db_name: klovercloud_database
-
+klovercloud_database_envar_configmap_name: klovercloud-database-envar-config
 
 ####### Klovercloud dns manager #######
 
@@ -583,7 +604,7 @@ klovercloud_dns_manager_container_port: 8080
 klovercloud_dns_manager_service_name: klovercloud-dns-manager
 klovercloud_dns_manager_service_port: 80
 klovercloud_dns_manager_service_target_port: 8080
-
+klovercloud_dns_manager_envar_configmap_name: klovercloud-dns-manager-envar-config
 
 ####### Klovercloud log manager #######
 
@@ -602,6 +623,7 @@ klovercloud_log_manager_service_name: klovercloud-log-manager
 klovercloud_log_manager_service_port: 80
 klovercloud_log_manager_service_target_port: 8086
 
+klovercloud_log_manager_envar_configmap_name: klovercloud-log-manager-envar-config
 
 ####### Klovercloud metrics #######
 
@@ -651,15 +673,16 @@ klovercloud_rook_ceph_object_storage_cpu_request: 200m
 klovercloud_rook_ceph_object_storage_memory_request: 350Mi
 klovercloud_rook_ceph_object_storage_cpu_limit: 350m
 klovercloud_rook_ceph_object_storage_memory_limit: 512Mi
-klovercloud_rook_ceph_object_storage_db_name: klovercloud_object-storage
-klovercloud_rook_ceph_object_storage_end_point: https://object-storage.klovercloud.io/
+klovercloud_rook_ceph_object_storage_db_name: klovercloud_object_storage
+# klovercloud_rook_ceph_object_storage_end_point: https://object-storage.klovercloud.io/
   
 klovercloud_rook_ceph_object_storage_ingress_name: object-storage-ingress
 klovercloud_rook_ceph_object_storage_ingress_host: object-storage.klovercloud.io
 klovercloud_rook_ceph_object_storage_ingress_secret: object-storage-tls
 
-klovercloud_rook_ceph_object_storage_user_id: abc
+klovercloud_rook_ceph_object_storage_user_id: klovercloud
 klovercloud_rook_ceph_object_storage_user_display_name: klovercloud-object-storgae-admin-admin
+klovercloud_rook_ceph_object_storage_admin_secret: object-storage-admin-secret
 klovercloud_rook_ceph_object_storage_access_key: abc
 klovercloud_rook_ceph_object_storage_secret_key: abc
 
@@ -668,6 +691,8 @@ klovercloud_rook_ceph_object_storage_container_port: 8092
 klovercloud_rook_ceph_object_storage_service_name: klovercloud-object-storage
 klovercloud_rook_ceph_object_storage_service_port: 80
 klovercloud_rook_ceph_object_storage_service_target_port: 8092 
+
+klovercloud_object_storage_envar_configmap_name: klovercloud-object-storage-envar-config
   
 ####### radosgw-exporter #####
 
@@ -677,7 +702,11 @@ radosgw_exporter_image: shaekhhasan/radosgw_usage_exporter:latest
 radosgw_exporter_app_label: radosgw
 radosgw_exporter_container_port: 9242
 
+####### klovercloud aws #####
 
+klovercloud_aws_route53_secret: klovercloud-aws-route53-secret
+klovercloud_aws_access_key_id: AKIARWFZ27L6WKBJENU4 
+klovercloud_aws_secret_access_key: 8IkaeB1LSiRaSGS0fiykf
 
 ####### loki #####
 loki_version: v0.4.0
