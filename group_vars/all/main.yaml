@@ -265,6 +265,8 @@ klovercloud_nexus_app_label: nexus
 klovercloud_nexus_ingress_name: klovercloud-nexus
 klovercloud_nexus_ingress_host: nexus.klovercloud.io
 
+klovercloud_nexus_secret: klovercloud-nexus-secret
+
 
 ####### klovercloud Listener #######
 klovercloud_listener_replica: 1
@@ -285,6 +287,7 @@ klovercloud_listener_metrics_sevice_target_port: 8081
 klovercloud_listener_ingress_name: klovercloud-listener
 klovercloud_listener_ingress_host: listener.klovercloud.io
 klovercloud_listener_envar_configmap_name: klovercloud-listener-envar-config
+klovercloud_listener_secret: klovercloud-listener-secret
 
 ####### klovercloud Cert Issuer #######
 klovercloud_cert_issuer_name: letsencrypt-prod
@@ -341,6 +344,8 @@ klovercloud_facade_admin_password: hello123
 klovercloud_facade_image: klovercloud/service:facade
 klovercloud_facade_api_access_token: abcxyz
 klovercloud_facade_envar_configmap_name: klovercloud-facade-envar-config
+
+klovercloud_facade_secret: klovercloud-facade-secret
 
 ####### klovercloud pipeline #######
 
@@ -644,7 +649,7 @@ klovercloud_metrics_service_name: klovercloud-metrics
 klovercloud_metrics_service_port: 80
 klovercloud_metrics_service_target_port: 8087
 
-
+klovercloud_metrics_envar_configmap_name: klovercloud-metrics-envar-config
 
 klovercloud_prometheus_base_url: http://monitoring-prometheus-server-internal-kc
 

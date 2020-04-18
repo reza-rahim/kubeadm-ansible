@@ -35,27 +35,13 @@ spec:
             cpu: {{ klovercloud_dns_manager_cpu_limit }}
             memory: {{ klovercloud_dns_manager_memory_limit }}
 {% endif %}
-        env:
-        - name: DEVELOPER_ALIAS
-          value: {{ klovercloud_developer_alias }}
-        - name: RUN_MODE
-          value: "PRODUCTION"
-        - name: DNS_TECHNOLOGY
-          value: "{{ klovercloud_dns_manager_dns_technology }}"
-        - name: SERVER_PORT
-          value: "{{ klovercloud_dns_manager_server_port }}"
-        - name: DATABASE_CONNECTION_STRING
-          value: "mongodb://{{ klovercloud_mongo_root_username }}:{{ klovercloud_mongodb_root_password }}@{{ klovercloud_mongodb_service_name }}:{{ klovercloud_mongodb_service_port }}"
-        - name: DATABASE_NAME
-          value: "{{ klovercloud_dns_manager_database_name }}"
-        - name: COREDNS_REDIS_HOST
-          value: "{{ klovercloud_dns_manager_coredns_redis_host }}"
-        - name: COREDNS_REDIS_PASS
-          value: "{{ klovercloud_dns_manager_coredns_redis_pass }}"
-        - name: AWS_ACCESS_KEY_ID
-          value: "{{ klovercloud_dns_manager_aws_access_key_id }}"
-        - name: AWS_SECRET_ACCESS_KEY
-          value: "{{ klovercloud_dns_manager_aws_secret_access_key }}"
+        envFrom:
+        - secretRef:
+            name: {{ klovercloud_mongodb_secret }}
+        - secretRef:
+            name: {{ klovercloud_aws_route53_secret }}
+        - configMapRef:
+            name: {{ klovercloud_dns_manager_envar_configmap_name }}
         ports:
         - containerPort: {{ klovercloud_dns_manager_container_port }}
         readinessProbe:

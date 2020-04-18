@@ -37,32 +37,22 @@ spec:
               cpu: {{ klovercloud_harbor_cpu_limit }}
               memory: {{ klovercloud_harbor_memory_limit }}
 {% endif %}
-          env:
-            - name: RUN_MODE
-              value: "PRODUCTION"
-            - name: DATABASE_CONNECTION_STR
-              value: {{ klovercloud_harbor_db_connection_str }}
-            - name: DATABASE_NAME
-              value: {{ klovercloud_harbor_db_name }}
-            - name: HARBOR_SERVICE_URL
-              value: "https://{{ klovercloud_harbor_ingress_host }}"
-            - name: HARBOR_ADMIN_AUTH_TOKEN
-              value: "Basic  {{ (klovercloud_harbor_admin + ':' + klovercloud_harbor_admin_password) | b64encode }} "
-            - name: PROJECT_QUOTAS_COUNT_LIMIT
-              value: "{{ klovercloud_harbor_project_quotas_count_limit }}"
-            - name: PROJECT_QUOTAS_STORAGE_LIMIT
-              value: "{{ klovercloud_harbor_project_quotas_storage_limit }}"
+          envFrom:
+          - secretRef:
+              name: {{ klovercloud_mongodb_secret }}
+          - configMapRef:
+              name: {{ klovercloud_harbor_envar_configmap_name }}
           ports:
             - containerPort: {{ klovercloud_harbor_container_port }}
           readinessProbe:
             httpGet:
-              path: /
+              path: /health
               port: {{ klovercloud_harbor_container_port }}
             initialDelaySeconds: 30
             periodSeconds: 10
           livenessProbe:
             httpGet:
-              path: /
+              path: /health
               port: {{ klovercloud_harbor_container_port }}
             initialDelaySeconds: 30
             periodSeconds: 10

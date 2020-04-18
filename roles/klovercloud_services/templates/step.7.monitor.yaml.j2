@@ -35,33 +35,11 @@ spec:
             cpu: {{ klovercloud_monitor_cpu_limit }}
             memory: {{ klovercloud_monitor_memory_limit }}
 {% endif %}
-        env:
-        - name: DEVELOPER_ALIAS
-          value: {{ klovercloud_developer_alias }}
-        - name: RUN_MODE
-          value: "PRODUCTION"
-        - name: MANAGEMENT_SERVICE_URL
-          value: "http://{{ klovercloud_management_service_name }}/"
-        - name: PIPELINE_SERVICE_URL
-          value: "http://{{ klovercloud_pipeline_service_name }}/"
-        - name: DATABASE_SERVICE_URL
-          value: "http://{{ klovercloud_database_service_name }}/"
-        - name: DATABASE_CONNECTION_STR
-          value: "mongodb://{{ klovercloud_mongo_root_username }}:{{ klovercloud_mongodb_root_password }}@{{ klovercloud_mongodb_service_name }}:{{ klovercloud_mongodb_service_port }}"
-        - name: DATABASE_NAME
-          value: "{{ klovercloud_monitor_db_name }}"
-        - name: KAFKA_BROKER
-          value: "{{ klovercloud_kafka_service_name }}:{{ klovercloud_kafka_service_port }}"
-        - name: DEPLOYMENT_POD_FEED_KAFKA_TOPIC
-          value: "{{ klovercloud_monitor_deployment_pod_feed_kafka_topic }}"
-        - name: DEPLOYMENT_POD_FEED_KAFKA_GROUP_ID
-          value: "{{ klovercloud_monitor_deployment_pod_feed_kafka_group_id }}"
-        - name: DEPLOYMENT_POD_FEED_CLEANUP_TIMEOUT_HOURS
-          value: "{{ klovercloud_monitor_deployment_pod_feed_cleanup_timeout_hours }}"
-        - name: CLUSTER_AGENT_RESPONSE_KAFKA_TOPIC
-          value: "{{ klovercloud_monitor_deployment_cluster_agent_response_kafka_topic }}"
-        - name: CLUSTER_AGENT_RESPONSE_KAFKA_GROUP_ID
-          value: "{{ klovercloud_monitor_deployment_cluster_agent_response_kafka_group_id }}"
+        envFrom:
+        - secretRef:
+            name: {{ klovercloud_mongodb_secret }}
+        - configMapRef:
+            name: {{ klovercloud_monitor_envar_configmap_name }}
         ports:
         - containerPort: {{ klovercloud_monitor_container_port }}
         readinessProbe:

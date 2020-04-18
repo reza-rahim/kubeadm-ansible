@@ -35,21 +35,13 @@ spec:
               cpu: {{ klovercloud_rook_ceph_object_storage_cpu_limit }}
               memory: {{ klovercloud_rook_ceph_object_storage_memory_limit }}
 {% endif %}
-          env:
-            - name: RUN_MODE
-              value: "PRODUCTION"
-            - name: DATABASE_CONNECTION_STR
-              value: "mongodb://{{ klovercloud_mongo_root_username }}:{{ klovercloud_mongodb_root_password }}@{{ klovercloud_mongodb_service_name }}:{{ klovercloud_mongodb_service_port }}"
-            - name: DATABASE_NAME
-              value: "{{ klovercloud_rook_ceph_object_storage_db_name }}"
-            - name: MANAGEMENT_SERVICE_URL
-              value: "http://{{ klovercloud_management_service_name }}/"
-            - name: OBJECT_STORAGE_ENDPOINT
-              value: "{{ klovercloud_rook_ceph_object_storage_end_point }}"
-            - name: OBJECT_STORAGE_ADMIN_USER_ACCESS_KEY
-              value: "{{ klovercloud_rook_ceph_object_storage_access_key }}"
-            - name: OBJECT_STORAGE_ADMIN_USER_SECRET_KEY
-              value: "{{ klovercloud_rook_ceph_object_storage_secret_key }}"
+          envFrom:
+          - secretRef:
+              name: {{ klovercloud_mongodb_secret }}
+          - secretRef:
+              name: {{ klovercloud_rook_ceph_object_storage_admin_secret }}
+          - configMapRef:
+              name: {{ klovercloud_object_storage_envar_configmap_name }}
           ports:
             - containerPort: {{ klovercloud_rook_ceph_object_storage_container_port }}
           readinessProbe:

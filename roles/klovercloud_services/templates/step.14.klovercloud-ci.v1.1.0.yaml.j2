@@ -55,37 +55,15 @@ spec:
             cpu: {{ klovercloud_ci_cpu_limit }}
             memory: {{ klovercloud_ci_memory_limit }}
 {% endif %}
-        env:
-        - name: RUN_MODE
-          value: "PRODUCTION"
-        - name: IS_K8
-          value: "True"
-        - name: DATABASE_CONNECTION_STR
-          value: "mongodb://{{ klovercloud_mongo_root_username }}:{{ klovercloud_mongodb_root_password }}@mongodb-internal-kc:{{ klovercloud_mongodb_service_port }}"
-        - name: DATABASE_NAME
-          value: {{ klovercloud_ci_db_name }}
-        - name: WEBSOCKET_SERVER_URL
-          value: {{ klovercloud_ci_facade_service_url }}
-        - name: WEBSOCKET_SERVER_ACCESS_TOKEN
-          value: {{ klovercloud_facade_api_access_token }}
-        - name: PIPELINE_SERVICE_BASE_URL
-          value: {{ klovercloud_ci_pipeline_service_url }}
-        - name: NEXUS_TOKEN
-          value: {{ klovercloud_ci_nexus_token }}
-        - name: NEXUS_USER
-          value: {{ klovercloud_ci_nexus_username }}
-        - name: NEXUS_PASSWORD
-          value: {{ klovercloud_ci_nexus_password }}
-        - name: NEXUS_MAVEN_PUBLIC_URL
-          value: {{ klovercloud_ci_nexus_maven_public_url }}
-        - name: NEXUS_MAVEN_RELEASES_URL
-          value: {{ klovercloud_ci_nexus_maven_releases_url }}
-        - name: NEXUS_MAVEN_SNAPSHOTS_URL
-          value: {{ klovercloud_ci_nexus_maven_snapshot_url }}
-        - name: NEXUS_NPM_GROUP_URL
-          value: {{ klovercloud_ci_nexus_npm_group_url }}
-        - name: GENERATOR_IMAGE_PULL_SECRET
-          value: {{ klovercloud_image_pulling_secret }}
+        envFrom:
+        - secretRef:
+            name: {{ klovercloud_mongodb_secret }}
+        - secretRef:
+            name: {{ klovercloud_facade_secret }}
+        - secretRef:
+            name: {{ klovercloud_nexus_secret }}
+        - configMapRef:
+            name: {{ klovercloud_ci_envar_configmap_name }}
         ports:
         - containerPort: {{ klovercloud_ci_containers_port }}
         readinessProbe:

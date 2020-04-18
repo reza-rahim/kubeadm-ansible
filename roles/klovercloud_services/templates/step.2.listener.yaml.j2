@@ -39,37 +39,13 @@ spec:
             cpu: {{ klovercloud_listener_cpu_limit }}
             memory: {{ klovercloud_listener_memory_limit }}
 {% endif %}
-        env:
-        - name: MONGO_SERVER
-          value: "{{ klovercloud_mongodb_service_name }}"
-        - name: MONGO_PORT
-          value: "{{ klovercloud_mongodb_service_port }}"
-        - name: MONGO_AUTH_DATABASE
-          value: "{{ klovercloud_mongo_auth_db_name }}"
-        - name: MONGO_USERNAME
-          value: "{{ klovercloud_mongo_root_username }}"
-        - name: MONGO_PASSWORD
-          value: "{{ klovercloud_mongodb_root_password }}"
-        - name: KAFKA_SERVER
-          value: "{{ klovercloud_kafka_io_kompose_service }}"
-        - name: KAFKA_PORT
-          value: "{{ klovercloud_kafka_service_port }}"
-        - name: ZOO_KEEPER_SERVER
-          value: "{{ klovercloud_zookeeper_io_kompose_service }}"
-        - name: ZOO_KEEPER_PORT
-          value: "{{ klovercloud_zookeeper_service_port }}"
-        - name: ADMIN_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: {{ klovercloud_super_admin_secret }}
-              key: username
-        - name: ADMIN_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: {{ klovercloud_super_admin_secret }}
-              key: password
-        - name: KLOVERCLOUD_MANAGEMENT_SERVICE_NAME
-          value: "{{ klovercloud_management_service_name }}"
+        envFrom:
+        - secretRef:
+            name: {{ klovercloud_mongodb_secret }}
+        - secretRef:
+            name: {{ klovercloud_super_admin_secret }}
+        - configMapRef:
+            name: {{ klovercloud_listener_envar_configmap_name }}
         ports:
         - containerPort: {{ klovercloud_listener_container_port1 }}
         - containerPort: {{ klovercloud_listener_container_port2 }}

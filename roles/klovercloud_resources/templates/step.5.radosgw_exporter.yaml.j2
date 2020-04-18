@@ -27,12 +27,11 @@ spec:
           ports:
           - containerPort: {{ radosgw_exporter_container_port }}
             name: {{ radosgw_exporter_app_label }}
+          envFrom:
+          - secretRef:
+              name: {{ klovercloud_rook_ceph_object_storage_admin_secret }}
           env:
           - name: RADOSGW_SERVER
-            value: "http://rook-ceph-rgw-my-store-service/"
+            value: "http://{{ klovercloud_rook_ceph_my_store_service_name }}/"
           - name: VIRTUAL_PORT
-            value: "{{ radosgw_exporter_container_port }}"
-          - name: ACCESS_KEY
-            value: "{{ klovercloud_rook_ceph_object_storage_access_key }}"
-          - name: SECRET_KEY
-            value: "{{ klovercloud_rook_ceph_object_storage_secret_key }}"
+            value: "{{ radosgw_exporter_container_port }} "

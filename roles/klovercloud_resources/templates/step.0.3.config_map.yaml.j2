@@ -153,7 +153,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ klovercloud_metrics_service_name }}
+  name: {{ klovercloud_metrics_envar_configmap_name }}
   namespace: {{ klovercloud_namespace }}
 data:
   RUN_MODE: "{{ run_mode }}"
@@ -227,3 +227,4 @@ data:
   NEXUS_MAVEN_SNAPSHOTS_URL: "{{ klovercloud_ci_nexus_maven_snapshot_url }}"
   NEXUS_NPM_GROUP_URL: "{{ klovercloud_ci_nexus_npm_group_url }}"
   GENERATOR_IMAGE_PULL_SECRET: "{{ klovercloud_image_pulling_secret }}"
+

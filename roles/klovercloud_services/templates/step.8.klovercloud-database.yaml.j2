@@ -35,25 +35,11 @@ spec:
               cpu: {{ klovercloud_database_cpu_limit }}
               memory: {{ klovercloud_database_memory_limit }}
 {% endif %}
-          env:
-            - name: RUN_MODE
-              value: {{ klovercloud_developer_alias }}
-            - name: DATABASE_CONNECTION_STR
-              value: "mongodb://{{ klovercloud_mongo_root_username }}:{{ klovercloud_mongodb_root_password }}@{{ klovercloud_mongodb_service_name }}:{{ klovercloud_mongodb_service_port }}"
-            - name: DATABASE_NAME
-              value: "{{ klovercloud_database_db_name }}"
-            - name: KAFKA_PRODUCER_BOOTSTRAP_SERVER
-              value: "{{ klovercloud_kafka_service_name }}:{{ klovercloud_kafka_service_port }}"
-            - name: MANAGEMENT_SERVICE_URL
-              value: "http://{{ klovercloud_management_service_name }}/"
-            - name: USE_STORAGE_CLASS
-              value: "true"
-            - name: STORAGE_CLASS_NAME
-              value: "rook-ceph-block"
-            - name: STORAGE_CLASS_TYPE
-              value: "BLOCK_STORAGE"
-            - name: METRICS_ENABLED
-              value: "true"
+          envFrom:
+          - secretRef:
+              name: {{ klovercloud_mongodb_secret }}
+          - configMapRef:
+              name: {{ klovercloud_database_envar_configmap_name }}
           ports:
             - containerPort: {{ klovercloud_database_container_port }}
           readinessProbe:

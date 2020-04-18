@@ -38,45 +38,7 @@
 
   # { kubectl get secret git-secret -n tekton -o json; } || { kubectl apply -f git-sec.yaml; }
 
-# - copy:
-#     content: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
-#     dest: "/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/klovercloud_super_admin_password.txt"
-#     force: no
 
-# - copy:
-#     content: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
-#     dest: "/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/klovercloud_harbor_admin_auth_token.txt"
-#     force: no
-
-# - copy:
-#     content: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
-#     dest: "/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/klovercloud_harbor_admin_password.txt"
-#     force: no
-
-# - copy:
-#     content: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
-#     dest: "/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/klovercloud_harbor_postgresql_password.txt"
-#     force: no
-
-# - copy:
-#     content: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
-#     dest: "/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/klovercloud_harbor_clair_db_password.txt"
-#     force: no
-
-# - copy:
-#     content: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
-#     dest: "/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/klovercloud_rook_ceph_object_storage_user_id.txt"
-#     force: no
-
-# - copy:
-#     content: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
-#     dest: "/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/klovercloud_rook_ceph_object_storage_access_key.txt"
-#     force: no
-
-# - copy:
-#     content: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
-#     dest: "/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/klovercloud_rook_ceph_object_storage_secret_key.txt"
-#     force: no
 
 
 
@@ -139,12 +101,7 @@
   shell: kubectl create secret docker-registry  {{ klovercloud_image_pulling_secret }} --docker-server={{ klovercloud_registry_url }} --docker-username={{ klovercloud_registry_username }} --docker-password={{ klovercloud_registry_password }} --docker-email={{ klovercloud_registry_email }} -n {{ klovercloud_harbor_namespace }};
   when: >
     groups['kube-master'].index(inventory_hostname) == 0   
-  ignore_errors: yes
-
-# - name:  
-#   shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.0.1.admin_secret.yaml;
-#   when: >
-#     groups['kube-master'].index(inventory_hostname) == 0  
+  ignore_errors: yes 
 
 - name: Creates secrets if not present
   shell: kubectl get secret {{ klovercloud_super_admin_secret }} -n {{ klovercloud_namespace }} -o json || /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.0.1.secrets.yaml;
@@ -179,13 +136,8 @@
 - name: Install harbor
   shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.1.harbor_installation.yaml;
   when: >
-    groups['kube-master'].index(inventory_hostname) == 0   
+    groups['kube-master'].index(inventory_hostname) == 0
 
-
-# - name: wait for pods to come up
-#   shell: kubectl get pods -n {{ klovercloud_harbor_namespace }} -o json
-#   register: kubectl_get_pods
-#   until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
 
 
 - name: 
@@ -198,12 +150,6 @@
   shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.2.mongodb.yaml;
   when: >
     groups['kube-master'].index(inventory_hostname) == 0   
-
-
-# - name: wait for pods to come up
-#   shell: kubectl get pods -n {{ klovercloud_namespace }} -o json
-#   register: kubectl_get_pods
-#   until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
 
 - name: 
   wait_for:
@@ -232,6 +178,10 @@
 - name: wait for pods to get ready
   shell: kubectl wait --for=condition=ready -l "name={{ klovercloud_nexus_operator_name }}" -n {{ klovercloud_nexus_namespace }}
   register: kubectl_get_pods
+
+- name: 
+  wait_for:
+    timeout: 30
 
 - name:  deploy nexus
   shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.3.1.nexus.yaml;
@@ -273,38 +223,6 @@
   shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.4.kafka.yaml;
   when: >
     groups['kube-master'].index(inventory_hostname) == 0   
-
-# - name: deploy Kafka
-#   k8s:
-#    state: present
-#    definition: "{{ lookup('file', '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.4.kafka.yaml') }}"
-#    wait: yes
-#    wait_timeout: 300
-#    wait_condition:
-#     type: Complete
-#     status: True
-
-# - name: Wait Until Job Is Done
-#   k8s_info:
-#     name: "{{ klovercloud_zookeeper_deployment_name }}"
-#     kind: Deployment
-#     namespace: "{{ klovercloud_namespace }}"
-#   register: job_status
-#   until: job_status.items[0].status.active != 1
-#   retries: 10
-#   delay: 10
-#   ignore_errors: yes
-
-# - name: Get Final Job Status
-#   k8s_info:
-#     name: "{{ klovercloud_zookeeper_deployment_name }}"
-#     kind: Deployment
-#     namespace: "{{ klovercloud_namespace }}"
-#   register: job_status
-
-# - fail:
-#     msg: "Job Has Been Failed!"
-#   when: job_status.items[0].status.failed == 1
 
 - name: wait for pods to come up
   shell: kubectl get pods -l app={{ klovercloud_kafka_app_label }} -n {{ klovercloud_namespace }} -o json

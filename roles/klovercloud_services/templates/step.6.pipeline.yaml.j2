@@ -39,53 +39,13 @@ spec:
             cpu: {{ klovercloud_pipeline_cpu_limit }}
             memory: {{ klovercloud_pipeline_memory_limit }}
 {% endif %}
-        env:
-        - name: MONGO_SERVER
-          value: "{{ klovercloud_mongodb_service_name }}"
-        - name: MONGO_PORT
-          value: "{{ klovercloud_mongodb_service_port }}"
-        - name: MONGO_AUTH_DATABASE
-          value: "{{ klovercloud_mongo_auth_db_name }}"
-        - name: MONGO_USERNAME
-          value: "{{ klovercloud_mongo_root_username }}"
-        - name: MONGO_PASSWORD
-          value: "{{ klovercloud_mongodb_root_password }}"
-        - name: JENKINS_SERVER
-          value: "35.239.103.165"
-        - name: JENKINS_PORT
-          value: "8080"
-        - name: JENKINS_USER
-          value: "klovercloud"
-        - name: JENKINS_TOKEN
-          value: "1114011c70ca964a1b6f05ebb16ddae103"
-        - name: KAFKA_SERVER
-          value: "{{ klovercloud_kafka_service_name }}"
-        - name: KAFKA_PORT
-          value: "{{ klovercloud_kafka_service_port }}"
-        - name: KLOVERCLOUD_FACADE_SERVICE_DOMAIN
-          value: "{{ klovercloud_facade_host }}"
-        - name: KLOVERCLOUD_FACADE_SERVICE_NAME
-          value: "{{ klovercloud_facade_service_name }}"
-        - name: KLOVERCLOUD_FACADE_SERVICE_API_ACCESS_TOKEN
-          value: "{{ klovercloud_facade_api_access_token }}"
-        - name: CONNECT_TO_KLOVERCLOUD_FACADE_WEB_SOCKET
-          value: "true"
-        - name: KLOVERCLOUD_MANAGEMENT_SERVICE_NAME
-          value: "{{ klovercloud_management_service_name }}"
-        - name: KLOVERCLOUD_APP_BUILDER_SERVICE_NAME
-          value: "klovercloud-app-builder"
-        - name: KLOVERCLOUD_HARBOR_SERVICE_NAME
-          value: "{{ klovercloud_harbor_service_name }}"
-        - name: KLOVERCLOUD_MONITOR_SERVICE_NAME
-          value: "{{ klovercloud_monitor_service_name }}"
-        - name: KLOVERCLOUD_CI_SERVICE_NAME
-          value: "{{ klovercloud_management_ci_service_name }}"
-        - name: KLOVERCLOUD_DNS_MANAGER_SERVICE_NAME
-          value: "{{ klovercloud_dns_manager_service }}"
-        - name: CI_TECHNOLOGY
-          value: "{{ klovercloud_ci_tecknology }}"
-        - name: DEFAULT_INGRESS_DOMAIN
-          value: "{{ klovercloud_default_ingress_domain }}"
+        envFrom:
+        - secretRef:
+            name: {{ klovercloud_mongodb_secret }}
+        - secretRef:
+            name: {{ klovercloud_facade_secret }}
+        - configMapRef:
+            name: {{ klovercloud_pipeline_envar_configmap_name }}
         ports:
         - containerPort: {{ klovercloud_pipeline_container_port1 }}
         - containerPort: {{ klovercloud_pipeline_container_port2 }}

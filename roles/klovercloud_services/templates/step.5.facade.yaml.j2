@@ -40,50 +40,15 @@ spec:
             cpu: {{ klovercloud_facade_cpu_limit }}
             memory: {{ klovercloud_facade_memory_limit }}
 {% endif %}
-
-        env:
-        - name: MONGO_SERVER
-          value: "{{ klovercloud_mongodb_service_name }}"
-        - name: MONGO_PORT
-          value: "{{ klovercloud_mongodb_service_port }}"
-        - name: MONGO_AUTH_DATABASE
-          value: "{{ klovercloud_mongo_auth_db_name }}"
-        - name: MONGO_USERNAME
-          value: "{{ klovercloud_mongo_root_username }}"
-        - name: MONGO_PASSWORD
-          value: "{{ klovercloud_mongodb_root_password }}"
-        - name: ADMIN_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: {{ klovercloud_super_admin_secret }}
-              key: username
-        - name: ADMIN_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: {{ klovercloud_super_admin_secret }}
-              key: password
-        - name: KLOVERCLOUD_MANAGEMENT_SERVICE_NAME
-          value: "{{ klovercloud_management_service_name }}"
-        - name: KLOVERCLOUD_PIPELINE_SERVICE_NAME
-          value: "{{ klovercloud_pipeline_service_name }}"
-        - name: KLOVERCLOUD_LISTENER_SERVICE_NAME
-          value: "{{ klovercloud_listener_service_name }}"
-        - name: KLOVERCLOUD_LISTENER_SERVICE_API_ACCESS_TOKEN
-          value: "{{ klovercloud_api_access_token }}"
-        - name: KLOVERCLOUD_DATABASE_SERVICE_NAME
-          value: "{{ klovercloud_database_service_name }}"
-        - name: KLOVERCLOUD_OBJECT_STORAGE_SERVICE_NAME
-          value: "{{ klovercloud_rook_ceph_object_storage_service_name }}"
-        - name: KLOVERCLOUD_HARBOR_SERVICE_NAME
-          value: "{{ klovercloud_harbor_service_name }}"
-        - name: KLOVERCLOUD_METRICS_SERVICE_NAME
-          value: "{{ klovercloud_metrics_service_name }}"
-        - name: KLOVERCLOUD_MONITOR_SERVICE_NAME
-          value: "{{ klovercloud_monitor_service_name }}"
-        - name: KLOVERCLOUD_LOG_MANAGER_SERVICE_NAME
-          value: "{{ klovercloud_log_manager_service }}"
-        - name: KLOVERCLOUD_DNS_MANAGER_SERVICE_NAME
-          value: "{{ klovercloud_dns_manager_service }}"
+        envFrom:
+        - secretRef:
+            name: {{ klovercloud_mongodb_secret }}
+        - secretRef:
+            name: {{ klovercloud_super_admin_secret }}
+        - secretRef:
+            name: {{ klovercloud_listener_secret }}
+        - configMapRef:
+            name: {{ klovercloud_facade_envar_configmap_name }}
         ports:
         - containerPort: {{ klovercloud_facade_container_port1 }}
         - containerPort: {{ klovercloud_facade_container_port2 }}

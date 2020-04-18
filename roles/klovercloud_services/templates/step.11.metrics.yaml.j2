@@ -35,15 +35,9 @@ spec:
               cpu: {{ klovercloud_metrics_cpu_limit }}
               memory: {{ klovercloud_metrics_memory_limit }}
 {% endif %}
-          env:
-            - name: RUN_MODE
-              value: "PRODUCTION"
-            - name: DATABASE_CONNECTION_STR
-              value: "mongodb://{{ klovercloud_mongo_root_username }}:{{ klovercloud_mongodb_root_password }}@{{ klovercloud_mongodb_service_name }}:{{ klovercloud_mongodb_service_port }}"
-            - name: DATABASE_NAME
-              value: "{{ klovercloud_metrics_db_name }}"
-            - name: PROMETHEUS_BASE_URL
-              value: "{{ klovercloud_prometheus_base_url }}"
+          envFrom:
+          - configMapRef:
+              name: {{ klovercloud_metrics_envar_configmap_name }}
           ports:
             - containerPort: {{ klovercloud_metrics_container_port }}
           readinessProbe:

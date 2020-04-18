@@ -35,19 +35,9 @@ spec:
             cpu: {{ klovercloud_log_manager_cpu_limit }}
             memory: {{ klovercloud_log_manager_memory_limit }}
 {% endif %}
-        env:
-        - name: DEVELOPER_ALIAS
-          value: {{ klovercloud_developer_alias }}
-        - name: RUN_MODE
-          value: "PRODUCTION"
-        - name: USER_NAME
-          value: "{{ loki_username }}"
-        - name: PASSWORD
-          value: "{{ loki_password }}"
-        - name: LOKI_URL
-          value: "https://{{ loki_url }}/"
-        - name: LOKIWS_URL
-          value: "ws://{{ loki_url }}/"
+        envFrom:
+        - configMapRef:
+            name: {{ klovercloud_log_manager_envar_configmap_name }}
         ports:
         - containerPort: {{ klovercloud_log_manager_container_port }}
         readinessProbe:
