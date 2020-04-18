@@ -34,14 +34,6 @@
     groups['kube-master'].index(inventory_hostname) == 0 
   ignore_errors: yes
 
-
-
-  # { kubectl get secret git-secret -n tekton -o json; } || { kubectl apply -f git-sec.yaml; }
-
-
-
-
-
 # reset facts values
 
 - name: reset variables

@@ -225,7 +225,7 @@ klovercloud_kafka_container_port: 9092
 klovercloud_kafka_target_port: 9092
 klovercloud_kafka_service_port: 9092
 klovercloud_kafka_image: bitnami/kafka:latest
-klovercloud_kafka_storage: 2Gi
+klovercloud_kafka_storage: 10Gi
 
 klovercloud_zookeeper_replica: 1
 klovercloud_zookeeper_io_kompose_service: zookeeper
@@ -236,7 +236,7 @@ klovercloud_zookeeper_image: bitnami/zookeeper:latest
 klovercloud_zookeeper_container_port: 2181
 klovercloud_zookeeper_service_port: 2181
 klovercloud_zookeeper_target_port: 2181
-klovercloud_zookeeper_storage: 2Gi
+klovercloud_zookeeper_storage: 10Gi
 
 ####### klovercloud nexus #######
 klovercloud_nexus_namespace: nexus
