@@ -63,6 +63,7 @@
   with_items:
      - { src: 'step.0.1.secrets.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.0.1.secrets.yaml'  }  
      - { src: 'step.0.2.cert_issuer.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.0.2.cert_issuer.yaml'  }
+     - { src: 'step.0.3.config_map.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.0.3.config_map.yaml'  }
      - { src: 'step.1.harbor_installation.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.1.harbor_installation.yaml'  } 
      - { src: 'step.2.mongodb.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.2.mongodb.yaml'  }  
      - { src: 'step.3.0.nexus_operator.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.3.0.nexus_operator.yaml'  } 
@@ -97,6 +98,14 @@
 
 - name: Creates secrets if not present
   shell: kubectl get secret {{ klovercloud_super_admin_secret }} -n {{ klovercloud_namespace }} -o json || kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.0.1.secrets.yaml;
+  when: >
+    groups['kube_master'].index(inventory_hostname) == 0   
+  ignore_errors: yes
+
+# Deploy configMap
+
+- name: Creates configMap
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.0.3.config_map.yaml;
   when: >
     groups['kube_master'].index(inventory_hostname) == 0   
   ignore_errors: yes
