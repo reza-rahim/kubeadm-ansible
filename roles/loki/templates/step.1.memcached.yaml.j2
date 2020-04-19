@@ -105,12 +105,12 @@ spec:
         ports:
         - containerPort: 11211
           name: client
-{% if loki_taint is defined and if profile  == "prod" %}
+{% if loki_taint is defined and profile  == "prod" %}
 
         resources:
           limits:
             cpu: {{ loki_memcached_limit_cpu }}
-            memory: {{ loki_memcached_limit_mem }
+            memory: {{ loki_memcached_limit_mem }}
           requests:
             cpu: {{ loki_memcached_req_cpu }}
             memory: {{ loki_memcached_req_mem }}
@@ -148,7 +148,7 @@ kind: StatefulSet
 metadata:
   name: memcached-frontend
 spec:
-  replicas: {{ loki_memcached-frontend_replica }}
+  replicas: {{ loki_memcached_frontend_replica }}
   selector:
     matchLabels:
       name: memcached-frontend
@@ -178,12 +178,12 @@ spec:
         - containerPort: 11211
           name: client
 
-{%  if loki_taint is defined and  if profile  == "prod" %}
+{%  if loki_taint is defined and profile  == "prod" %}
 
         resources:
           limits:
             cpu: {{ loki_memcached_limit_cpu }}
-            memory: {{ loki_memcached_limit_mem }
+            memory: {{ loki_memcached_limit_mem }}
           requests:
             cpu: {{ loki_memcached_req_cpu }}
             memory: {{ loki_memcached_req_mem }}
@@ -250,12 +250,12 @@ spec:
         - containerPort: 11211
           name: client
 
-{%  if loki_taint is defined and if profile  == "prod" %}
+{%  if loki_taint is defined and  profile  == "prod" %}
 
         resources:
           limits:
             cpu: {{ loki_memcached_limit_cpu }}
-            memory: {{ loki_memcached_limit_mem }
+            memory: {{ loki_memcached_limit_mem }}
           requests:
             cpu: {{ loki_memcached_req_cpu }}
             memory: {{ loki_memcached_req_mem }}
@@ -322,12 +322,12 @@ spec:
         - containerPort: 11211
           name: client
 
-{% if loki_taint is defined and if profile  == "prod" %}
+{% if loki_taint is defined and  profile  == "prod" %}
 
         resources:
           limits:
             cpu: {{ loki_memcached_limit_cpu }}
-            memory: {{ loki_memcached_limit_mem }
+            memory: {{ loki_memcached_limit_mem }}
           requests:
             cpu: {{ loki_memcached_req_cpu }}
             memory: {{ loki_memcached_req_mem }}

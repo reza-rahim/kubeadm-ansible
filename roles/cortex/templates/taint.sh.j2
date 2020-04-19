@@ -1,16 +1,14 @@
 {% macro label() -%}
-{% for host in groups['kube-cortex'] %} kubectl label nodes {{ host }}  dedicated={{ cortex_taint }} ; {% endfor %}
+{% for host in groups['kube_cortex'] %} kubectl label nodes {{ host }}  dedicated={{ cortex_taint }} ; {% endfor %}
 {% endmacro -%}
 
 {% macro taint() -%}
-{% for host in groups['kube-cortex'] %} kubectl taint nodes {{ host }} dedicated={{ cortex_taint }}:NoSchedule ;  {% endfor %}
+{% for host in groups['kube_cortex'] %} kubectl taint nodes {{ host }} dedicated={{ cortex_taint }}:NoSchedule ;  {% endfor %}
 {% endmacro -%}
 
-
-{% if cortex_taint is defined and profile  == "prod" %}
+{% if kube_cortex is defined and cortex_taint is defined and profile  == "prod" %}
 
   {{ label() }} 
   {{ taint() }}
 
 {% endif %}
-

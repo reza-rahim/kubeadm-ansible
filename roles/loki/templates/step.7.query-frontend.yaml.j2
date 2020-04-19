@@ -3,72 +3,69 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    name: distributor
-  name: distributor
+    name: query-frontend
+  name: query-frontend
 spec:
+  clusterIP: None
   ports:
-  - name: distributor-http-metrics
+  - name: query-frontend-http-metrics
     port: 80
     targetPort: 80
-  - name: distributor-grpc
+  - name: query-frontend-grpc
     port: 9095
     targetPort: 9095
   selector:
-    name: distributor
+    name: query-frontend
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: distributor
+  name: query-frontend
 spec:
   minReadySeconds: 10
-  replicas: {{ loki_distributor_replica }}
+  replicas: {{ loki_query_frontend_replica }}
   revisionHistoryLimit: 10
   selector:
     matchLabels:
-      name: distributor
+      name: query-frontend
   template:
     metadata:
       annotations:
         config_hash: 4f80cdaf0db655fa4b3b3cd15c0a0f44
+        prometheus.io/port: "80"
+        prometheus.io/scrape: "true"
       labels:
-        name: distributor
+        name: query-frontend
     spec:
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
               matchLabels:
-                name: distributor
+                name: query-frontend
             topologyKey: kubernetes.io/hostname
       containers:
       - args:
         - -config.file=/etc/loki/config/config.yaml
         #- -limits.per-user-override-config=/etc/loki/overrides/overrides.yaml
-        - -target=distributor
+        #- -log.level=debug
+        - -target=query-frontend
         image: grafana/loki:v1.3.0
         imagePullPolicy: IfNotPresent
-        name: distributor
+        name: query-frontend
         ports:
         - containerPort: 80
-        :  name: http-metrics
+          name: http-metrics
         - containerPort: 9095
           name: grpc
-        readinessProbe:
-          httpGet:
-            path: /ready
-            port: 80
-          initialDelaySeconds: 15
-          timeoutSeconds: 1
- {% if profile  == "prod" %}
+{% if profile  == "prod" %}
 
         resources:
-         limits:
-           cpu: "1"
-           memory: 1Gi
-        requests:
-           cpu: 500m
-           memory: 500Mi
+          limits:
+           memory: {{ loki_queryfrontend_limit_mem }}
+         requests:
+           cpu: {{ loki_queryfrontend_req_cpu }}
+          memory: {{ loki_queryfrontend_req_mem }}
 {% endif %}
 
         volumeMounts:
@@ -83,4 +80,3 @@ spec:
       - configMap:
           name: overrides
         name: overrides
----

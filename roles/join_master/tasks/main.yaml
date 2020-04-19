@@ -12,6 +12,6 @@
 - name:  join master
   shell: sh /etc/kubernetes/master_join.sh
   when: >
-    inventory_hostname in groups['kube-master'] and
-    groups['kube-master'].index(inventory_hostname) >  0 and
-    command_result.rc != 0 
+    inventory_hostname in groups['kube_master'] and
+    groups['kube_master'].index(inventory_hostname) >  0 and
+    command_result.rc != 0    

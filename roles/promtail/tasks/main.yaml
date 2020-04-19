@@ -1,0 +1,26 @@
+---
+
+- name: Creates /etc/kubernetes/kubeadm directory
+  file: path=/etc/kubernetes/kubeadm/promtail  recurse=yes state=directory
+  when: >
+    groups['kube_master'].index(inventory_hostname) == 0 
+
+- name: Copy promtail config files
+  template: src="{{ item.src }}" dest="{{ item.dest }}"
+  with_items:
+     - { src: 'step.0.promtail.yaml.j2', dest: '/etc/kubernetes/kubeadm/promtail/step.0.promtail.yaml'  }  
+  when: >
+    groups['kube_master'].index(inventory_hostname) == 0 
+  register: result
+
+- name:  create promtail namespace
+  shell: kubectl create ns promtail;
+  when: >
+    groups['kube_master'].index(inventory_hostname) == 0 
+  ignore_errors: yes
+
+- name: create promtail 
+  shell: kubectl apply -n promtail -f /etc/kubernetes/kubeadm/promtail/step.0.promtail.yaml; \
+  when: >
+    groups['kube_master'].index(inventory_hostname) == 0 
+  ignore_errors: yes

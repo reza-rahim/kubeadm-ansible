@@ -43,7 +43,7 @@ data:
   promtail.yml: |
     clients:
       #- url: http://loki:password@gateway.loki.svc/loki/api/v1/push
-      - url: http://gateway.loki.svc/loki/api/v1/push
+      - url: {{ loki_gateway_url }}
     scrape_configs:
       - job_name: kubernetes-pods-name
         kubernetes_sd_configs:

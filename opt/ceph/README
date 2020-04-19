@@ -1,4 +1,12 @@
 #
+# 
+
+https://blogs.oracle.com/cloud-infrastructure/running-ceph-clusters-with-rook-in-oracle-container-engine-for-kubernetes
+
+https://medium.com/cloudops/the-ultimate-rook-and-ceph-survival-guide-eff198a5764a
+
+https://www.virtualtothecore.com/adventures-with-ceph-storage-part-5-install-ceph-in-the-lab/
+
 ssh kube-master-0 "mkdir -p ~/ceph"
 scp  common.yaml kube-master-0:~/ceph 
 scp  operator.yaml kube-master-0:~/ceph 
