@@ -88,7 +88,7 @@
 
 - name: reset klovercloud_super_admin_password
   set_fact:
-    klovercloud_super_admin_password: "{{ password.stdout  | b64decode }}"
+    klovercloud_super_admin_password: "{{ password  | b64decode }}"
 
 
 - name: Login to listener service as admin user
