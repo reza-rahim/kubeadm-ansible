@@ -171,6 +171,7 @@
 - name: wait for pods to get ready
   shell: kubectl wait --for=condition=ready -l "name={{ klovercloud_nexus_operator_name }}" -n {{ klovercloud_nexus_namespace }}
   register: kubectl_get_pods
+  ignore_errors: yes
 
 - name: 
   wait_for:
@@ -200,7 +201,7 @@
 
 - name: copy admin.password file from pod
   shell: kubectl cp {{klovercloud_nexus_cr}}-0:/nexus-data/admin.password /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/admin.password -n nexus
-
+  ignore_errors: yes
 
 - name: 
   set_fact:
