@@ -35,7 +35,7 @@ items:
       io.kompose.service: {{ klovercloud_zookeeper_io_kompose_service }}
   status:
     loadBalancer: {}
-- apiVersion: apps/v1beta1
+- apiVersion: apps/v1
   kind: StatefulSet
   metadata:
     name: {{ klovercloud_kafka_statefulset_name }}
@@ -43,6 +43,9 @@ items:
   spec:
     serviceName: {{ klovercloud_kafka_service_name }}
     replicas: {{ klovercloud_kafka_replica }}
+    selector:
+      matchLabels:
+        io.kompose.service: {{ klovercloud_kafka_io_kompose_service }}
     template:
       metadata:
         labels:
