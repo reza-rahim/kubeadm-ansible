@@ -127,7 +127,7 @@
     groups['kube_master'].index(inventory_hostname) == 0  
   register: result
 
-  - name:  
+- name:  
   shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.2.1.secret.yaml;
   when: >
     groups['kube_master'].index(inventory_hostname) == 0
