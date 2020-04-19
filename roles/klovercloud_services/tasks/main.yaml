@@ -5,7 +5,7 @@
 - name: Creates /etc/kubernetes/kubeadm directory
   file: path=/etc/kubernetes/kubeadm/klovercloud/klovercloud_services  recurse=yes state=directory
   when: >
-    groups['kube-master'].index(inventory_hostname) == 0  
+    groups['kube_master'].index(inventory_hostname) == 0  
 
 
 - name: Copy descriptors
@@ -15,7 +15,7 @@
      - { src: 'step.2.listener.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.2.listener.yaml'  } 
      - { src: 'step.3.management.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.3.management.yaml'  } 
   when: >
-    groups['kube-master'].index(inventory_hostname) == 0  
+    groups['kube_master'].index(inventory_hostname) == 0  
   register: result
 
   
@@ -27,7 +27,7 @@
 - name:  
   shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.1.klovercloud-harbor.yaml;
   when: >
-    groups['kube-master'].index(inventory_hostname) == 0   
+    groups['kube_master'].index(inventory_hostname) == 0   
 
 
 - name: wait for pods to come up
@@ -59,7 +59,7 @@
 - name:  
   shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.2.listener.yaml;
   when: >
-    groups['kube-master'].index(inventory_hostname) == 0 
+    groups['kube_master'].index(inventory_hostname) == 0 
 
 
 - name: wait for pods to come up
@@ -124,13 +124,13 @@
   with_items:
      - { src: 'step.2.1.secret.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.2.1.secret.yaml'  } 
   when: >
-    groups['kube-master'].index(inventory_hostname) == 0  
+    groups['kube_master'].index(inventory_hostname) == 0  
   register: result
 
   - name:  
   shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.2.1.secret.yaml;
   when: >
-    groups['kube-master'].index(inventory_hostname) == 0
+    groups['kube_master'].index(inventory_hostname) == 0
 
 
 # deploy management
@@ -138,7 +138,7 @@
 - name:  
   shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.3.management.yaml;
   when: >
-    groups['kube-master'].index(inventory_hostname) == 0
+    groups['kube_master'].index(inventory_hostname) == 0
 
 - name: wait for pods to come up
   shell: kubectl get pods -n {{ klovercloud_namespace }} -o json
@@ -165,7 +165,7 @@
   with_items:
       - { src: 'step.4.facade.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.4.facade.yaml'  } 
   when: >
-    groups['kube-master'].index(inventory_hostname) == 0  
+    groups['kube_master'].index(inventory_hostname) == 0  
   register: result
 
 
@@ -173,7 +173,7 @@
 - name:  
   shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.4.facade.yaml;
   when: >
-    groups['kube-master'].index(inventory_hostname) == 0
+    groups['kube_master'].index(inventory_hostname) == 0
 
 
 - name: wait for pods to come up
@@ -239,14 +239,14 @@
 
      - { src: 'step.4.1.secret.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.4.1.secret.yaml'  } 
   when: >
-    groups['kube-master'].index(inventory_hostname) == 0  
+    groups['kube_master'].index(inventory_hostname) == 0  
   register: result
 
 
 - name:  
   shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.4.1.secret.yaml;
   when: >
-     groups['kube-master'].index(inventory_hostname) == 0 
+     groups['kube_master'].index(inventory_hostname) == 0 
 
 
 - name: Copy descriptors
@@ -263,7 +263,7 @@
      - { src: 'step.12.object_storage.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.12.object_storage.yaml'  } 
      - { src: 'step.13.klovercloud-ci.v1.1.0.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.13.klovercloud-ci.v1.1.0.yaml'  } 
   when: >
-    groups['kube-master'].index(inventory_hostname) == 0  
+    groups['kube_master'].index(inventory_hostname) == 0  
   register: result
 
 
@@ -272,28 +272,28 @@
 - name:  
   shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.5.pipeline.yaml;
   when: >
-     groups['kube-master'].index(inventory_hostname) == 0 
+     groups['kube_master'].index(inventory_hostname) == 0 
 
 # deploy monitor 
 
 - name:  
   shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.6.monitor.yaml;
   when: >
-     groups['kube-master'].index(inventory_hostname) == 0 
+     groups['kube_master'].index(inventory_hostname) == 0 
 
 # deploy klovercloud-database 
 
 - name:  
   shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.7.klovercloud-database.yaml;
   when: >
-     groups['kube-master'].index(inventory_hostname) == 0 
+     groups['kube_master'].index(inventory_hostname) == 0 
 
 # deploy dns_manager 
 
 - name:  
   shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.8.dns_manager.yaml;
   when: >
-     groups['kube-master'].index(inventory_hostname) == 0
+     groups['kube_master'].index(inventory_hostname) == 0
 
 
 # deploy log_manager
@@ -301,7 +301,7 @@
 - name:  
   shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.9.log_manager.yaml;
   when: >
-     groups['kube-master'].index(inventory_hostname) == 0
+     groups['kube_master'].index(inventory_hostname) == 0
 
 
 # deploy metrics
@@ -309,14 +309,14 @@
 - name:  
   shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.10.metrics.yaml;
   when: >
-     groups['kube-master'].index(inventory_hostname) == 0
+     groups['kube_master'].index(inventory_hostname) == 0
 
 # Create my_store service and ingress 
 
 - name:  
   shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.11.my_store.yaml;
   when: >
-     groups['kube-master'].index(inventory_hostname) == 0
+     groups['kube_master'].index(inventory_hostname) == 0
 
 # Create rados admin user
 
@@ -328,7 +328,7 @@
 - name:  
   shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.12.object_storage.yaml;
   when: >
-     groups['kube-master'].index(inventory_hostname) == 0
+     groups['kube_master'].index(inventory_hostname) == 0
 
 
 # deploy klovercloud-ci
@@ -336,7 +336,7 @@
 - name:  
   shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.13.klovercloud-ci.v1.1.0.yaml;
   when: >
-    groups['kube-master'].index(inventory_hostname) == 0   
+    groups['kube_master'].index(inventory_hostname) == 0   
   ignore_errors: yes
 
 

@@ -6,32 +6,32 @@
 - name: Create namespace for klovercloud
   shell: kubectl create ns {{ klovercloud_namespace }};
   when: >
-    groups['kube-master'].index(inventory_hostname) == 0 
+    groups['kube_master'].index(inventory_hostname) == 0 
   ignore_errors: yes
 
 - name: Create namespace for klovercloud-ci 
   shell: kubectl create ns {{ klovercloud_ci_namespace }};
   when: >
-    groups['kube-master'].index(inventory_hostname) == 0 
+    groups['kube_master'].index(inventory_hostname) == 0 
   ignore_errors: yes
 
 - name: Create namespace for nexus 
   shell: kubectl create ns {{ klovercloud_nexus_namespace }};
   when: >
-    groups['kube-master'].index(inventory_hostname) == 0 
+    groups['kube_master'].index(inventory_hostname) == 0 
   ignore_errors: yes
 
 - name: Create namespace for harbor
   shell: kubectl create ns {{ klovercloud_harbor_namespace }};
   when: >
-    groups['kube-master'].index(inventory_hostname) == 0 
+    groups['kube_master'].index(inventory_hostname) == 0 
   ignore_errors: yes
 
 
 - name: Create namespace for rook ceph
   shell: kubectl create ns {{ klovercloud_rook_ceph_namespace }};
   when: >
-    groups['kube-master'].index(inventory_hostname) == 0 
+    groups['kube_master'].index(inventory_hostname) == 0 
   ignore_errors: yes
 
 # reset facts values
@@ -54,7 +54,7 @@
 - name: Creates /etc/kubernetes/kubeadm directory
   file: path=/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources  recurse=yes state=directory
   when: >
-    groups['kube-master'].index(inventory_hostname) == 0  
+    groups['kube_master'].index(inventory_hostname) == 0  
 
 # temp=$(kubectl get secret regcred-dh -n tekton -o json | jq -r '.data.".dockerconfigjson"' )
 
@@ -70,7 +70,7 @@
      - { src: 'step.4.kafka.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.4.kafka.yaml'  } 
      - { src: 'step.5.radosgw_exporter.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.5.radosgw_exporter.yaml'  } 
   when: >
-    groups['kube-master'].index(inventory_hostname) == 0  
+    groups['kube_master'].index(inventory_hostname) == 0  
   register: result
   
 
@@ -80,25 +80,25 @@
 - name: Create secret to pull images from registry for tekton ns
   shell: kubectl create secret docker-registry  {{ klovercloud_image_pulling_secret }} --docker-server={{ klovercloud_registry_url }} --docker-username={{ klovercloud_registry_username }} --docker-password={{ klovercloud_registry_password }} --docker-email={{ klovercloud_registry_email }} -n {{ klovercloud_ci_namespace }};
   when: >
-    groups['kube-master'].index(inventory_hostname) == 0   
+    groups['kube_master'].index(inventory_hostname) == 0   
   ignore_errors: yes
 
 - name: Create secret to pull images from registry klovercloud ns
   shell: kubectl create secret docker-registry  {{ klovercloud_image_pulling_secret }} --docker-server={{ klovercloud_registry_url }} --docker-username={{ klovercloud_registry_username }} --docker-password={{ klovercloud_registry_password }} --docker-email={{ klovercloud_registry_email }} -n {{ klovercloud_namespace }};
   when: >
-    groups['kube-master'].index(inventory_hostname) == 0   
+    groups['kube_master'].index(inventory_hostname) == 0   
   ignore_errors: yes
 
 - name: Create secret to pull images from registry klovercloud ns
   shell: kubectl create secret docker-registry  {{ klovercloud_image_pulling_secret }} --docker-server={{ klovercloud_registry_url }} --docker-username={{ klovercloud_registry_username }} --docker-password={{ klovercloud_registry_password }} --docker-email={{ klovercloud_registry_email }} -n {{ klovercloud_harbor_namespace }};
   when: >
-    groups['kube-master'].index(inventory_hostname) == 0   
+    groups['kube_master'].index(inventory_hostname) == 0   
   ignore_errors: yes 
 
 - name: Creates secrets if not present
   shell: kubectl get secret {{ klovercloud_super_admin_secret }} -n {{ klovercloud_namespace }} -o json || /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.0.1.secrets.yaml;
   when: >
-    groups['kube-master'].index(inventory_hostname) == 0   
+    groups['kube_master'].index(inventory_hostname) == 0   
   ignore_errors: yes
 
 # Create issuer
@@ -106,20 +106,20 @@
 - name: Create issuer
   shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.0.2.cert_issuer.yaml;
   when: >
-    groups['kube-master'].index(inventory_hostname) == 0 
+    groups['kube_master'].index(inventory_hostname) == 0 
 
 # install tekton
 
 - name: Install Tekton Pipelines and its dependencies
   shell: kubectl apply --filename https://storage.googleapis.com/tekton-releases/pipeline/latest/release.yaml;
   when: >
-   groups['kube-master'].index(inventory_hostname) == 0   
+   groups['kube_master'].index(inventory_hostname) == 0   
   ignore_errors: yes
 
 - name: Run for those container runtime that does not support image-reference:tag@digest
   shell: kubectl apply --filename https://storage.googleapis.com/tekton-releases/pipeline/latest/release.notags.yaml;
   when: >
-   groups['kube-master'].index(inventory_hostname) == 0   
+   groups['kube_master'].index(inventory_hostname) == 0   
   ignore_errors: yes
 
 
@@ -128,7 +128,7 @@
 - name: Install harbor
   shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.1.harbor_installation.yaml;
   when: >
-    groups['kube-master'].index(inventory_hostname) == 0
+    groups['kube_master'].index(inventory_hostname) == 0
   ignore_errors: yes
 
 
@@ -141,9 +141,9 @@
 - name: deploy mongo db  
   shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.2.mongodb.yaml;
   when: >
-    groups['kube-master'].index(inventory_hostname) == 0   
+    groups['kube_master'].index(inventory_hostname) == 0   
   ignore_errors: yes
-  
+
 - name: 
   wait_for:
     timeout: 10
@@ -154,7 +154,7 @@
 - name:  deploy nexus operator deployment descriptor
   shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.3.0.nexus_operator.yaml;
   when: >
-    groups['kube-master'].index(inventory_hostname) == 0   
+    groups['kube_master'].index(inventory_hostname) == 0   
 
 
 
@@ -179,7 +179,7 @@
 - name:  deploy nexus
   shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.3.1.nexus.yaml;
   when: >
-    groups['kube-master'].index(inventory_hostname) == 0
+    groups['kube_master'].index(inventory_hostname) == 0
 
 
 - name: wait for pods to come up
@@ -215,7 +215,7 @@
 - name: deploy Kafka
   shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.4.kafka.yaml;
   when: >
-    groups['kube-master'].index(inventory_hostname) == 0   
+    groups['kube_master'].index(inventory_hostname) == 0   
 
 - name: wait for pods to come up
   shell: kubectl get pods -l app={{ klovercloud_kafka_app_label }} -n {{ klovercloud_namespace }} -o json
@@ -239,6 +239,6 @@
 - name: deploy radosgw exporter
   shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.5.radosgw_exporter.yaml;
   when: >
-    groups['kube-master'].index(inventory_hostname) == 0   
+    groups['kube_master'].index(inventory_hostname) == 0   
 
 
