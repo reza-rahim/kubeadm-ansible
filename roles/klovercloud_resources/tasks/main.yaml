@@ -56,6 +56,8 @@
 - name: get klovercloud_mongodb_root_password
   shell: kubectl get secret {{ klovercloud_mongodb_secret }} -n {{ klovercloud_namespace }} -o json | jq -r '.data."MONGO_PASSWORD"'
   register: password
+  when: >
+    stat_result.stat.exists
 
 - name: Print password
   debug:
@@ -65,7 +67,9 @@
 - name: reset klovercloud_mongodb_root_password
   set_fact:
     klovercloud_mongodb_root_password: "{{ password  | b64decode }}"
-
+  when: >
+    stat_result.stat.exists
+    
 - name: Print klovercloud_mongodb_root_password
   debug:
     msg: "Ansible klovercloud_mongodb_root_password: {{ klovercloud_mongodb_root_password }}"
