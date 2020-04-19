@@ -250,11 +250,11 @@ klovercloud_zookeeper_storage: 10Gi
 ####### klovercloud nexus #######
 klovercloud_nexus_namespace: nexus
 klovercloud_nexus_replica: 1
-klovercloud_nexus_storage: 2000Mi
+klovercloud_nexus_storage: 1000Mi
 klovercloud_nexus_cpu_request: 500m
-klovercloud_nexus_memory_request: 2Gi
+klovercloud_nexus_memory_request: 1Gi
 klovercloud_nexus_cpu_limit: 1000m
-klovercloud_nexus_memory_limit: 4Gi
+klovercloud_nexus_memory_limit: 1Gi
 klovercloud_nexus_default_super_admin_password: abc
 klovercloud_nexus_default_super_admin_username: admin
 klovercloud_nexus_super_admin: admin

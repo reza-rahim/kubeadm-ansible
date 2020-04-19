@@ -93,6 +93,9 @@ items:
     namespace: {{ klovercloud_namespace }}
   spec:
     replicas: {{ klovercloud_zookeeper_replica }}
+    selector:
+    matchLabels:
+      io.kompose.service: {{ klovercloud_zookeeper_io_kompose_service }}
     strategy:
       type: Recreate
     template:
