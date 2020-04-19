@@ -69,7 +69,8 @@
     klovercloud_mongodb_root_password: "{{ password  | b64decode }}"
   when: >
     stat_result.stat.exists
-    
+  ignore_errors: yes
+
 - name: Print klovercloud_mongodb_root_password
   debug:
     msg: "Ansible klovercloud_mongodb_root_password: {{ klovercloud_mongodb_root_password }}"
