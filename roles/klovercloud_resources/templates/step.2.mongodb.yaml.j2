@@ -154,7 +154,7 @@ spec:
         - "/bin/mongodb_exporter --mongodb.uri mongodb://root:${MONGODB_ROOT_PASSWORD}@localhost:27017/admin "
         env:
         - name: MONGODB_ROOT_PASSWORD
-          value: {{ klovercloud_mongodd_root_password }}
+          value: {{ klovercloud_mongodb_root_password }}
         envFrom:
         ports:
         - name: metrics
