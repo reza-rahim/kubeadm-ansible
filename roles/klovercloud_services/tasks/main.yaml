@@ -88,19 +88,18 @@
 
 - name: reset klovercloud_super_admin_password
   set_fact:
-    klovercloud_super_admin_password: "{{ password  | b64decode }}"
-  ignore_errors: yes
+    klovercloud_super_admin_password: "{{ password.stdout  | b64decode }}"
+
 
 - name: Login to listener service as admin user
   shell: kubectl -n {{ klovercloud_namespace }} exec -it $(kubectl -n {{ klovercloud_namespace }} get pod -l "app={{ klovercloud_listener_app_label }}" -o jsonpath='{.items[0].metadata.name}') -- bin/sh -c "curl -X POST 'http://localhost:{{ klovercloud_listener_container_port1 }}/api/auth/login'  -H 'Content-Type:application/json'  -d '{\"username\":\"{{ klovercloud_super_admin_username }}\",\"password\":\"{{ klovercloud_super_admin_password }}\"}'"
   register: login_result
-  ignore_errors: yes
+  
 
 - name: reset login_result
   set_fact:
     login_result: "{{ login_result.stdout | from_json }}"
-  ignore_errors: yes
-
+ 
 
 - name: Create an API Access Token when login request returns token
   shell: kubectl -n {{ klovercloud_namespace }} exec -it $(kubectl -n {{ klovercloud_namespace }} get pod -l "app={{ klovercloud_listener_app_label }}" -o jsonpath='{.items[0].metadata.name}') -- bin/sh -c "curl -X POST 'http://localhost:{{ klovercloud_listener_container_port1 }}/api/api-access-token'  -H 'Content-Type:application/json' -H 'x-auth-token:{{ login_result.token }}' -d '{}'"
@@ -233,16 +232,6 @@
 - name: reset klovercloud_facade_api_access_token
   set_fact:
     klovercloud_facade_api_access_token: "{{ facade_api_access_token.data }}"
-
-# - copy:
-#     content: "{{ klovercloud_facade_api_access_token }}"
-#     dest: "/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/klovercloud_facade_api_access_token.txt"
-#     force: yes
-
-# - name: reset variables
-#   set_fact:
-#     klovercloud_facade_api_access_token: "{{ lookup('file', '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/klovercloud_facade_api_access_token.txt') }}"
-
 
 - name: Copy descriptors
   template: src="{{ item.src }}" dest="{{ item.dest }}"
