@@ -66,7 +66,7 @@
 
 - name: reset klovercloud_mongodb_root_password
   set_fact:
-    klovercloud_mongodb_root_password: "{{ password  | b64decode }}"
+    klovercloud_mongodb_root_password: "{{ password.stdout  | b64decode }}"
   when: >
     stat_result.stat.exists
   ignore_errors: yes
