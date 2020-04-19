@@ -80,7 +80,7 @@
   ignore_errors: yes
 
 - name: wait for pods to get ready
-  shell: kubectl wait --for=condition=ready -l "app={{ klovercloud_listener_app_label }}" -n {{ klovercloud_namespace }}
+  shell: while [[ $(kubectl get pods -l app={{ klovercloud_listener_app_label }} -n {{ klovercloud_namespace }} -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for pod" && sleep 1; done
   register: kubectl_get_pods
 
 - name: get klovercloud_super_admin_password
@@ -194,8 +194,9 @@
   ignore_errors: yes
 
 - name: wait for pods to get ready
-  shell: kubectl wait --for=condition=ready -l "app={{ klovercloud_facade_app_label }}" -n {{ klovercloud_namespace }}
+  shell: while [[ $(kubectl get pods -l app={{ klovercloud_facade_app_label }} -n {{ klovercloud_namespace }} -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for pod" && sleep 1; done
   register: kubectl_get_pods
+
 
 - name: 
   wait_for:

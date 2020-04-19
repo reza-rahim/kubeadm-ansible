@@ -35,7 +35,7 @@
   ignore_errors: yes
 
 # reset facts values
-- name: Check that the somefile.conf exists
+- name: Check if secret exists
   stat:
     path: /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.0.1.secrets.yaml
   register: stat_result
@@ -52,6 +52,23 @@
     klovercloud_super_admin_password: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
   when: >
     not stat_result.stat.exists
+
+- name: get klovercloud_mongodb_root_password
+  shell: kubectl get secret {{ klovercloud_mongodb_secret }} -n {{ klovercloud_namespace }} -o json | jq -r '.data."MONGO_PASSWORD"'
+  register: password
+
+- name: Print password
+  debug:
+    msg: "Ansible klovercloud_mongodb_root_password: {{ password }}"
+
+
+- name: reset klovercloud_mongodb_root_password
+  set_fact:
+    klovercloud_mongodb_root_password: "{{ password  | b64decode }}"
+
+- name: Print klovercloud_mongodb_root_password
+  debug:
+    msg: "Ansible klovercloud_mongodb_root_password: {{ klovercloud_mongodb_root_password }}"
 
 
 
@@ -245,11 +262,9 @@
   wait_for:
     timeout: 20
 
-- name: wait for pods to come up
-  shell:  kubectl get pods -l app={{ klovercloud_kafka_app_label }} -n {{ klovercloud_namespace }} -o json
+- name: wait for pods to get ready
+  shell: while [[ $(kubectl get pods -l app={{ klovercloud_kafka_app_label }} -n {{ klovercloud_namespace }} -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for pod" && sleep 1; done
   register: kubectl_get_pods
-  until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
-
 
 # deploy radosgw exporter
 
