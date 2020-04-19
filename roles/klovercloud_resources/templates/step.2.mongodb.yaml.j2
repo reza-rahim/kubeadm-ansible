@@ -104,7 +104,7 @@ spec:
         - name: MONGODB_REPLICA_SET_KEY
           value: {{ klovercloud_mongodb_replica_set_key }}
         - name: MONGODB_ROOT_PASSWORD
-          value: {{ klovercloud_mongodd_root_password }}
+          value: {{ klovercloud_mongodb_root_password }}
         - name: MONGODB_ADVERTISED_HOSTNAME
           value: "$(MONGODB_POD_NAME).mongodb.klovercloud.svc.cluster.local"
         envFrom:
