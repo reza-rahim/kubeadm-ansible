@@ -4,3 +4,5 @@
 #ansible-playbook -i inventory.ini  addon.step.4.promtail.yaml
 ansible-playbook -i inventory.ini  addon.step.5.monitoring.yaml 
 ansible-playbook -i inventory.ini  addon.step.6.dashboard.yaml 
+ansible-playbook -i inventory.ini  addon.step.7.nginx-ingress.yaml
+ansible-playbook -i inventory.ini  addon.step.8.cert-manager.yaml 
