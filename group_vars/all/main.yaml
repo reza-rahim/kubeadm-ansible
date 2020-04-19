@@ -1,5 +1,5 @@
 profile: dev
-kube_master_lb: 10.20.0.8
+kube_master_lb:  LB 
 
 docker_ce_ubuntu: 18.06.2~ce~3-0~ubuntu
 

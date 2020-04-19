@@ -73,6 +73,6 @@
      update_cache: yes
   loop:
     - kubelet-{{ redhat_k8_version }}
-    - kubeadm-{{ redhat_k8_version }} 
     - kubectl-{{ redhat_k8_version }}
+    - kubeadm-{{ redhat_k8_version }} 
   notify: restart kubelet      
