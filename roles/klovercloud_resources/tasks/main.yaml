@@ -44,8 +44,8 @@
 - name: reset variables
   set_fact:
     klovercloud_harbor_admin_password: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
-    klovercloud_harbor_postgresql_password: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
-    klovercloud_harbor_clair_db_password: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
+    # klovercloud_harbor_postgresql_password: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
+    # klovercloud_harbor_clair_db_password: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
     klovercloud_rook_ceph_object_storage_access_key: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
     klovercloud_rook_ceph_object_storage_secret_key: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
     klovercloud_mongodb_root_password: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
@@ -66,33 +66,33 @@
     stat_result.stat.exists
   ignore_errors: yes
 
-- name: get klovercloud_harbor_postgresql_password
-  shell: kubectl get secret {{ klovercloud_harbor_db_secret }} -n {{ klovercloud_harbor_namespace }} -o json | jq -r '.data."POSTGRESQL_PASSWORD"'
-  register: postgresql_password
-  when: >
-    stat_result.stat.exists
+# - name: get klovercloud_harbor_postgresql_password
+#   shell: kubectl get secret {{ klovercloud_harbor_db_secret }} -n {{ klovercloud_harbor_namespace }} -o json | jq -r '.data."POSTGRESQL_PASSWORD"'
+#   register: postgresql_password
+#   when: >
+#     stat_result.stat.exists
 
 
-- name: reset klovercloud_harbor_postgresql_password
-  set_fact:
-    klovercloud_harbor_postgresql_password: "{{ postgresql_password.stdout  | b64decode }}"
-  when: >
-    stat_result.stat.exists
-  ignore_errors: yes
+# - name: reset klovercloud_harbor_postgresql_password
+#   set_fact:
+#     klovercloud_harbor_postgresql_password: "{{ postgresql_password.stdout  | b64decode }}"
+#   when: >
+#     stat_result.stat.exists
+#   ignore_errors: yes
 
-- name: get klovercloud_harbor_clair_db_password
-  shell: kubectl get secret {{ klovercloud_harbor_db_secret }} -n {{ klovercloud_harbor_namespace }} -o json | jq -r '.data."CLAIR_DB_PASSWORD"'
-  register: clairdb_password
-  when: >
-    stat_result.stat.exists
+# - name: get klovercloud_harbor_clair_db_password
+#   shell: kubectl get secret {{ klovercloud_harbor_db_secret }} -n {{ klovercloud_harbor_namespace }} -o json | jq -r '.data."CLAIR_DB_PASSWORD"'
+#   register: clairdb_password
+#   when: >
+#     stat_result.stat.exists
 
 
-- name: reset klovercloud_harbor_clair_db_password
-  set_fact:
-    klovercloud_harbor_clair_db_password: "{{ clairdb_password.stdout  | b64decode }}"
-  when: >
-    stat_result.stat.exists
-  ignore_errors: yes
+# - name: reset klovercloud_harbor_clair_db_password
+#   set_fact:
+#     klovercloud_harbor_clair_db_password: "{{ clairdb_password.stdout  | b64decode }}"
+#   when: >
+#     stat_result.stat.exists
+#   ignore_errors: yes
 
 # copy decriptors
 
