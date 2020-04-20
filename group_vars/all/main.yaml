@@ -190,7 +190,7 @@ klovercloud_ci_envar_configmap_name: klovercloud-ci-envar-config
 
 ####### klovercloud mongodb #######
 klovercloud_mongodb_replica: 1
-klovercloud_mongodb_storage: 2000Mi
+klovercloud_mongodb_storage: 5000Mi
 klovercloud_mongodb_cpu_request: 500m
 klovercloud_mongodb_memory_request: 500Mi
 klovercloud_mongodb_cpu_limit: 1000m
