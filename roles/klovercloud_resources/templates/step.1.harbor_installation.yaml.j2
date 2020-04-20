@@ -695,7 +695,7 @@ metadata:
     app: {{ klovercloud_harbor_app_label }}
 type: Opaque
 data:
-  POSTGRES_PASSWORD: "Y2hhbmdlaXQ="
+  POSTGRES_PASSWORD: "{{ klovercloud_harbor_postgresql_password }}"
 
 
 ---
