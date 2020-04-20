@@ -152,7 +152,7 @@ klovercloud_ci_cpu_request: 500m
 klovercloud_ci_memory_request: 1024Mi
 klovercloud_ci_cpu_limit: 1000m
 klovercloud_ci_memory_limit: 1536Mi
-klovercloud_ci_containers_port: 8084
+klovercloud_ci_containers_port: 8080
 klovercloud_ci_tecknology: TEKTON
 
 klovercloud_ci_image: klovercloud/service:ci
@@ -215,6 +215,7 @@ klovercloud_mongodb_service_node_port: 32205
 klovercloud_mongodb_metrics_node_port: 32206
 klovercloud_mongodb_image: docker.io/bitnami/mongodb:4.2.3-debian-10-r31
 klovercloud_mongodb_exporter_image: docker.io/bitnami/mongodb-exporter:0.10.0-debian-10-r27
+
 # klovercloud_mongodb_replica_set_key: admin123
 
 klovercloud_mongo_auth_db_name: admin
@@ -540,10 +541,10 @@ klovercloud_harbor_db_connection_str: mongodb://mongoAdmin:abc123@mongodb:27017
 klovercloud_harbor_db_name: klovercloud_harbor
 klovercloud_harbor_project_quotas_count_limit: 20
 klovercloud_harbor_project_quotas_storage_limit: 10000000000
-klovercloud_harbor_container_port: 8085
+klovercloud_harbor_container_port: 8080
 klovercloud_harbor_service_name: klovercloud-harbor
 klovercloud_harbor_service_port: 80
-klovercloud_harbor_service_target_port: 8085
+klovercloud_harbor_service_target_port: 8080
 
 klovercloud_harbor_envar_configmap_name: klovercloud-harbor-envar-config
 
@@ -565,13 +566,13 @@ klovercloud_monitor_cpu_limit: 350m
 klovercloud_monitor_memory_limit: 512Mi
 klovercloud_monitor_db_name: klovercloud_monitor
 
-klovercloud_monitor_container_port: 8088
+klovercloud_monitor_container_port: 8080
 
 
 klovercloud_monitor_service_name: klovercloud-monitor
 
 klovercloud_monitor_service_port: 80
-klovercloud_monitor_service_target_port: 8088
+klovercloud_monitor_service_target_port: 8080
 klovercloud_monitor_envar_configmap_name: klovercloud-monitor-envar-config
 
 
@@ -584,8 +585,8 @@ klovercloud_database_deployment_replica: 1
 klovercloud_database_deployment_image: klovercloud/service:database
 klovercloud_database_service_name: klovercloud-database
 klovercloud_database_service_port: 80
-klovercloud_database_container_port: 8095
-klovercloud_database_service_target_port: 8095
+klovercloud_database_container_port: 8080
+klovercloud_database_service_target_port: 8080
 klovercloud_database_cpu_request: 200m
 klovercloud_database_memory_request: 350Mi
 klovercloud_database_cpu_limit: 350m
@@ -632,10 +633,10 @@ klovercloud_log_manager_memory_request: 350Mi
 klovercloud_log_manager_cpu_limit: 500m
 klovercloud_log_manager_memory_limit: 512Mi
 
-klovercloud_log_manager_container_port: 8086
+klovercloud_log_manager_container_port: 8080
 klovercloud_log_manager_service_name: klovercloud-log-manager
 klovercloud_log_manager_service_port: 80
-klovercloud_log_manager_service_target_port: 8086
+klovercloud_log_manager_service_target_port: 8080
 
 klovercloud_log_manager_envar_configmap_name: klovercloud-log-manager-envar-config
 
@@ -653,10 +654,10 @@ klovercloud_metrics_cpu_limit: 350m
 klovercloud_metrics_memory_limit: 512Mi
 klovercloud_metrics_db_name: klovercloud_metrics
 
-klovercloud_metrics_container_port: 8087
+klovercloud_metrics_container_port: 8080
 klovercloud_metrics_service_name: klovercloud-metrics
 klovercloud_metrics_service_port: 80
-klovercloud_metrics_service_target_port: 8087
+klovercloud_metrics_service_target_port: 8080
 
 klovercloud_metrics_envar_configmap_name: klovercloud-metrics-envar-config
 
@@ -701,10 +702,10 @@ klovercloud_rook_ceph_object_storage_access_key: abc
 klovercloud_rook_ceph_object_storage_secret_key: abc
 
 
-klovercloud_rook_ceph_object_storage_container_port: 8092
+klovercloud_rook_ceph_object_storage_container_port: 8080
 klovercloud_rook_ceph_object_storage_service_name: klovercloud-object-storage
 klovercloud_rook_ceph_object_storage_service_port: 80
-klovercloud_rook_ceph_object_storage_service_target_port: 8092 
+klovercloud_rook_ceph_object_storage_service_target_port: 8080
 
 klovercloud_object_storage_envar_configmap_name: klovercloud-object-storage-envar-config
   
