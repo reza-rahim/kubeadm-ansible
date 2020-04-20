@@ -236,10 +236,13 @@
   set_fact:
     klovercloud_facade_api_access_token: "{{ facade_api_access_token.data }}"
 
+- name: Print klovercloud_facade_api_access_token
+  debug:
+    msg: "klovercloud_facade_api_access_token: {{ klovercloud_facade_api_access_token }}"
+
 - name: Copy descriptors
   template: src="{{ item.src }}" dest="{{ item.dest }}"
   with_items:
-
      - { src: 'step.4.1.secret.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.4.1.secret.yaml'  } 
   when: >
     groups['kube_master'].index(inventory_hostname) == 0  
