@@ -9,6 +9,6 @@
      #- monitoring
      #- nginx-ingress
      #- klovercloud
-     - klovercloud_resources
+     #- klovercloud_resources
      - klovercloud_services
 
