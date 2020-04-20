@@ -137,7 +137,7 @@ klovercloud_registry_url: https://index.docker.io/v1/
 klovercloud_registry_username: klovercloud
 klovercloud_registry_password: Docker@Klover2019!
 klovercloud_registry_email: sheikh.osmani@klovercloud.com
-klovercloud_service_username: klovercloud-service-user@klovercloud.com
+klovercloud_service_username: klovercloud-service-user2@klovercloud.com
 klovercloud_service_lastname: user
 klovercloud_service_firstname: klovercloud service
 klovercloud_service_usertype: AGENT_SERVICE
