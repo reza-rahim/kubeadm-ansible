@@ -223,6 +223,11 @@
   ignore_errors: yes
 
 
+- name: Print service_user
+  debug:
+    msg: "service_user: {{ service_user }}"
+
+
 - name: Request to create a facade Service access token
   shell: kubectl -n {{ klovercloud_namespace }} exec -it $(kubectl -n {{ klovercloud_namespace }} get pod -l "app={{ klovercloud_facade_app_label }}" -o jsonpath='{.items[0].metadata.name}') -- bin/sh -c "curl -X POST 'http://localhost:{{ klovercloud_facade_container_port1 }}/api/api-access-token'  -H 'Content-Type:application/json' -H 'x-auth-token:{{ facade_login_result.token }}' -d '{\"userId\":\"{{ service_user.data }}\"}'"
   register: facade_api_access_token
