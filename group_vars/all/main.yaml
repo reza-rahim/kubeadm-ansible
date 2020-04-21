@@ -1,7 +1,7 @@
 profile: dev
 run_mode: PRODUCTION
 
-kube_master_lb: 62.171.168.79
+kube_master_lb: LB
 
 docker_ce_ubuntu: 18.06.2~ce~3-0~ubuntu
 

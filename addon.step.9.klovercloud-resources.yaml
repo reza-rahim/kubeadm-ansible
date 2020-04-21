@@ -2,5 +2,5 @@
 - hosts: kube_master
   become: yes
   roles:
-     - nginx-ingress
+     - klovercloud_resources
 
