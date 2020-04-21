@@ -1,0 +1,2 @@
+- name: restart envoy
+  command: docker kill some-envoy; docker rm some-envoy; docker run -d  --net host -v ~/envoy.yaml:/etc/envoy/envoy.yaml  --restart=always   --name some-envoy  envoyproxy/envoy:latest

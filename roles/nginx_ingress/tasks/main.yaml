@@ -1,0 +1,36 @@
+---
+
+- name: Creates /etc/kubernetes/kubeadm/nginx-ingress directory
+  file: path=/etc/kubernetes/kubeadm/nginx-ingress  recurse=yes state=directory
+  when: >
+    groups['kube_master'].index(inventory_hostname) == 0
+
+
+- name: Copy ingress config file
+  template: src="{{ item.src }}" dest="{{ item.dest }}"
+  with_items:
+     - { src: 'nginx.yaml.j2', dest: '/etc/kubernetes/kubeadm/nginx-ingress/nginx.yaml'  }  
+     - { src: 'taint.sh.j2', dest: '/etc/kubernetes/kubeadm/nginx-ingress/taint.sh'  }  
+     - { src: 'deploy.sh.j2', dest: '/etc/kubernetes/kubeadm/nginx-ingress/deploy.sh'  }  
+     - { src: 'echo-server.yaml.j2', dest: '/etc/kubernetes/kubeadm/nginx-ingress/echo-server.yaml'  }  
+  when: >
+    groups['kube_master'].index(inventory_hostname) == 0
+  register: result
+
+- name:  label and taint ingress box
+  shell: sh /etc/kubernetes/kubeadm/nginx-ingress/taint.sh;
+  when: >
+    groups['kube_master'].index(inventory_hostname) == 0
+  ignore_errors: yes
+
+- name:  Create namespace
+  shell: kubectl create namespace nginx-ingress;
+  when: >
+    groups['kube_master'].index(inventory_hostname) == 0
+  ignore_errors: yes
+
+- name:  deploy ingress
+  shell: sh /etc/kubernetes/kubeadm/nginx-ingress/deploy.sh ;
+  when: >
+    groups['kube_master'].index(inventory_hostname) == 0
+  ignore_errors: yes
