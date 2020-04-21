@@ -223,13 +223,9 @@
     timeout: 60
 
 - name: wait for pods to get ready
-  shell: kubectl wait --for=condition=ready -l "name={{ klovercloud_nexus_operator_name }}" -n {{ klovercloud_nexus_namespace }}
+  shell: while [[ $(kubectl get pods -l name={{ klovercloud_nexus_operator_name }} -n {{ klovercloud_nexus_namespace }} -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for pod" && sleep 1; done
   register: kubectl_get_pods
   ignore_errors: yes
-
-- name: 
-  wait_for:
-    timeout: 30
 
 - name:  deploy nexus
   shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.3.1.nexus.yaml;
@@ -245,12 +241,17 @@
 
 - name: 
   wait_for:
-    timeout: 90
+    timeout: 30
 
 - name: wait for pods to come up
   shell: kubectl get pods -n {{ klovercloud_nexus_namespace }} -o json
   register: kubectl_get_pods
   until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
+  ignore_errors: yes
+
+- name: wait for pods to get ready
+  shell: while [[ $(kubectl get pods -l app={{ klovercloud_nexus_app_label }} -n {{ klovercloud_nexus_namespace }} -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for pod" && sleep 1; done
+  register: kubectl_get_pods
   ignore_errors: yes
 
 - name: copy admin.password file from pod
