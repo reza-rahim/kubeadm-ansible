@@ -16,7 +16,7 @@ redhat_k8_version: 1.16.8-0
 ##### nginx ingress ########
 nginx_ingress_controller_version: 0.29.0
 nginx_ingress_controller_replicas: 1
-ingress_hostname: www.klovercloud.io
+ingress_hostname: www.dev.klovercloud.io
 nginx_ingress_http_mgmt: 18080
 ingress_limit_cpu: 1000m
 ingress_limit_mem: 2Gi
@@ -117,7 +117,7 @@ loki_distributor_replica: 1
 loki_query-frontend_replica: 1
 loki_username: loki-admin
 loki_password: Dev@Klover2019!
-loki_url: loki.klovercloud.io
+loki_url: loki.dev.klovercloud.io
 
 #######  klovercloud common ####### 
 #klovercloud_super_admin_username: admin-listener@klovercloud.com
@@ -127,7 +127,7 @@ klovercloud_super_admin_password: onhZruhF
 klovercloud_super_admin_secret: klovercloud-super-admin-secret
 klovercloud_dns_manager_service: klovercloud-dns-manager
 klovercloud_log_manager_service: klovercloud-log-manager
-klovercloud_default_ingress_domain: klovercloud.io
+klovercloud_default_ingress_domain: dev.klovercloud.io
 klovercloud_developer_alias: klovercloud
 klovercloud_namespace: klovercloud
 klovercloud_api_access_token: abcxyz
@@ -175,10 +175,10 @@ klovercloud_ci_pipeline_service_port: 80
 klovercloud_ci_nexus_token: YWRtaW46YWRtaW4=
 klovercloud_ci_nexus_username: admin
 klovercloud_ci_nexus_password: admin
-klovercloud_ci_nexus_maven_public_url: http://nexus.klovercloud.io/repository/maven-public/
-klovercloud_ci_nexus_maven_releases_url: http://nexus.klovercloud.io/repository/maven-releases/
-klovercloud_ci_nexus_maven_snapshot_url: http://nexus.klovercloud.io/repository/maven-snapshot/
-klovercloud_ci_nexus_npm_group_url: http://nexus.klovercloud.io/repository/npm-group/
+klovercloud_ci_nexus_maven_public_url: http://nexus.dev.klovercloud.io/repository/maven-public/
+klovercloud_ci_nexus_maven_releases_url: http://nexus.dev.klovercloud.io/repository/maven-releases/
+klovercloud_ci_nexus_maven_snapshot_url: http://nexus.dev.klovercloud.io/repository/maven-snapshot/
+klovercloud_ci_nexus_npm_group_url: http://nexus.dev.klovercloud.io/repository/npm-group/
 
 klovercloud_ci_service_name: klovercloud-ci
 klovercloud_ci_service_port: 80
@@ -273,7 +273,7 @@ klovercloud_nexus_cr: example-nexus
 klovercloud_nexus_app_label: nexus
 
 klovercloud_nexus_ingress_name: klovercloud-nexus
-klovercloud_nexus_ingress_host: nexus.klovercloud.io
+klovercloud_nexus_ingress_host: nexus.dev.klovercloud.io
 
 klovercloud_nexus_secret: klovercloud-nexus-secret
 
@@ -295,7 +295,7 @@ klovercloud_listener_service_name: klovercloud-listener
 klovercloud_listener_metrics_sevice_port: 8081
 klovercloud_listener_metrics_sevice_target_port: 8081
 klovercloud_listener_ingress_name: klovercloud-listener
-klovercloud_listener_ingress_host: listener.klovercloud.io
+klovercloud_listener_ingress_host: listener.dev.klovercloud.io
 klovercloud_listener_envar_configmap_name: klovercloud-listener-envar-config
 klovercloud_listener_secret: klovercloud-listener-secret
 
@@ -348,7 +348,7 @@ klovercloud_facade_target_port: 8080
 klovercloud_facade_metrics_port: 8081
 klovercloud_facade_metrics_target_port: 8081
 klovercloud_facade_tls_secret: facade-tls
-klovercloud_facade_host: facade.klovercloud.io
+klovercloud_facade_host: facade.dev.klovercloud.io
 klovercloud_facade_admin_username: admin@klovercloud.com
 klovercloud_facade_admin_password: hello123
 klovercloud_facade_image: klovercloud/service:facade
@@ -458,7 +458,7 @@ klovercloud_harbor_database_deployment_replica: 1
 
 klovercloud_harbor_ingress_name: klover-alpha-v1-harbor-ingress
 
-klovercloud_harbor_ingress_host: container-registry.klovercloud.io
+klovercloud_harbor_ingress_host: container-registry.dev.klovercloud.io
 
 klovercloud_harbor_jobservice_secret_name: klover-alpha-v1-harbor-jobservice
 klovercloud_harbor_jobservice_config_map_name: klover-alpha-v1-harbor-jobservice
@@ -689,10 +689,10 @@ klovercloud_rook_ceph_object_storage_memory_request: 350Mi
 klovercloud_rook_ceph_object_storage_cpu_limit: 350m
 klovercloud_rook_ceph_object_storage_memory_limit: 512Mi
 klovercloud_rook_ceph_object_storage_db_name: klovercloud_object_storage
-# klovercloud_rook_ceph_object_storage_end_point: https://object-storage.klovercloud.io/
+# klovercloud_rook_ceph_object_storage_end_point: https://object-storage.dev.klovercloud.io/
   
 klovercloud_rook_ceph_object_storage_ingress_name: object-storage-ingress
-klovercloud_rook_ceph_object_storage_ingress_host: object-storage.klovercloud.io
+klovercloud_rook_ceph_object_storage_ingress_host: object-storage.dev.klovercloud.io
 klovercloud_rook_ceph_object_storage_ingress_secret: object-storage-tls
 
 klovercloud_rook_ceph_object_storage_user_id: klovercloud
