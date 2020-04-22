@@ -1,0 +1,74 @@
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ klovercloud_metrics_deployment_name }}
+  namespace: {{ klovercloud_namespace }}
+spec:
+  replicas: {{ klovercloud_metrics_deployment_replica }}
+  selector:
+    matchLabels:
+      app: {{ klovercloud_metrics_app_label }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 50%
+      maxUnavailable: 50%
+  minReadySeconds: 25
+  template:
+    metadata:
+      labels:
+        app: {{ klovercloud_metrics_app_label }}
+    spec:
+      terminationGracePeriodSeconds: 60
+      containers:
+        - name: {{ klovercloud_metrics_deployment_name }}
+          imagePullPolicy: Always
+          image: {{ klovercloud_metrics_image }}
+{% if profile  == "prod" %}
+          resources:
+            requests:
+              cpu: {{ klovercloud_metrics_cpu_request }}
+              memory: {{ klovercloud_metrics_memory_request }}
+            limits:
+              cpu: {{ klovercloud_metrics_cpu_limit }}
+              memory: {{ klovercloud_metrics_memory_limit }}
+{% endif %}
+          envFrom:
+          - configMapRef:
+              name: {{ klovercloud_metrics_envar_configmap_name }}
+          ports:
+            - containerPort: {{ klovercloud_metrics_container_port }}
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ klovercloud_metrics_container_port }}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ klovercloud_metrics_container_port }}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+      imagePullSecrets:
+        - name: {{ klovercloud_image_pulling_secret }}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ klovercloud_metrics_service_name }}
+  namespace: {{ klovercloud_namespace }}
+  labels:
+    app: {{ klovercloud_metrics_app_label }}
+spec:
+  ports:
+    - name: http-rest
+      port: {{ klovercloud_metrics_service_port }}
+      protocol: TCP
+      targetPort: {{ klovercloud_metrics_service_target_port }}
+  selector:
+    app: {{ klovercloud_metrics_app_label }}

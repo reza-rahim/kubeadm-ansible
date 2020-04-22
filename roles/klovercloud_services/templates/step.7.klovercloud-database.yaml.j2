@@ -1,0 +1,78 @@
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ klovercloud_database_deployment_name }}
+  namespace: {{ klovercloud_namespace }}
+spec:
+  replicas: {{ klovercloud_database_deployment_replica }}
+  selector:
+    matchLabels:
+      app: {{ klovercloud_database_app_label }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0
+  minReadySeconds: 25
+  template:
+    metadata:
+      labels:
+        app: {{ klovercloud_database_app_label }}
+    spec:
+      terminationGracePeriodSeconds: 60
+      containers:
+        - name: {{ klovercloud_database_deployment_name }}
+          imagePullPolicy: Always
+          image: {{ klovercloud_database_deployment_image }}
+{% if profile  == "prod" %}
+          resources:
+            requests:
+              cpu: {{ klovercloud_database_cpu_request }}
+              memory: {{ klovercloud_database_memory_request }}
+            limits:
+              cpu: {{ klovercloud_database_cpu_limit }}
+              memory: {{ klovercloud_database_memory_limit }}
+{% endif %}
+          envFrom:
+          - secretRef:
+              name: {{ klovercloud_mongodb_secret }}
+          - configMapRef:
+              name: {{ klovercloud_database_envar_configmap_name }}
+          ports:
+            - containerPort: {{ klovercloud_database_container_port }}
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ klovercloud_database_container_port }}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ klovercloud_database_container_port }}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+      imagePullSecrets:
+        - name: {{ klovercloud_image_pulling_secret }}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ klovercloud_database_service_name }}
+  namespace: {{ klovercloud_namespace }}
+  labels:
+    app: {{ klovercloud_database_app_label }}
+spec:
+  ports:
+    - name: http-rest
+      port: {{ klovercloud_database_service_port }}
+      protocol: TCP
+      targetPort: {{ klovercloud_database_service_target_port }}
+  selector:
+    app: {{ klovercloud_database_app_label }}
+
+

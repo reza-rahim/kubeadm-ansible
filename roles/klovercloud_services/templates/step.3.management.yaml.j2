@@ -1,0 +1,101 @@
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ klovercloud_management_deployment_name }}
+  namespace: {{ klovercloud_namespace }}
+spec:
+  replicas: {{ klovercloud_management_replica }}
+  selector:
+    matchLabels:
+      app: {{ klovercloud_management_app_label }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0
+  minReadySeconds: 25
+  template:
+    metadata:
+      annotations:
+        prometheus.io/path: "/prometheus"
+        prometheus.io/port: '8081'
+        prometheus.io/scrape: 'true'
+      labels:
+        app: {{ klovercloud_management_app_label }}
+    spec:
+      terminationGracePeriodSeconds: 60
+      containers:
+      - name:  {{ klovercloud_management_deployment_name }}
+        imagePullPolicy: Always
+        image: {{ klovercloud_management_image }}
+{% if profile  == "prod" %}
+        resources:
+          requests:
+            cpu: {{ klovercloud_management_cpu_request }}
+            memory: {{ klovercloud_management_memory_request }}
+          limits:
+            cpu: {{ klovercloud_management_cpu_limit }}
+            memory: {{ klovercloud_management_memory_limit }}
+{% endif %}
+        envFrom:
+        - secretRef:
+            name: {{ klovercloud_mongodb_secret }}
+        - secretRef:
+            name: {{ klovercloud_listener_secret }}
+        - configMapRef:
+            name: {{ klovercloud_management_envar_configmap_name }}
+        ports:
+        - containerPort: {{ klovercloud_management_container_port1 }}
+        - containerPort: {{ klovercloud_management_container_port2 }}
+        readinessProbe:
+          httpGet:
+            path: /
+            port: {{ klovercloud_management_container_port1 }}
+          initialDelaySeconds: 80
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /
+            port: {{ klovercloud_management_container_port1 }}
+          initialDelaySeconds: 80
+          periodSeconds: 10
+      imagePullSecrets:
+      - name: {{ klovercloud_image_pulling_secret }}
+
+
+--- 
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ klovercloud_management_service_name }}
+  namespace: {{ klovercloud_namespace }}
+  labels:
+    app: {{ klovercloud_management_app_label }}
+spec:
+  ports:
+  - name: http-rest
+    port: {{ klovercloud_management_service_port }}
+    protocol: TCP
+    targetPort: {{ klovercloud_management_target_port }}
+  - name: http-metrics
+    port: {{ klovercloud_management_metrics_port }}
+    protocol: TCP
+    targetPort: {{ klovercloud_management_metrics_target_port }}
+  selector:
+    app: {{ klovercloud_management_app_label }}
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ klovercloud_management_ci_service_name }}
+  namespace: {{ klovercloud_namespace }}
+spec:
+  type: ExternalName
+  externalName: {{ klovercloud_management_ci_external_service_name }}
+  ports:
+  - port: {{ klovercloud_management_ci_service_port }}

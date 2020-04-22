@@ -1,0 +1,230 @@
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ klovercloud_pipeline_envar_configmap_name }}
+  namespace: {{ klovercloud_namespace }}
+data:
+  MONGO_SERVER: "{{ klovercloud_mongodb_service_name }}"
+  MONGO_PORT: "{{ klovercloud_mongodb_service_port }}"
+  MONGO_AUTH_DATABASE: "{{ klovercloud_mongo_auth_db_name }}"
+  JENKINS_SERVER: "jenkins"
+  JENKINS_PORT: "8080"
+  JENKINS_USER: "klovercloud"
+  JENKINS_TOKEN: "1114011c70ca964a1b6f05ebb16ddae103"
+  KAFKA_SERVER: "{{ klovercloud_kafka_service_name }}"
+  KAFKA_PORT: "{{ klovercloud_kafka_service_port }}"
+  CI_TECHNOLOGY: "{{ klovercloud_ci_tecknology }}"
+  DEFAULT_INGRESS_DOMAIN: "{{ klovercloud_default_ingress_domain }}"
+  KLOVERCLOUD_FACADE_SERVICE_DOMAIN: "{{ klovercloud_facade_host }}"
+  KLOVERCLOUD_FACADE_SERVICE_NAME: "{{ klovercloud_facade_service_name }}"
+  CONNECT_TO_KLOVERCLOUD_FACADE_WEB_SOCKET: "true"
+  KLOVERCLOUD_MANAGEMENT_SERVICE_NAME: "{{ klovercloud_management_service_name }}"
+  KLOVERCLOUD_APP_BUILDER_SERVICE_NAME: "klovercloud-app-builder"
+  KLOVERCLOUD_HARBOR_SERVICE_NAME: "{{ klovercloud_harbor_service_name }}"
+  KLOVERCLOUD_MONITOR_SERVICE_NAME: "{{ klovercloud_monitor_service_name }}"
+  KLOVERCLOUD_CI_SERVICE_NAME: "{{ klovercloud_management_ci_service_name }}"
+  KLOVERCLOUD_DNS_MANAGER_SERVICE_NAME: "{{ klovercloud_dns_manager_service }}"
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ klovercloud_management_envar_configmap_name }}
+  namespace: {{ klovercloud_namespace }}
+data:
+  DEVELOPER_ALIAS: "{{ klovercloud_developer_alias }}"
+  MONGO_SERVER: "{{ klovercloud_mongodb_service_name }}"
+  MONGO_PORT: "{{ klovercloud_mongodb_service_port }}"
+  MONGO_AUTH_DATABASE: "{{ klovercloud_mongo_auth_db_name }}"
+  KAFKA_SERVER: "{{ klovercloud_kafka_service_name }}"
+  KAFKA_PORT: "{{ klovercloud_kafka_service_port }}"
+  CI_TECHNOLOGY: "{{ klovercloud_ci_tecknology }}"
+  CLUSTER_RESOURCE_LIMIT_FACTOR_CPU: "{{ klovercloud_management_cluster_resource_limit_factor_cpu }}"
+  CLUSTER_RESOURCE_LIMIT_FACTOR_MEMORY: "{{ klovercloud_management_cluster_resource_limit_factor_memory }}"
+  CLUSTER_RESOURCE_LIMIT_FACTOR_STORAGE: "{{ klovercloud_management_cluster_resource_limit_factor_storage }}"
+  KLOVERCLOUD_FACADE_SERVICE_NAME: "{{ klovercloud_facade_service_name }}"
+  KLOVERCLOUD_PIPELINE_SERVICE_NAME: "{{ klovercloud_pipeline_service_name }}"
+  KLOVERCLOUD_LISTENER_SERVICE_NAME: "{{ klovercloud_listener_service_name }}"
+  KLOVERCLOUD_OBJECT_STORAGE_SERVICE_NAME: "{{ klovercloud_rook_ceph_object_storage_service_name }}"
+  KLOVERCLOUD_HARBOR_SERVICE_NAME: "{{ klovercloud_harbor_service_name }}"
+  KLOVERCLOUD_CI_SERVICE_NAME: "{{ klovercloud_management_ci_service_name }}"
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ klovercloud_listener_envar_configmap_name }}
+  namespace: {{ klovercloud_namespace }}
+data:
+  MONGO_SERVER: "{{ klovercloud_mongodb_service_name }}"
+  MONGO_PORT: "{{ klovercloud_mongodb_service_port }}"
+  MONGO_AUTH_DATABASE: "{{ klovercloud_mongo_auth_db_name }}"
+  KAFKA_SERVER: "{{ klovercloud_kafka_service_name }}"
+  KAFKA_PORT: "{{ klovercloud_kafka_service_port }}"
+  ZOO_KEEPER_SERVER: "{{ klovercloud_zookeeper_service_name }}"
+  ZOO_KEEPER_PORT: "{{ klovercloud_zookeeper_service_port }}"
+  KLOVERCLOUD_MANAGEMENT_SERVICE_NAME: "{{ klovercloud_management_service_name }}"
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ klovercloud_facade_envar_configmap_name }}
+  namespace: {{ klovercloud_namespace }}
+data:
+  MONGO_SERVER: "{{ klovercloud_mongodb_service_name }}"
+  MONGO_PORT: "{{ klovercloud_mongodb_service_port }}"
+  MONGO_AUTH_DATABASE: "{{ klovercloud_mongo_auth_db_name }}"
+  KLOVERCLOUD_MANAGEMENT_SERVICE_NAME: "{{ klovercloud_management_service_name }}"
+  KLOVERCLOUD_PIPELINE_SERVICE_NAME: "{{ klovercloud_pipeline_service_name }}"
+  KLOVERCLOUD_LISTENER_SERVICE_NAME: "{{ klovercloud_listener_service_name }}"
+  KLOVERCLOUD_DATABASE_SERVICE_NAME: "{{ klovercloud_database_service_name }}"
+  KLOVERCLOUD_OBJECT_STORAGE_SERVICE_NAME: "{{ klovercloud_rook_ceph_object_storage_service_name }}"
+  KLOVERCLOUD_HARBOR_SERVICE_NAME: "{{ klovercloud_harbor_service_name }}"
+  KLOVERCLOUD_MONITOR_SERVICE_NAME: "{{ klovercloud_monitor_service_name }}"
+  KLOVERCLOUD_METRICS_SERVICE_NAME: "{{ klovercloud_metrics_service_name }}"
+  KLOVERCLOUD_LOG_MANAGER_SERVICE_NAME: "{{ klovercloud_log_manager_service_name }}"
+  KLOVERCLOUD_DNS_MANAGER_SERVICE_NAME: "{{ klovercloud_dns_manager_service }}"
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ klovercloud_dns_manager_envar_configmap_name }}
+  namespace: {{ klovercloud_namespace }}
+data:
+  RUN_MODE: "{{ run_mode }}"
+  SERVER_PORT: "{{ klovercloud_dns_manager_server_port }}"
+  MONGO_SERVER: "{{ klovercloud_mongodb_service_name }}"
+  MONGO_PORT: "{{ klovercloud_mongodb_service_port }}"
+  DATABASE_NAME: "{{ klovercloud_dns_manager_database_name }}"
+  DNS_TECHNOLOGY: "{{ klovercloud_dns_manager_dns_technology }}"
+
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ klovercloud_monitor_envar_configmap_name }}
+  namespace: {{ klovercloud_namespace }}
+data:
+  RUN_MODE: "{{ run_mode }}"
+  DEVELOPER_ALIAS: "{{ klovercloud_developer_alias }}"
+  SERVER_PORT: "8080"
+  MONGO_SERVER: "{{ klovercloud_mongodb_service_name }}"
+  MONGO_PORT: "{{ klovercloud_mongodb_service_port }}"
+  DATABASE_NAME: "{{ klovercloud_monitor_db_name }}"
+  MANAGEMENT_SERVICE_URL: "http://{{ klovercloud_management_service_name }}"
+  PIPELINE_SERVICE_URL: "http://{{ klovercloud_pipeline_service_name }}"
+  DATABASE_SERVICE_URL: "http://{{ klovercloud_database_service_name }}"
+  KAFKA_BROKER: "{{ klovercloud_kafka_service_name }}:{{ klovercloud_kafka_service_port }}"
+  DEPLOYMENT_POD_FEED_KAFKA_TOPIC: "{{ klovercloud_monitor_deployment_pod_feed_kafka_topic }}"
+  DEPLOYMENT_POD_FEED_KAFKA_GROUP_ID: "{{ klovercloud_monitor_deployment_pod_feed_kafka_group_id }}"
+  DEPLOYMENT_POD_FEED_CLEANUP_TIMEOUT_HOURS: "{{ klovercloud_monitor_deployment_pod_feed_cleanup_timeout_hours }}"
+  CLUSTER_AGENT_RESPONSE_KAFKA_TOPIC: "{{ klovercloud_monitor_deployment_cluster_agent_response_kafka_topic }}"
+  CLUSTER_AGENT_RESPONSE_KAFKA_GROUP_ID: "{{ klovercloud_monitor_deployment_cluster_agent_response_kafka_group_id }}"
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ klovercloud_database_envar_configmap_name }}
+  namespace: {{ klovercloud_namespace }}
+data:
+  RUN_MODE: "{{ run_mode }}"
+  SERVER_PORT: "8080"
+  MONGO_SERVER: "{{ klovercloud_mongodb_service_name }}"
+  MONGO_PORT: "{{ klovercloud_mongodb_service_port }}"
+  DATABASE_NAME: "{{ klovercloud_database_db_name }}"
+  KAFKA_PRODUCER_BOOTSTRAP_SERVER: "{{ klovercloud_kafka_service_name }}:{{ klovercloud_kafka_service_port }}"
+  USE_STORAGE_CLASS: "true"
+  STORAGE_CLASS_NAME: "rook-ceph-block"
+  STORAGE_CLASS_TYPE: "BLOCK_STORAGE"
+  METRICS_ENABLED: "true"
+  MANAGEMENT_SERVICE_URL: "http://{{ klovercloud_management_service_name }}"
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ klovercloud_metrics_envar_configmap_name }}
+  namespace: {{ klovercloud_namespace }}
+data:
+  RUN_MODE: "{{ run_mode }}"
+  SERVER_PORT: "8080"
+  PROMETHEUS_BASE_URL: "{{ klovercloud_prometheus_base_url }}"
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ klovercloud_log_manager_envar_configmap_name }}
+  namespace: {{ klovercloud_namespace }}
+data:
+  RUN_MODE: "{{ run_mode }}"
+  SERVER_PORT: "8080"
+  LOKI_URL: "https://{{ loki_url }}/"
+  LOKI_WS_URL: "ws://{{ loki_url }}/"
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ klovercloud_harbor_envar_configmap_name }}
+  namespace: {{ klovercloud_namespace }}
+data:
+  RUN_MODE: "{{ run_mode }}"
+  SERVER_PORT: "8080"
+  MONGO_SERVER: "{{ klovercloud_mongodb_service_name }}"
+  MONGO_PORT: "{{ klovercloud_mongodb_service_port }}"
+  DATABASE_NAME: "{{ klovercloud_harbor_db_name }}"
+  HARBOR_SERVICE_URL: "https://{{ klovercloud_harbor_ingress_host }}"
+  PROJECT_QUOTAS_COUNT_LIMIT: "{{ klovercloud_harbor_project_quotas_count_limit }}"
+  PROJECT_QUOTAS_STORAGE_LIMIT: "{{ klovercloud_harbor_project_quotas_storage_limit }}"
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ klovercloud_object_storage_envar_configmap_name }}
+  namespace: {{ klovercloud_namespace }}
+data:
+  RUN_MODE: "{{ run_mode }}"
+  SERVER_PORT: "8080"
+  MONGO_SERVER: "{{ klovercloud_mongodb_service_name }}"
+  MONGO_PORT: "{{ klovercloud_mongodb_service_port }}"
+  DATABASE_NAME: "{{ klovercloud_rook_ceph_object_storage_db_name }}"
+  MANAGEMENT_SERVICE_URL: "http://{{ klovercloud_management_service_name }}"
+  OBJECT_STORAGE_ENDPOINT: "https://{{ klovercloud_rook_ceph_object_storage_ingress_host }}/"
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ klovercloud_ci_envar_configmap_name }}
+  namespace: {{ klovercloud_ci_namespace }}
+data:
+  RUN_MODE: "{{ run_mode }}"
+  SERVER_PORT: "8080"
+  IS_K8: "True"
+  MONGO_SERVER: "{{ klovercloud_ci_mongo_external_name }}"
+  MONGO_PORT: "{{ klovercloud_mongodb_service_port }}"
+  DATABASE_NAME: "{{ klovercloud_ci_db_name }}"
+  KLOVERCLOUD_FACADE_SERVICE_WEBSOCKET_SERVER_URL: "{{ klovercloud_ci_facade_service_url }}"
+  KLOVERCLOUD_PIPELINE_SERVICE_BASE_URL: "{{ klovercloud_ci_pipeline_service_url }}"
+  NEXUS_MAVEN_PUBLIC_URL: "{{ klovercloud_ci_nexus_maven_public_url }}"
+  NEXUS_MAVEN_RELEASES_URL: "{{ klovercloud_ci_nexus_maven_releases_url }}"
+  NEXUS_MAVEN_SNAPSHOTS_URL: "{{ klovercloud_ci_nexus_maven_snapshot_url }}"
+  NEXUS_NPM_GROUP_URL: "{{ klovercloud_ci_nexus_npm_group_url }}"
+  GENERATOR_IMAGE_PULL_SECRET: "{{ klovercloud_image_pulling_secret }}"
+

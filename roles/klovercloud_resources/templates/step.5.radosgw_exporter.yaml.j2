@@ -1,0 +1,37 @@
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ radosgw_exporter_deployment_name }}
+  namespace: {{ klovercloud_rook_ceph_namespace }}
+  labels:
+    app: radosgw
+spec:
+  replicas: {{ radosgw_exporter_deployment_replica }}
+  selector:
+    matchLabels:
+      app: {{ radosgw_exporter_app_label }}
+  template:
+    metadata:
+      labels:
+        app: {{ radosgw_exporter_app_label }}
+      annotations:
+        prometheus.io/port: '{{ radosgw_exporter_container_port }}'
+        prometheus.io/scrape: 'true'
+    spec:
+      containers:
+        - name: {{ radosgw_exporter_app_label }}
+          image: {{ radosgw_exporter_image }}
+          imagePullPolicy: Always
+          ports:
+          - containerPort: {{ radosgw_exporter_container_port }}
+            name: {{ radosgw_exporter_app_label }}
+          envFrom:
+          - secretRef:
+              name: {{ klovercloud_rook_ceph_object_storage_admin_secret }}
+          env:
+          - name: RADOSGW_SERVER
+            value: "http://{{ klovercloud_rook_ceph_my_store_service_name }}/"
+          - name: VIRTUAL_PORT
+            value: "{{ radosgw_exporter_container_port }} "

@@ -1,6 +1,0 @@
----
-- hosts: kube_master
-  become: yes
-  roles:
-     - klovercloud
-

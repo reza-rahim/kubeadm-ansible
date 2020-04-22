@@ -3,10 +3,12 @@
   become: yes
   roles:
      #- storage
-     - cassandra
+     #- cassandra
      #- cortex
      #- loki
      #- monitoring
      #- nginx-ingress
      #- klovercloud
+     #- klovercloud_resources
+     - klovercloud_services
 

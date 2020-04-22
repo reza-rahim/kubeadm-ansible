@@ -1,0 +1,362 @@
+---
+  
+# copy decriptors
+
+- name: Creates /etc/kubernetes/kubeadm directory
+  file: path=/etc/kubernetes/kubeadm/klovercloud/klovercloud_services  recurse=yes state=directory
+  when: >
+    groups['kube_master'].index(inventory_hostname) == 0  
+
+
+- name: Copy descriptors
+  template: src="{{ item.src }}" dest="{{ item.dest }}"
+  with_items:
+     - { src: 'step.1.klovercloud-harbor.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.1.klovercloud-harbor.yaml'  } 
+     - { src: 'step.2.listener.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.2.listener.yaml'  } 
+     - { src: 'step.3.management.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.3.management.yaml'  } 
+  when: >
+    groups['kube_master'].index(inventory_hostname) == 0  
+  register: result
+
+  
+
+
+# deploy klovercloud harbor
+
+
+- name:  
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.1.klovercloud-harbor.yaml;
+  when: >
+    groups['kube_master'].index(inventory_hostname) == 0   
+
+
+- name: wait for pods to come up
+  shell: kubectl get pods -l app={{ klovercloud_harbor_deployement_app_label }} -n {{ klovercloud_namespace }} -o json
+  register: kubectl_get_pods
+  until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
+  ignore_errors: yes
+
+- name: 
+  wait_for:
+    timeout: 10
+
+- name: wait for pods to come up
+  shell: kubectl get pods -l app={{ klovercloud_harbor_deployement_app_label }} -n {{ klovercloud_namespace }} -o json
+  register: kubectl_get_pods
+  until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
+  ignore_errors: yes
+
+- name: wait for pods to get ready
+  shell: while [[ $(kubectl get pods -l app={{ klovercloud_harbor_deployement_app_label }} -n {{ klovercloud_namespace }} -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for pod" && sleep 1; done
+  # shell: kubectl wait --for=condition=ready -l "app={{ klovercloud_harbor_deployement_app_label }}" -n {{ klovercloud_namespace }}
+  register: kubectl_get_pods
+
+- name: 
+  wait_for:
+    timeout: 10
+
+# deploy listener
+
+- name:  
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.2.listener.yaml;
+  when: >
+    groups['kube_master'].index(inventory_hostname) == 0 
+
+
+- name: wait for pods to come up
+  shell: kubectl get pods -l app={{ klovercloud_listener_app_label }} -n {{ klovercloud_namespace }} -o json
+  register: kubectl_get_pods
+  until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
+  ignore_errors: yes
+
+- name: 
+  wait_for:
+    timeout: 30
+
+- name: wait for pods to come up
+  shell: kubectl get pods -l app={{ klovercloud_listener_app_label }} -n {{ klovercloud_namespace }} -o json
+  register: kubectl_get_pods
+  until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
+  ignore_errors: yes
+
+- name: wait for pods to get ready
+  shell: while [[ $(kubectl get pods -l app={{ klovercloud_listener_app_label }} -n {{ klovercloud_namespace }} -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for pod" && sleep 1; done
+  register: kubectl_get_pods
+
+- name: get klovercloud_super_admin_password
+  shell: kubectl get secret {{ klovercloud_super_admin_secret }} -n {{ klovercloud_namespace }} -o json | jq -r '.data."ADMIN_PASSWORD"'
+  register: password
+
+- name: reset klovercloud_super_admin_password
+  set_fact:
+    klovercloud_super_admin_password: "{{ password.stdout  | b64decode }}"
+
+
+- name: Login to listener service as admin user
+  shell: kubectl -n {{ klovercloud_namespace }} exec -it $(kubectl -n {{ klovercloud_namespace }} get pod -l "app={{ klovercloud_listener_app_label }}" -o jsonpath='{.items[0].metadata.name}') -- bin/sh -c "curl -X POST 'http://localhost:{{ klovercloud_listener_container_port1 }}/api/auth/login'  -H 'Content-Type:application/json'  -d '{\"username\":\"{{ klovercloud_super_admin_username }}\",\"password\":\"{{ klovercloud_super_admin_password }}\"}'"
+  register: login_result
+  
+
+- name: reset login_result
+  set_fact:
+    login_result: "{{ login_result.stdout | from_json }}"
+ 
+
+- name: Create an API Access Token when login request returns token
+  shell: kubectl -n {{ klovercloud_namespace }} exec -it $(kubectl -n {{ klovercloud_namespace }} get pod -l "app={{ klovercloud_listener_app_label }}" -o jsonpath='{.items[0].metadata.name}') -- bin/sh -c "curl -X POST 'http://localhost:{{ klovercloud_listener_container_port1 }}/api/api-access-token'  -H 'Content-Type:application/json' -H 'x-auth-token:{{ login_result.token }}' -d '{}'"
+  register: api_access_token
+  ignore_errors: yes
+
+
+- name: reset api_access_token
+  set_fact:
+    api_access_token: "{{ api_access_token.stdout | from_json }}"
+  ignore_errors: yes
+
+- name: reset klovercloud_api_access_token
+  set_fact:
+    klovercloud_api_access_token: "{{ api_access_token.data }}"
+  ignore_errors: yes
+  # when: api_access_token.json.success == true
+
+
+- name: Copy descriptors
+  template: src="{{ item.src }}" dest="{{ item.dest }}"
+  with_items:
+     - { src: 'step.2.1.secret.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.2.1.secret.yaml'  } 
+  when: >
+    groups['kube_master'].index(inventory_hostname) == 0  
+  register: result
+
+- name:  
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.2.1.secret.yaml;
+  when: >
+    groups['kube_master'].index(inventory_hostname) == 0
+
+
+# deploy management
+
+- name:  
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.3.management.yaml;
+  when: >
+    groups['kube_master'].index(inventory_hostname) == 0
+
+- name: wait for pods to come up
+  shell: kubectl get pods -n {{ klovercloud_namespace }} -o json
+  register: kubectl_get_pods
+  until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
+
+- name: 
+  wait_for:
+    timeout: 60
+
+- name: wait for pods to get ready
+  shell: while [[ $(kubectl get pods -l app={{ klovercloud_management_app_label }} -n {{ klovercloud_namespace }} -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for pod" && sleep 1; done
+  register: kubectl_get_pods
+
+
+- name: 
+  wait_for:
+    timeout: 10
+
+
+# deploy facade
+
+- name: Copy descriptors
+  template: src="{{ item.src }}" dest="{{ item.dest }}"
+  with_items:
+      - { src: 'step.4.facade.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.4.facade.yaml'  } 
+  when: >
+    groups['kube_master'].index(inventory_hostname) == 0  
+  register: result
+
+
+
+- name:  
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.4.facade.yaml;
+  when: >
+    groups['kube_master'].index(inventory_hostname) == 0
+
+
+- name: wait for pods to come up
+  shell: kubectl get pods -l app={{ klovercloud_facade_app_label }} -n {{ klovercloud_namespace }} -o json
+  register: kubectl_get_pods
+  until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
+  ignore_errors: yes
+
+- name: 
+  wait_for:
+    timeout: 120
+
+- name: wait for pods to come up
+  shell: kubectl get pods -l app={{ klovercloud_facade_app_label }} -n {{ klovercloud_namespace }} -o json
+  register: kubectl_get_pods
+  until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
+  ignore_errors: yes
+
+- name: wait for pods to get ready
+  shell: while [[ $(kubectl get pods -l app={{ klovercloud_facade_app_label }} -n {{ klovercloud_namespace }} -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for pod" && sleep 1; done
+  register: kubectl_get_pods
+
+
+- name: 
+  wait_for:
+    timeout: 20
+
+- name: Login to facade service as super admin user
+  shell: kubectl -n {{ klovercloud_namespace }} exec -it $(kubectl -n {{ klovercloud_namespace }} get pod -l "app={{ klovercloud_facade_app_label }}" -o jsonpath='{.items[0].metadata.name}') -- bin/sh -c "curl -X POST 'http://localhost:{{ klovercloud_facade_container_port1 }}/api/auth/login'  -H 'Content-Type:application/json'  -d '{\"username\":\"{{ klovercloud_super_admin_username }}\",\"password\":\"{{ klovercloud_super_admin_password }}\"}'"
+  register: facade_login_result
+
+- name: reset facade_login_result
+  set_fact:
+    facade_login_result: "{{ facade_login_result.stdout | from_json }}"
+  ignore_errors: yes
+
+- name: Request to create a Service User using facade login token
+  shell: kubectl -n {{ klovercloud_namespace }} exec -it $(kubectl -n {{ klovercloud_namespace }} get pod -l "app={{ klovercloud_facade_app_label }}" -o jsonpath='{.items[0].metadata.name}') -- bin/sh -c "curl -X POST 'http://localhost:{{ klovercloud_facade_container_port1 }}/api/user'  -H 'Content-Type:application/json' -H 'x-auth-token:{{ facade_login_result.token }}' -d '{\"firstName\":\"{{ klovercloud_service_firstname }}\",\"lastName\":\"{{ klovercloud_service_lastname }}\",\"username\":\"{{ klovercloud_service_username }}\",\"userType\":\"{{ klovercloud_service_usertype }}\",\"enabled\":true,\"authorities\":[ \"ROLE_AGENT_SERVICE\"]}'"
+  register: service_user
+
+
+- name: reset service_user
+  set_fact:
+    service_user: "{{ service_user.stdout | from_json }}"
+  ignore_errors: yes
+
+
+- name: Print service_user
+  debug:
+    msg: "service_user: {{ service_user }}"
+
+
+- name: Request to create a facade Service access token
+  shell: kubectl -n {{ klovercloud_namespace }} exec -it $(kubectl -n {{ klovercloud_namespace }} get pod -l "app={{ klovercloud_facade_app_label }}" -o jsonpath='{.items[0].metadata.name}') -- bin/sh -c "curl -X POST 'http://localhost:{{ klovercloud_facade_container_port1 }}/api/api-access-token'  -H 'Content-Type:application/json' -H 'x-auth-token:{{ facade_login_result.token }}' -d '{\"userId\":\"{{ service_user.data }}\"}'"
+  register: facade_api_access_token
+
+# - name: Request to create a facade Service access token
+#   shell: kubectl -n {{ klovercloud_namespace }} exec -it $(kubectl -n {{ klovercloud_namespace }} get pod -l "app={{ klovercloud_facade_app_label }}" -o jsonpath='{.items[0].metadata.name}') -- bin/sh -c "curl -X POST 'http://localhost:{{ klovercloud_facade_container_port1 }}/api/api-access-token'  -H 'Content-Type:application/json' -H 'x-auth-token:{{ facade_login_result.token }}' -d '{\"userId\":\"5e9db43374d93c00012b87e0\"}'"
+#   register: facade_api_access_token
+
+  
+
+- name: Print facade_api_access_token
+  debug:
+    msg: "facade_api_access_token: {{ facade_api_access_token }}"
+
+- name: reset facade_api_access_token
+  set_fact:
+    facade_api_access_token: "{{ facade_api_access_token.stdout | from_json }}"
+  
+
+- name: reset klovercloud_facade_api_access_token
+  set_fact:
+    klovercloud_facade_api_access_token: "{{ facade_api_access_token.data }}"
+
+- name: Print klovercloud_facade_api_access_token
+  debug:
+    msg: "klovercloud_facade_api_access_token: {{ klovercloud_facade_api_access_token }}"
+
+- name: Copy descriptors
+  template: src="{{ item.src }}" dest="{{ item.dest }}"
+  with_items:
+     - { src: 'step.4.1.secret.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.4.1.secret.yaml'  } 
+  when: >
+    groups['kube_master'].index(inventory_hostname) == 0  
+  register: result
+
+
+- name:  
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.4.1.secret.yaml;
+  when: >
+     groups['kube_master'].index(inventory_hostname) == 0 
+
+
+- name: Copy descriptors
+  template: src="{{ item.src }}" dest="{{ item.dest }}"
+  with_items:
+
+     - { src: 'step.5.pipeline.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.5.pipeline.yaml'  } 
+     - { src: 'step.6.monitor.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.6.monitor.yaml'  } 
+     - { src: 'step.7.klovercloud-database.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.7.klovercloud-database.yaml'  } 
+     - { src: 'step.8.dns_manager.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.8.dns_manager.yaml'  }
+     - { src: 'step.9.log_manager.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.9.log_manager.yaml'  }
+     - { src: 'step.10.metrics.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.10.metrics.yaml'  } 
+     - { src: 'step.11.my_store.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.11.my_store.yaml'  } 
+     - { src: 'step.12.object_storage.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.12.object_storage.yaml'  } 
+     - { src: 'step.13.klovercloud-ci.v1.1.0.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.13.klovercloud-ci.v1.1.0.yaml'  } 
+  when: >
+    groups['kube_master'].index(inventory_hostname) == 0  
+  register: result
+
+
+# deploy pipeline
+
+- name:  
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.5.pipeline.yaml;
+  when: >
+     groups['kube_master'].index(inventory_hostname) == 0 
+
+# deploy monitor 
+
+- name:  
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.6.monitor.yaml;
+  when: >
+     groups['kube_master'].index(inventory_hostname) == 0 
+
+# deploy klovercloud-database 
+
+- name:  
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.7.klovercloud-database.yaml;
+  when: >
+     groups['kube_master'].index(inventory_hostname) == 0 
+
+# deploy dns_manager 
+
+- name:  
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.8.dns_manager.yaml;
+  when: >
+     groups['kube_master'].index(inventory_hostname) == 0
+
+
+# deploy log_manager
+
+- name:  
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.9.log_manager.yaml;
+  when: >
+     groups['kube_master'].index(inventory_hostname) == 0
+
+
+# deploy metrics
+
+- name:  
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.10.metrics.yaml;
+  when: >
+     groups['kube_master'].index(inventory_hostname) == 0
+
+# Create my_store service and ingress 
+
+- name:  
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.11.my_store.yaml;
+  when: >
+     groups['kube_master'].index(inventory_hostname) == 0
+
+# Create rados admin user
+
+- name: 
+  shell: kubectl -n {{ klovercloud_rook_ceph_namespace }} exec -it $(kubectl -n {{ klovercloud_rook_ceph_namespace }} get pod -l "app=rook-ceph-tools" -o jsonpath='{.items[0].metadata.name}') -- bash -c 'radosgw-admin user create --uid={{ klovercloud_rook_ceph_object_storage_user_id }} --display-name={{ klovercloud_rook_ceph_object_storage_user_display_name }} --access-key={{ klovercloud_rook_ceph_object_storage_access_key }} --secret-key={{ klovercloud_rook_ceph_object_storage_secret_key }} &&  radosgw-admin --id admin caps add --caps="buckets=*;users=*;usage=*;metadata=*" --uid={{ klovercloud_rook_ceph_object_storage_user_id }}'
+
+# Deploy object storage 
+
+- name:  
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.12.object_storage.yaml;
+  when: >
+     groups['kube_master'].index(inventory_hostname) == 0
+
+
+# deploy klovercloud-ci
+
+- name:  
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.13.klovercloud-ci.v1.1.0.yaml;
+  when: >
+    groups['kube_master'].index(inventory_hostname) == 0   
+  ignore_errors: yes
+

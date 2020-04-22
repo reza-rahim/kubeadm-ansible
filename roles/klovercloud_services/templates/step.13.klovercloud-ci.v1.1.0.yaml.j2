@@ -1,0 +1,218 @@
+---
+# ------------------- klovercloud-ci service ------------------- # 
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ klovercloud_ci_service_name }}
+  namespace: {{ klovercloud_ci_namespace }}
+  labels:
+    app: {{ klovercloud_ci_app_label }}
+spec:
+  ports:
+    - name: http-rest
+      port: {{ klovercloud_ci_service_port }}
+      protocol: TCP
+      targetPort: {{ klovercloud_ci_containers_port }}
+  selector:
+    app: {{ klovercloud_ci_app_label }}
+
+---
+# ------------------- klovercloud-ci deployment ------------------- #
+ 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ klovercloud_ci_deployment_name }}
+  namespace: {{ klovercloud_ci_namespace }}
+spec:
+  replicas: {{ klovercloud_ci_replica }}
+  selector:
+    matchLabels:
+      app: {{ klovercloud_ci_app_label }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0
+  minReadySeconds: 25
+  template:
+    metadata:
+      labels:
+        app: {{ klovercloud_ci_app_label }}
+    spec:
+      terminationGracePeriodSeconds: 60
+      containers:
+      - name: klovercloud-ci
+        imagePullPolicy: Always
+        image: {{ klovercloud_ci_image }}
+{% if profile  == "prod" %}
+        resources:
+          requests:
+            cpu: {{ klovercloud_ci_cpu_request }}
+            memory: {{ klovercloud_ci_memory_request }}
+          limits:
+            cpu: {{ klovercloud_ci_cpu_limit }}
+            memory: {{ klovercloud_ci_memory_limit }}
+{% endif %}
+        envFrom:
+        - secretRef:
+            name: {{ klovercloud_mongodb_secret }}
+        - secretRef:
+            name: {{ klovercloud_facade_secret }}
+        - secretRef:
+            name: {{ klovercloud_nexus_secret }}
+        - configMapRef:
+            name: {{ klovercloud_ci_envar_configmap_name }}
+        ports:
+        - containerPort: {{ klovercloud_ci_containers_port }}
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: {{ klovercloud_ci_containers_port }}
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: {{ klovercloud_ci_containers_port }}
+          initialDelaySeconds: 30
+          periodSeconds: 10
+      serviceAccount: {{ klovercloud_ci_service_account_name }}
+      imagePullSecrets:
+      - name: {{ klovercloud_image_pulling_secret }}
+
+---
+# ------------------- CI Service Account ------------------- #
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    k8s-app: {{ klovercloud_ci_app_label }}
+  name: {{ klovercloud_ci_service_account_name }}
+  namespace: {{ klovercloud_ci_namespace }}
+
+
+---
+# ------------------- Role Binding ------------------- #
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: klovercloud-ci-rolebinding
+  namespace: {{ klovercloud_ci_namespace }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: {{ klovercloud_ci_service_account_name }}
+    namespace: {{ klovercloud_ci_namespace }}
+
+---
+# ------------------- Pipeline service ------------------- #
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ klovercloud_ci_pipeline_service_name }}
+  namespace:  {{ klovercloud_ci_namespace }}
+spec:
+  type: ExternalName
+  externalName: {{ klovercloud_ci_pipeline_service_external_name }}
+  ports:
+  - port: {{ klovercloud_ci_pipeline_service_port }}
+
+---
+# ------------------- Facade service ------------------- #
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ klovercloud_ci_facade_service_name }}
+  namespace: {{ klovercloud_ci_namespace }}
+spec:
+  type: ExternalName
+  externalName: {{ klovercloud_ci_facade_service_external_name }}
+  ports:
+  - port: {{ klovercloud_ci_facade_port }}
+
+
+---
+# ------------------- mongo service ------------------- #
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ klovercloud_ci_mongo_service_name }}
+  namespace: {{ klovercloud_ci_namespace }}
+spec:
+  type: ExternalName
+  externalName: {{ klovercloud_ci_mongo_external_name }}
+  ports:
+  - port: {{ klovercloud_mongodb_service_port }}
+
+
+
+---
+# ------------------- tekton task  ------------------- #
+
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: build-docker-image-from-git-source
+  namespace: tekton
+spec:
+  inputs:
+    resources:
+      - name: docker-source
+        type: git
+    params:
+      - name: pathToDockerFile
+        type: string
+        description: The path to the dockerfile to build
+        default: /workspace/docker-source/Dockerfile
+      - name: pathToContext
+        type: string
+        description:
+          The build context used by Kaniko
+          (https://github.com/GoogleContainerTools/kaniko#kaniko-build-contexts)
+        default: /workspace/docker-source
+      - name: nexususer
+        type: string
+      - name: nexuspassword
+        type: string
+      - name: nexus-maven-public-url
+        type: string
+      - name: nexus-maven-releases-url
+        type: string
+      - name: nexus-maven-snapshots-url
+        type: string
+      - name: nexus-npm-group-url
+        type: string
+      - name: nexus-token
+        type: string
+  outputs:
+    resources:
+      - name: builtImage
+        type: image
+  steps:
+    - name: build-and-push
+      image: gcr.io/kaniko-project/executor:v0.14.0
+
+      # specifying DOCKER_CONFIG is required to allow kaniko to detect docker credential
+      env:
+        - name: "DOCKER_CONFIG"
+          value: "/tekton/home/.docker/"
+      command:
+        - /kaniko/executor
+      args:
+        - --dockerfile=$(inputs.params.pathToDockerFile)
+        - --destination=$(outputs.resources.builtImage.url)
+        - --context=$(inputs.params.pathToContext)
+        - --build-arg=NEXUS_USER=$(inputs.params.nexususer)
+        - --build-arg=NEXUS_PASSWORD=$(inputs.params.nexuspassword)
+        - --build-arg=NEXUS_MAVEN_PUBLIC_URL=$(inputs.params.nexus-maven-public-url)
+        - --build-arg=NEXUS_MAVEN_RELEASES_URL=$(inputs.params.nexus-maven-releases-url)
+        - --build-arg=NEXUS_MAVEN_SNAPSHOTS_URL=$(inputs.params.nexus-maven-snapshots-url)
+        - --build-arg=NEXUS_NPM_GROUP_URL=$(inputs.params.nexus-npm-group-url)
+        - --build-arg=NEXUS_TOKEN=$(inputs.params.nexus-token)
