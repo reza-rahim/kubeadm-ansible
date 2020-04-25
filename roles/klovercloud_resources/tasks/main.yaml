@@ -115,6 +115,7 @@
      - { src: 'step.3.1.nexus.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.3.1.nexus.yaml'  } 
      - { src: 'step.4.kafka.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.4.kafka.yaml'  } 
      - { src: 'step.5.radosgw_exporter.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.5.radosgw_exporter.yaml'  } 
+     - { src: 'step.6.mywebsql.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.6.mywebsql.yaml'  } 
   when: >
     groups['kube_master'].index(inventory_hostname) == 0  
 
@@ -296,5 +297,13 @@
   shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.5.radosgw_exporter.yaml;
   when: >
     groups['kube_master'].index(inventory_hostname) == 0   
+
+# deploy mywebsql
+ 
+- name: deploy mywebsql
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.6.mywebsql.yaml;
+  when: >
+    groups['kube_master'].index(inventory_hostname) == 0   
+
 
 
