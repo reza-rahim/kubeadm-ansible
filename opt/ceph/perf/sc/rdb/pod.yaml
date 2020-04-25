@@ -1,0 +1,53 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: csirbd-demo-pod-1
+spec:
+  containers:
+   - name: web-server
+     image: nginx
+     volumeMounts:
+       - name: mypvc
+         mountPath: /var/lib/data
+  volumes:
+   - name: mypvc
+     persistentVolumeClaim:
+       claimName: rbd-pvc-1
+       readOnly: false
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: csirbd-demo-pod-2
+spec:
+  containers:
+   - name: web-server
+     image: nginx
+     volumeMounts:
+       - name: mypvc
+         mountPath: /var/lib/data
+  volumes:
+   - name: mypvc
+     persistentVolumeClaim:
+       claimName: rbd-pvc-2
+       readOnly: false
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: csirbd-demo-pod-3
+spec:
+  containers:
+   - name: web-server
+     image: nginx
+     volumeMounts:
+       - name: mypvc
+         mountPath: /var/lib/data
+  volumes:
+   - name: mypvc
+     persistentVolumeClaim:
+       claimName: rbd-pvc-3
+       readOnly: false
+
