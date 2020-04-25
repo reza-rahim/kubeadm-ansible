@@ -1,8 +1,7 @@
 profile: dev
-
 run_mode: PRODUCTION
 
-kube_master_lb: 62.171.168.79
+kube_master_lb: LB
 
 docker_ce_ubuntu: 18.06.2~ce~3-0~ubuntu
 
@@ -104,19 +103,6 @@ cortex_nginx_req_mem: 500Mi
 cortex_nginx: 1
 
 ####### Loki  ######
-loki_version: v0.4.0
-loki_date: 2017-03-01
-loki_taint: storage
-l_cassandra: cassandra.cassandra.svc.cluster.local
-loki_memcached_frontend_replica: 1
-loki_memcached_index_queries_replica: 1
-loki_memcached_index_writes_replica: 1
-loki_ingester_replica: 3
-loki_querier_replica: 1
-loki_distributor_replica: 1
-loki_query-frontend_replica: 1
-loki_username: loki-admin
-loki_password: Dev@Klover2019!
 loki_url: loki.dev.klovercloud.io
 
 #######  klovercloud common ####### 
