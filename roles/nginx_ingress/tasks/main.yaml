@@ -9,10 +9,9 @@
 - name: Copy ingress config file
   template: src="{{ item.src }}" dest="{{ item.dest }}"
   with_items:
-     - { src: 'nginx.yaml.j2', dest: '/etc/kubernetes/kubeadm/nginx-ingress/nginx.yaml'  }  
+     - { src: 'nginx-ingress.yaml.j2', dest: '/etc/kubernetes/kubeadm/nginx-ingress/nginx-ingress.yaml'  }  
      - { src: 'taint.sh.j2', dest: '/etc/kubernetes/kubeadm/nginx-ingress/taint.sh'  }  
      - { src: 'deploy.sh.j2', dest: '/etc/kubernetes/kubeadm/nginx-ingress/deploy.sh'  }  
-     - { src: 'echo-server.yaml.j2', dest: '/etc/kubernetes/kubeadm/nginx-ingress/echo-server.yaml'  }  
   when: >
     groups['kube_master'].index(inventory_hostname) == 0
   register: result
@@ -30,7 +29,7 @@
   ignore_errors: yes
 
 - name:  deploy ingress
-  shell: sh /etc/kubernetes/kubeadm/nginx-ingress/deploy.sh ;
+  shell: kubectl apply -n nginx-ingress -f /etc/kubernetes/kubeadm/nginx-ingress/nginx-ingress.yaml ;
   when: >
     groups['kube_master'].index(inventory_hostname) == 0
   ignore_errors: yes
