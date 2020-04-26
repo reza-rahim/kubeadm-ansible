@@ -1,0 +1,2 @@
+ssh kube-master-0 "mkdir -p ~/ceph"
+scp  -rp ./ kube-master-0:~/ceph
