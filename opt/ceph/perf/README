@@ -1,2 +1,5 @@
+
+# https://blog.rook.io/rook-toolbox-for-troubleshooting-and-testing-a6fbe1d75f96
+
 ssh kube-master-0 "mkdir -p ~/ceph"
 scp  -rp ./ kube-master-0:~/ceph
