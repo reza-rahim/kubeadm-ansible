@@ -1,5 +1,5 @@
-
-# https://blog.rook.io/rook-toolbox-for-troubleshooting-and-testing-a6fbe1d75f96
+# https://tracker.ceph.com/projects/ceph/wiki/Benchmark_Ceph_Cluster_Performance
+# https://blog.rook.io/rook-toolbox-for-troubleshooting-and-testing-a6fbe1d75f96 - obsolete
 
 ssh kube-master-0 "mkdir -p ~/ceph"
 scp  -rp ./ kube-master-0:~/ceph
