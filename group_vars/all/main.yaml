@@ -1,7 +1,7 @@
-profile: dev
+profile: prod
 run_mode: PRODUCTION
 
-kube_master_lb: LB
+kube_master_lb: 10.20.0.10
 
 docker_ce_ubuntu: 18.06.2~ce~3-0~ubuntu
 
@@ -9,7 +9,7 @@ docker_ce_redhat: 19.03.8
 containerd: 1.2.13
 
 ubunutu_k8_version: 1.15.6-00
-redhat_k8_version: 1.16.8-0  
+redhat_k8_version: 1.17.0-0  
 
 
 ##### nginx ingress ########
