@@ -1,4 +1,4 @@
-profile: prod
+profile: dev
 run_mode: PRODUCTION
 
 kube_master_lb: 10.20.0.10
@@ -37,13 +37,14 @@ monitoring_pushgateway: v1.0.1
 ####### Ceph ######
 
 ceph_mon: 3
-osdsPerDevice: 1 # number of OSD per device 
+osdsPerDevice: 2 # number of OSD per device 
 ceph_version: v14.2.7
 rbdMirroring: 3
 storage_taint: storage
+
 ###### cassandra #######
 cassandra_endpoint:  cassandra.cassandra.svc.cluster.local
-cassandra_replicas: 1
+cassandra_replicas: 3
 cassandra_storage: 5Gi
 cassandra_strorage_class: rook-ceph-block-ec
 cassandra_taint: storage 

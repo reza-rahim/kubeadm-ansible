@@ -14,7 +14,7 @@
      - { src: 'step.5.object-user.yaml.j2', dest: '/etc/kubernetes/kubeadm/storage/step.5.object-user.yaml'  }  
      - { src: 'step.6.toolbox.yaml.j2', dest: '/etc/kubernetes/kubeadm/storage/step.6.toolbox.yaml'  }  
      - { src: 'step.7.StorageClass.yaml.j2', dest: '/etc/kubernetes/kubeadm/storage/step.7.StorageClass.yaml'  }  
-     #- { src: 'step.8.StorageClassEC.yaml.j2', dest: '/etc/kubernetes/kubeadm/storage/step.8.StorageClassEC.yaml'  }  
+     - { src: 'step.8.StorageClassEC.yaml.j2', dest: '/etc/kubernetes/kubeadm/storage/step.8.StorageClassEC.yaml'  }  
      - { src: 'taint.sh.j2', dest: '/etc/kubernetes/kubeadm/storage/taint.sh'  }  
   when: >
     groups['kube_master'].index(inventory_hostname) == 0    
@@ -38,4 +38,5 @@
   ignore_errors: yes
 
 - name: creating storage class ...
-  shell: kubectl apply -f /etc/kubernetes/kubeadm/storage/step.7.StorageClass.yaml; 
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/storage/step.7.StorageClass.yaml; \
+         kubectl apply -f /etc/kubernetes/kubeadm/storage/step.8.StorageClassEC.yaml; 

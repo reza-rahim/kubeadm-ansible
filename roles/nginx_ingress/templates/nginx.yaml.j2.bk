@@ -1,292 +1,28 @@
 ---
-# Source: nginx-ingress/templates/controller-serviceaccount.yaml
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  labels:
-    app: nginx-ingress
-    chart: nginx-ingress-1.31.0
-    heritage: Helm
-    release: release
-  name: release-nginx-ingress
----
-# Source: nginx-ingress/templates/default-backend-serviceaccount.yaml
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  labels:
-    app: nginx-ingress
-    chart: nginx-ingress-1.31.0
-    heritage: Helm
-    release: release
-  name: release-nginx-ingress-backend
----
-# Source: nginx-ingress/templates/clusterrole.yaml
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  labels:
-    app: nginx-ingress
-    chart: nginx-ingress-1.31.0
-    heritage: Helm
-    release: release
-  name: release-nginx-ingress
-rules:
-  - apiGroups:
-      - ""
-    resources:
-      - configmaps
-      - endpoints
-      - nodes
-      - pods
-      - secrets
-    verbs:
-      - list
-      - watch
-  - apiGroups:
-      - ""
-    resources:
-      - nodes
-    verbs:
-      - get
-  - apiGroups:
-      - ""
-    resources:
-      - services
-    verbs:
-      - get
-      - list
-      - update
-      - watch
-  - apiGroups:
-      - extensions
-      - "networking.k8s.io" # k8s 1.14+
-    resources:
-      - ingresses
-    verbs:
-      - get
-      - list
-      - watch
-  - apiGroups:
-      - ""
-    resources:
-      - events
-    verbs:
-      - create
-      - patch
-  - apiGroups:
-      - extensions
-      - "networking.k8s.io" # k8s 1.14+
-    resources:
-      - ingresses/status
-    verbs:
-      - update
----
-# Source: nginx-ingress/templates/clusterrolebinding.yaml
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  labels:
-    app: nginx-ingress
-    chart: nginx-ingress-1.31.0
-    heritage: Helm
-    release: release
-  name: release-nginx-ingress
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: release-nginx-ingress
-subjects:
-  - kind: ServiceAccount
-    name: release-nginx-ingress
-    namespace: nginx-ingress
----
-# Source: nginx-ingress/templates/controller-role.yaml
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  labels:
-    app: nginx-ingress
-    chart: nginx-ingress-1.31.0
-    heritage: Helm
-    release: release
-  name: release-nginx-ingress
-rules:
-  - apiGroups:
-      - ""
-    resources:
-      - namespaces
-    verbs:
-      - get
-  - apiGroups:
-      - ""
-    resources:
-      - configmaps
-      - pods
-      - secrets
-      - endpoints
-    verbs:
-      - get
-      - list
-      - watch
-  - apiGroups:
-      - ""
-    resources:
-      - services
-    verbs:
-      - get
-      - list
-      - update
-      - watch
-  - apiGroups:
-      - extensions
-      - "networking.k8s.io" # k8s 1.14+
-    resources:
-      - ingresses
-    verbs:
-      - get
-      - list
-      - watch
-  - apiGroups:
-      - extensions
-      - "networking.k8s.io" # k8s 1.14+
-    resources:
-      - ingresses/status
-    verbs:
-      - update
-  - apiGroups:
-      - ""
-    resources:
-      - configmaps
-    resourceNames:
-      - ingress-controller-leader-nginx
-    verbs:
-      - get
-      - update
-  - apiGroups:
-      - ""
-    resources:
-      - configmaps
-    verbs:
-      - create
-  - apiGroups:
-      - ""
-    resources:
-      - endpoints
-    verbs:
-      - create
-      - get
-      - update
-  - apiGroups:
-      - ""
-    resources:
-      - events
-    verbs:
-      - create
-      - patch
----
-# Source: nginx-ingress/templates/controller-rolebinding.yaml
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  labels:
-    app: nginx-ingress
-    chart: nginx-ingress-1.31.0
-    heritage: Helm
-    release: release
-  name: release-nginx-ingress
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: release-nginx-ingress
-subjects:
-  - kind: ServiceAccount
-    name: release-nginx-ingress
-    namespace: nginx-ingress
----
-# Source: nginx-ingress/templates/controller-service.yaml
 apiVersion: v1
 kind: Service
 metadata:
-  labels:
-    app: nginx-ingress
-    chart: nginx-ingress-1.31.0
-    component: "controller"
-    heritage: Helm
-    release: release
-  name: release-nginx-ingress-controller
+  name: default-backend
 spec:
   ports:
-    - name: http
-      port: 80
-      protocol: TCP
-      targetPort: http
-      nodePort: 30080
-    - name: https
-      port: 443
-      protocol: TCP
-      nodePort: 30443
-      targetPort: https
+  - port: 80
+    protocol: TCP
+    targetPort: 8080
   selector:
-    app: nginx-ingress
-    component: "controller"
-    release: release
-  type: "NodePort"
+    app: default-backend
 ---
-# Source: nginx-ingress/templates/default-backend-service.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    app: nginx-ingress
-    chart: nginx-ingress-1.31.0
-    component: "default-backend"
-    heritage: Helm
-    release: release
-  name: release-nginx-ingress-default-backend
-spec:
-  ports:
-    - name: http
-      port: 80
-      protocol: TCP
-      targetPort: http
-  selector:
-    app: nginx-ingress
-    component: "default-backend"
-    release: release
-  type: "ClusterIP"
----
-# Source: nginx-ingress/templates/controller-deployment.yaml
-apiVersion: apps/v1
+apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  labels:
-    app: nginx-ingress
-    chart: nginx-ingress-1.31.0
-    component: "controller"
-    heritage: Helm
-    release: release
-  name: release-nginx-ingress-controller
-  annotations:
-    {}
+  name: default-backend
 spec:
-  selector:
-    matchLabels:
-      app: nginx-ingress
-      release: release
-  replicas: {{ nginx_replica }}
-  revisionHistoryLimit: 10
-  strategy:
-    {}
-  minReadySeconds: 0
+  replicas: {{ nginx_ingress_controller_replicas }}
   template:
     metadata:
       labels:
-        app: nginx-ingress
-        component: "controller"
-        release: release
+        app: default-backend
     spec:
-      dnsPolicy: ClusterFirst
+      terminationGracePeriodSeconds: 60
       tolerations:
         - effect: NoSchedule
           key: dedicated
@@ -302,23 +38,109 @@ spec:
                 values:
                 - ingress
       containers:
+      - name: default-backend
+        image: gcr.io/google_containers/defaultbackend:1.0
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+        ports:
+        - containerPort: 8080
+        resources:
+          limits:
+            cpu: 10m
+            memory: 20Mi
+          requests:
+            cpu: 10m
+            memory: 20Mi
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-ingress-controller-conf
+  labels:
+    app: nginx-ingress-lb
+data:
+  enable-vts-status: 'true'
+  proxy-body-size: 15m
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    k8s-app: nginx
+  name: nginx
+  namespace: ${POD_NAMESPACE}
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: nginx
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: nginx
+  namespace: ${POD_NAMESPACE}
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: nginx-ingress-controller
+spec:
+  replicas: {{ nginx_ingress_controller_replicas }}
+  revisionHistoryLimit: 3
+  template:
+    metadata:
+      labels:
+        app: nginx-ingress-lb
+    spec:
+      hostNetwork: true
+      terminationGracePeriodSeconds: 60
+      serviceAccount: nginx
+      tolerations:
+        - effect: NoSchedule
+          key: dedicated
+          operator: Equal
+          value: ingress
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: dedicated
+                operator: In
+                values:
+                - ingress
+
+      containers:
         - name: nginx-ingress-controller
-          image: "quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.29.0"
-          imagePullPolicy: "IfNotPresent"
+          image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.30.0
+          imagePullPolicy: Always
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 10254
+              scheme: HTTP
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 10254
+              scheme: HTTP
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
           args:
             - /nginx-ingress-controller
-            - --default-backend-service=nginx-ingress/release-nginx-ingress-default-backend
-            - --election-id=ingress-controller-leader
-            - --ingress-class=nginx
-            - --configmap=nginx-ingress/release-nginx-ingress-controller
-          securityContext:
-            capabilities:
-                drop:
-                - ALL
-                add:
-                - NET_BIND_SERVICE
-            runAsUser: 101
-            allowPrivilegeEscalation: true
+            - --default-backend-service=${POD_NAMESPACE}/default-backend
+            - --configmap=${POD_NAMESPACE}/nginx-ingress-controller-conf
+            - --enable-ssl-passthrough
+            - --v=2
           env:
             - name: POD_NAME
               valueFrom:
@@ -328,110 +150,19 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
-          livenessProbe:
-            httpGet:
-              path: /healthz
-              port: 10254
-              scheme: HTTP
-            initialDelaySeconds: 10
-            periodSeconds: 10
-            timeoutSeconds: 1
-            successThreshold: 1
-            failureThreshold: 3
-          ports:
-            - name: http
-              containerPort: 80
-              protocol: TCP
-            - name: https
-              containerPort: 443
-              protocol: TCP
-          readinessProbe:
-            httpGet:
-              path: /healthz
-              port: 10254
-              scheme: HTTP
-            initialDelaySeconds: 10
-            periodSeconds: 10
-            timeoutSeconds: 1
-            successThreshold: 1
-            failureThreshold: 3
+{% if profile  == "prod" %}
+
           resources:
-            {}
-      hostNetwork: false
-      serviceAccountName: release-nginx-ingress
-      terminationGracePeriodSeconds: 60
----
-# Source: nginx-ingress/templates/default-backend-deployment.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  labels:
-    app: nginx-ingress
-    chart: nginx-ingress-1.31.0
-    component: "default-backend"
-    heritage: Helm
-    release: release
-  name: release-nginx-ingress-default-backend
-spec:
-  selector:
-    matchLabels:
-      app: nginx-ingress
-      release: release
-  replicas: {{ nginx_replica }}
-  revisionHistoryLimit: 10
-  template:
-    metadata:
-      labels:
-        app: nginx-ingress
-        component: "default-backend"
-        release: release
-    spec:
-      tolerations:
-        - effect: NoSchedule
-          key: dedicated
-          operator: Equal
-          value: ingress
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: dedicated
-                operator: In
-                values:
-                - ingress
-      containers:
-        - name: nginx-ingress-default-backend
-          image: "k8s.gcr.io/defaultbackend-amd64:1.5"
-          imagePullPolicy: "IfNotPresent"
-          args:
-          securityContext:
-            runAsUser: 65534
-          livenessProbe:
-            httpGet:
-              path: /healthz
-              port: 8080
-              scheme: HTTP
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            timeoutSeconds: 5
-            successThreshold: 1
-            failureThreshold: 3
-          readinessProbe:
-            httpGet:
-              path: /healthz
-              port: 8080
-              scheme: HTTP
-            initialDelaySeconds: 0
-            periodSeconds: 5
-            timeoutSeconds: 5
-            successThreshold: 1
-            failureThreshold: 6
+            limits:
+              cpu: {{ ingress_limit_cpu }}
+              memory: {{ ingress_limit_mem }}
+            requests:
+              cpu: {{ ingress_request_cpu }}
+              memory: {{ ingress_request_mem }}
+{% endif %}
+
           ports:
-            - name: http
-              containerPort: 8080
-              protocol: TCP
-          resources:
-            {}
-      serviceAccountName: release-nginx-ingress-backend
-      terminationGracePeriodSeconds: 60
+            - containerPort: 80
+            - containerPort: 443
+            - containerPort: 18080
+            - containerPort: 10254

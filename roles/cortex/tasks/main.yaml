@@ -43,8 +43,8 @@
          kubectl apply -n cortex -f /etc/kubernetes/kubeadm/cortex/step.5.querier.yaml; \
          kubectl apply -n cortex -f /etc/kubernetes/kubeadm/cortex/step.6.distributor.yaml; \
          kubectl apply -n cortex -f /etc/kubernetes/kubeadm/cortex/step.7.queryfrontend.yaml; \
-         kubectl apply -n cortex -f /etc/kubernetes/kubeadm/cortex/step.8.nginx.yaml; \
-         kubectl apply -n cortex -f /etc/kubernetes/kubeadm/cortex/step.9.grafana-dep.yaml;
+         kubectl apply -n cortex -f /etc/kubernetes/kubeadm/cortex/step.8.nginx.yaml; 
+         #kubectl apply -n cortex -f /etc/kubernetes/kubeadm/cortex/step.9.grafana-dep.yaml;
   when: >
     groups['kube_master'].index(inventory_hostname) == 0 
   ignore_errors: yes
