@@ -760,3 +760,14 @@ loki_nginx_limit_cpu: 500m
 loki_nginx_limit_mem: 500Mi
 loki_nginx_req_cpu: 500m
 loki_nginx_req_mem: 500Mi
+
+
+###### mywebsql service ######
+mywebsql_deployment_name: mywebsql-deployment
+mywebsql_app_label: mywebsql
+mywebsql_image: quantumobject/docker-mywebsql
+mywebsql_container_port: 80
+mywebsql_node_port_service_name: mywebsql-service-np
+mywebsql_node_port_service_port: 80
+mywebsql_node_port_service_target_port: 80
+mywebsql_node_port_service_node_port: 32218
