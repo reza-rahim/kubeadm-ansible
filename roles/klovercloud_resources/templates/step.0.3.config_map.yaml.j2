@@ -228,3 +228,17 @@ data:
   NEXUS_NPM_GROUP_URL: "{{ klovercloud_ci_nexus_npm_group_url }}"
   GENERATOR_IMAGE_PULL_SECRET: "{{ klovercloud_image_pulling_secret }}"
 
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ klovercloud_webapp_envar_configmap_name }}
+  namespace: {{ klovercloud_namespace }}
+data:
+  KLOVERCLOUD_WEB_APP_ENDPOINT: "{{ klovercloud_webapp_endpoint }}"
+  KLOVERCLOUD_API_ENDPOINT: "{{ klovercloud_webapp_api_endpoint }}"
+  KLOVERCLOUD_CONTAINER_REGISTRY_ENDPOINT: "{{ klovercloud_container_registry_endpoint }}"
+
+

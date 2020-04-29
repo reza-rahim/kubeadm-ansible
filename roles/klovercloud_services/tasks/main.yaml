@@ -197,7 +197,7 @@
 - name: wait for pods to get ready
   shell: while [[ $(kubectl get pods -l app={{ klovercloud_facade_app_label }} -n {{ klovercloud_namespace }} -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for pod" && sleep 1; done
   register: kubectl_get_pods
-
+ 
 
 - name: 
   wait_for:
@@ -206,6 +206,7 @@
 - name: Login to facade service as super admin user
   shell: kubectl -n {{ klovercloud_namespace }} exec -it $(kubectl -n {{ klovercloud_namespace }} get pod -l "app={{ klovercloud_facade_app_label }}" -o jsonpath='{.items[0].metadata.name}') -- bin/sh -c "curl -X POST 'http://localhost:{{ klovercloud_facade_container_port1 }}/api/auth/login'  -H 'Content-Type:application/json'  -d '{\"username\":\"{{ klovercloud_super_admin_username }}\",\"password\":\"{{ klovercloud_super_admin_password }}\"}'"
   register: facade_login_result
+  ignore_errors: yes
 
 - name: reset facade_login_result
   set_fact:
@@ -215,7 +216,7 @@
 - name: Request to create a Service User using facade login token
   shell: kubectl -n {{ klovercloud_namespace }} exec -it $(kubectl -n {{ klovercloud_namespace }} get pod -l "app={{ klovercloud_facade_app_label }}" -o jsonpath='{.items[0].metadata.name}') -- bin/sh -c "curl -X POST 'http://localhost:{{ klovercloud_facade_container_port1 }}/api/user'  -H 'Content-Type:application/json' -H 'x-auth-token:{{ facade_login_result.token }}' -d '{\"firstName\":\"{{ klovercloud_service_firstname }}\",\"lastName\":\"{{ klovercloud_service_lastname }}\",\"username\":\"{{ klovercloud_service_username }}\",\"userType\":\"{{ klovercloud_service_usertype }}\",\"enabled\":true,\"authorities\":[ \"ROLE_AGENT_SERVICE\"]}'"
   register: service_user
-
+  ignore_errors: yes
 
 - name: reset service_user
   set_fact:
@@ -231,7 +232,7 @@
 - name: Request to create a facade Service access token
   shell: kubectl -n {{ klovercloud_namespace }} exec -it $(kubectl -n {{ klovercloud_namespace }} get pod -l "app={{ klovercloud_facade_app_label }}" -o jsonpath='{.items[0].metadata.name}') -- bin/sh -c "curl -X POST 'http://localhost:{{ klovercloud_facade_container_port1 }}/api/api-access-token'  -H 'Content-Type:application/json' -H 'x-auth-token:{{ facade_login_result.token }}' -d '{\"userId\":\"{{ service_user.data }}\"}'"
   register: facade_api_access_token
-
+  ignore_errors: yes
 # - name: Request to create a facade Service access token
 #   shell: kubectl -n {{ klovercloud_namespace }} exec -it $(kubectl -n {{ klovercloud_namespace }} get pod -l "app={{ klovercloud_facade_app_label }}" -o jsonpath='{.items[0].metadata.name}') -- bin/sh -c "curl -X POST 'http://localhost:{{ klovercloud_facade_container_port1 }}/api/api-access-token'  -H 'Content-Type:application/json' -H 'x-auth-token:{{ facade_login_result.token }}' -d '{\"userId\":\"5e9db43374d93c00012b87e0\"}'"
 #   register: facade_api_access_token
@@ -283,6 +284,7 @@
      - { src: 'step.11.my_store.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.11.my_store.yaml'  } 
      - { src: 'step.12.object_storage.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.12.object_storage.yaml'  } 
      - { src: 'step.13.klovercloud-ci.v1.1.0.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.13.klovercloud-ci.v1.1.0.yaml'  } 
+     - { src: 'step.14.klovercloud_webapp.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.14.klovercloud_webapp.yaml'  }
   when: >
     groups['kube_master'].index(inventory_hostname) == 0  
   register: result
@@ -356,6 +358,17 @@
 
 - name:  
   shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.13.klovercloud-ci.v1.1.0.yaml;
+  when: >
+    groups['kube_master'].index(inventory_hostname) == 0   
+  ignore_errors: yes
+
+
+
+
+# deploy klovercloud-webapp
+
+- name:  
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.14.klovercloud_webapp.yaml;
   when: >
     groups['kube_master'].index(inventory_hostname) == 0   
   ignore_errors: yes
