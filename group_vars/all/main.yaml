@@ -771,3 +771,35 @@ mywebsql_node_port_service_name: mywebsql-service-np
 mywebsql_node_port_service_port: 80
 mywebsql_node_port_service_target_port: 80
 mywebsql_node_port_service_node_port: 32218
+
+
+
+###### klovercloud-webapp-envar-config ######
+
+klovercloud_webapp_envar_configmap_name: klovercloud-webapp-envar-config
+klovercloud_webapp_endpoint: https://webapp.klovercloud.io
+klovercloud_webapp_api_endpoint: https://facade.klovercloud.io
+klovercloud_container_registry_endpoint: container-registry.klovercloud.io
+klovercloud_webapp_secret: klovercloud-webapp-secret
+klovercloud_webapp_service_name: klovercloud-webapp
+klovercloud_webapp_service_port: 80
+klovercloud_webapp_service_target_port: 8000
+klovercloud_webapp_app_label: klovercloud-webapp
+klovercloud_webapp_deployment_name: klovercloud-webapp
+klovercloud_webapp_host: webapp.klovercloud.io
+klovercloud_webapp_ingress_name: klovercloud-webapp
+klovercloud_webapp_replica: 1
+klovercloud_webapp_image: klovercloud/service:webapp
+
+klovercloud_webapp_cpu_request: 200m
+klovercloud_webapp_memory_request: 350Mi
+klovercloud_webapp_cpu_limit: 350m
+klovercloud_webapp_memory_limit: 512Mi
+
+sl_google_client_id: 646539459524-dt34o9aaqtaf54rhb2v7ca2a1nnkpfh5.apps.googleusercontent.com
+sl_github_client_id: 71b742151dfc6b176242
+sl_bitbucket_consumer_key: AGkKBWvS6DrqjvSkfB
+sl_bitbucket_application_id: f12c33aca136cbb434c00a9d8fdadeb724a028f707f418cb5549e583d6737ab4
+sl_gitlab_state: 7ac66c0f148de9519b8bd264312c4d64
+
+
