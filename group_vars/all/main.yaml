@@ -142,7 +142,7 @@ klovercloud_ci_memory_limit: 1536Mi
 klovercloud_ci_containers_port: 8080
 klovercloud_ci_tecknology: TEKTON
 
-klovercloud_ci_image: klovercloud/service:ci
+klovercloud_ci_image: klovercloud/service:ci-v0.1.0
 klovercloud_ci_mongo_service_name: mongodb-internal-kc
 klovercloud_ci_mongo_external_name: mongodb.klovercloud.svc.cluster.local
 klovercloud_ci_db_connection_str: mongodb://mongoAdmin:abc123@mongodb-internal-kc:27017
@@ -273,7 +273,7 @@ klovercloud_listener_cpu_limit: 1000m
 klovercloud_listener_memory_limit: 1000Mi
 klovercloud_listener_deployment_name: klovercloud-listener
 klovercloud_listener_app_label: klovercloud-listener
-klovercloud_listener_image: klovercloud/service:listener
+klovercloud_listener_image: klovercloud/service:listener-v0.1.0
 klovercloud_listener_container_port1: 8080
 klovercloud_listener_container_port2: 8081
 klovercloud_listener_service_port: 80
@@ -301,7 +301,7 @@ klovercloud_management_cpu_limit: 750m
 klovercloud_management_memory_limit: 786Mi
 klovercloud_management_deployment_name: klovercloud-management
 klovercloud_management_service_name: klovercloud-management
-klovercloud_management_image: klovercloud/service:management
+klovercloud_management_image: klovercloud/service:management-v0.1.0
 klovercloud_management_app_label: klovercloud-management
 klovercloud_management_cluster_resource_limit_factor_cpu: 0.6
 klovercloud_management_cluster_resource_limit_factor_memory: 0.8
@@ -338,7 +338,7 @@ klovercloud_facade_tls_secret: facade-tls
 klovercloud_facade_host: facade.dev.klovercloud.com
 klovercloud_facade_admin_username: admin@klovercloud.com
 klovercloud_facade_admin_password: hello123
-klovercloud_facade_image: klovercloud/service:facade
+klovercloud_facade_image: klovercloud/service:facade-v0.1.0
 klovercloud_facade_api_access_token: abcxyz
 klovercloud_facade_envar_configmap_name: klovercloud-facade-envar-config
 
@@ -355,7 +355,7 @@ klovercloud_pipeline_service_target_port: 8080
 klovercloud_pipeline_service_metrics_port: 8081
 klovercloud_pipeline_service_metrics_target_port: 8081
 klovercloud_pipeline_service_internal_name: klovercloud-pipeline-internal-kc
-klovercloud_pipeline_image: klovercloud/service:pipeline
+klovercloud_pipeline_image: klovercloud/service:pipeline-v0.1.0
 
 klovercloud_pipeline_cpu_request: 500m
 klovercloud_pipeline_memory_request: 756Mi
@@ -518,7 +518,7 @@ klovercloud_harbor_registry_ctl_container_port: 8080
 klovercloud_harbor_deployment_name: klovercloud-harbor
 klovercloud_harbor_deployment_replica: 1
 klovercloud_harbor_deployement_app_label: klovercloud-harbor
-klovercloud_harbor_image: klovercloud/service:harbor
+klovercloud_harbor_image: klovercloud/service:harbor-v0.1.0
 
 klovercloud_harbor_cpu_request: 200m
 klovercloud_harbor_memory_request: 350Mi
@@ -546,7 +546,7 @@ klovercloud_monitor_deployment_pod_feed_cleanup_timeout_hours: 1
 klovercloud_monitor_deployment_cluster_agent_response_kafka_topic: kt-klovercloud-ca-response
 klovercloud_monitor_deployment_cluster_agent_response_kafka_group_id: cg-klovercloud-ca-response
 klovercloud_monitor_app_label: klovercloud-monitor
-klovercloud_monitor_image: klovercloud/service:monitor
+klovercloud_monitor_image: klovercloud/service:monitor-v0.1.0
 klovercloud_monitor_cpu_request: 200m
 klovercloud_monitor_memory_request: 350Mi
 klovercloud_monitor_cpu_limit: 350m
@@ -569,7 +569,7 @@ klovercloud_database_deployment_name: klovercloud-database
 klovercloud_database_app_label: klovercloud-database
 
 klovercloud_database_deployment_replica: 1
-klovercloud_database_deployment_image: klovercloud/service:database
+klovercloud_database_deployment_image: klovercloud/service:database-v0.1.0
 klovercloud_database_service_name: klovercloud-database
 klovercloud_database_service_port: 80
 klovercloud_database_container_port: 8080
@@ -584,7 +584,7 @@ klovercloud_database_envar_configmap_name: klovercloud-database-envar-config
 ####### Klovercloud dns manager #######
 
 klovercloud_dns_manager_deployment_name: klovercloud-dns-manager
-klovercloud_dns_manager_image: klovercloud/service:dns-manager
+klovercloud_dns_manager_image: klovercloud/service:dns-manager-v0.1.0
 
 klovercloud_dns_manager_cpu_request: 200m
 klovercloud_dns_manager_memory_request: 350Mi
@@ -610,9 +610,9 @@ klovercloud_dns_manager_envar_configmap_name: klovercloud-dns-manager-envar-conf
 
 ####### Klovercloud log manager #######
 
-klovercloud_log_manager_deployment_name: klovercloud-log-manage
-klovercloud_log_manager_image: klovercloud/service:log-manager
-klovercloud_log_manager_app_label: klovercloud-log-manage
+klovercloud_log_manager_deployment_name: klovercloud-log-manager
+klovercloud_log_manager_image: klovercloud/service:log-manager-v0.1.0
+klovercloud_log_manager_app_label: klovercloud-log-manager
 klovercloud_log_manager_deployment_replica: 1
 
 klovercloud_log_manager_cpu_request: 250m
@@ -630,7 +630,7 @@ klovercloud_log_manager_envar_configmap_name: klovercloud-log-manager-envar-conf
 ####### Klovercloud metrics #######
 
 klovercloud_metrics_deployment_name: klovercloud-metrics
-klovercloud_metrics_image: klovercloud/service:metrics
+klovercloud_metrics_image: klovercloud/service:metrics-v0.1.0
 klovercloud_metrics_app_label: klovercloud-metrics
 klovercloud_metrics_deployment_replica: 1
 
@@ -669,7 +669,7 @@ klovercloud_rook_ceph_object_storage_deployment_name: klovercloud-object-storage
 klovercloud_rook_ceph_object_storage_app_label: klovercloud-object-storage
 klovercloud_rook_ceph_object_storage_deployment_replica: 1
 
-klovercloud_rook_ceph_object_storage_image: klovercloud/service:object-storage
+klovercloud_rook_ceph_object_storage_image: klovercloud/service:object-storage-v0.1.0
 
 klovercloud_rook_ceph_object_storage_cpu_request: 200m
 klovercloud_rook_ceph_object_storage_memory_request: 350Mi
@@ -789,7 +789,7 @@ klovercloud_webapp_deployment_name: klovercloud-webapp
 klovercloud_webapp_host: webapp.klovercloud.io
 klovercloud_webapp_ingress_name: klovercloud-webapp
 klovercloud_webapp_replica: 1
-klovercloud_webapp_image: klovercloud/service:webapp
+klovercloud_webapp_image: klovercloud/service:webapp-v0.1.0
 
 klovercloud_webapp_cpu_request: 200m
 klovercloud_webapp_memory_request: 350Mi
