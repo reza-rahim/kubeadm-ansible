@@ -285,7 +285,8 @@
      - { src: 'step.12.object_storage.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.12.object_storage.yaml'  } 
      - { src: 'step.13.klovercloud-ci.v1.1.0.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.13.klovercloud-ci.v1.1.0.yaml'  } 
      - { src: 'step.14.klovercloud_webapp.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.14.klovercloud_webapp.yaml'  }
-     - { src: 'step.15.klovercloud_cluster_cleanup.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.15.klovercloud_cluster_cleanup.yaml'  }
+     - { src: 'step.15.klovercloud_message_publisher.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.15.klovercloud_message_publisher.yaml'  }
+     - { src: 'step.16.klovercloud_cluster_cleanup.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.16.klovercloud_cluster_cleanup.yaml'  }
   when: >
     groups['kube_master'].index(inventory_hostname) == 0  
   register: result
@@ -365,7 +366,6 @@
 
 
 
-
 # deploy klovercloud-webapp
 
 - name:  
@@ -376,10 +376,22 @@
 
 
 
+
+# deploy klovercloud-message-publisher
+
+- name:
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.15.klovercloud_message_publisher.yaml;
+  when: >
+    groups['kube_master'].index(inventory_hostname) == 0
+  ignore_errors: yes
+
+
+
+
 # deploy klovercloud-cluster-cleanup
 
 - name:
-  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.15.klovercloud_cluster_cleanup.yaml;
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.16.klovercloud_cluster_cleanup.yaml;
   when: >
     groups['kube_master'].index(inventory_hostname) == 0
   ignore_errors: yes

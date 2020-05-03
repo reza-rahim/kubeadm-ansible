@@ -254,3 +254,16 @@ data:
   CLEANUP_INTERVAL: "{{ klovercloud_cluster_cleanup_interval }}"
   POD_EXPIRY_THRESHOLD: "{{ klovercloud_cluster_cleanup_pod_expiry_threshold }}"
   WHITELISTED_NAMESPACES: "{{ klovercloud_cluster_cleanup_whitelisted_namespaces }}"
+
+
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ klovercloud_message_publisher_envar_configmap_name }}
+  namespace: {{ klovercloud_namespace }}
+data:
+  KAFKA_SERVER: "{{ klovercloud_kafka_service_name }}"
+  KAFKA_PORT: "{{ klovercloud_kafka_service_port }}"

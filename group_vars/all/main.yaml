@@ -821,3 +821,23 @@ klovercloud_cluster_cleanup_cpu_request: 100m
 klovercloud_cluster_cleanup_memory_request: 128Mi
 klovercloud_cluster_cleanup_cpu_limit: 200m
 klovercloud_cluster_cleanup_memory_limit: 256Mi
+klovercloud_cluster_cleanup_deployment_replica: 1
+
+
+
+
+###### klovercloud-message-publisher ######
+
+klovercloud_message_publisher_app_label: klovercloud-message-publisher
+klovercloud_message_publisher_envar_configmap_name: klovercloud-message-publisher-envar-config
+klovercloud_message_publisher_image: klovercloud/service:message-publisher-v0.1.0
+
+klovercloud_message_publisher_cpu_request: 350m
+klovercloud_message_publisher_memory_request: 360Mi
+klovercloud_message_publisher_cpu_limit: 500m
+klovercloud_message_publisher_memory_limit: 512Mi
+klovercloud_message_publisher_deployment_replica: 1
+
+klovercloud_message_publisher_container_port: 8080
+klovercloud_message_publisher_service_name: klovercloud-message-publisher
+klovercloud_message_publisher_service_port: 80

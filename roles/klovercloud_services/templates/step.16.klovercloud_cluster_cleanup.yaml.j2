@@ -37,7 +37,7 @@ metadata:
   name: {{ klovercloud_cluster_cleanup_app_label }}
   namespace: {{ klovercloud_namespace }}
 spec:
-  replicas: 1
+  replicas: {{ klovercloud_cluster_cleanup_deployment_replica }}
   selector:
     matchLabels:
       app: {{ klovercloud_cluster_cleanup_app_label }}
