@@ -1,5 +1,5 @@
 
-bash```
+```bash
 ceph quorum_status --format json-pretty
 ceph mon dump
 
