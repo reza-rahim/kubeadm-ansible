@@ -35,7 +35,7 @@ metadata:
 spec:
   type: NodePort
   ports:
-  - name: mongodb
+  - name: {{ klovercloud_mongodb_statefulset_name }}
     port: {{ klovercloud_mongodb_service_port }}
     protocol: TCP
     targetPort: {{ klovercloud_mongodb_service_target_port }}
@@ -48,6 +48,7 @@ spec:
   selector:
     app: {{ klovercloud_mongdb_app_label }}
     component: primary
+
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -78,7 +79,7 @@ spec:
       terminationGracePeriodSeconds: 60
       securityContext:
       containers:
-      - name: mongodb
+      - name: {{ klovercloud_mongodb_statefulset_name }}
         imagePullPolicy: IfNotPresent
         image: {{ klovercloud_mongodb_image }}
 {% if profile  == "prod" %}
@@ -102,14 +103,20 @@ spec:
         - name: MONGODB_REPLICA_SET_NAME
           value: {{ klovercloud_mongdb_app_label }}-2020030913370139
         - name: MONGODB_REPLICA_SET_KEY
-          value: {{ klovercloud_mongodb_root_password }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ klovercloud_mongodb_secret }}
+              key: MONGO_PASSWORD
         - name: MONGODB_ROOT_PASSWORD
-          value: {{ klovercloud_mongodb_root_password }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ klovercloud_mongodb_secret }}
+              key: MONGO_PASSWORD
         - name: MONGODB_ADVERTISED_HOSTNAME
           value: "$(MONGODB_POD_NAME).mongodb.klovercloud.svc.cluster.local"
         envFrom:
         ports:
-        - name: mongodb
+        - name: {{ klovercloud_mongodb_statefulset_name }}
           containerPort: {{ klovercloud_mongodb_containers_port }}
         volumeMounts:
         - mountPath: "/bitnami/mongodb"
@@ -154,7 +161,10 @@ spec:
         - "/bin/mongodb_exporter --mongodb.uri mongodb://root:${MONGODB_ROOT_PASSWORD}@localhost:27017/admin "
         env:
         - name: MONGODB_ROOT_PASSWORD
-          value: {{ klovercloud_mongodb_root_password }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ klovercloud_mongodb_secret }}
+              key: MONGO_PASSWORD
         envFrom:
         ports:
         - name: metrics
@@ -179,11 +189,13 @@ spec:
           successThreshold: 1
           timeoutSeconds: 5
         securityContext: {}
+      imagePullSecrets:
+      - name: {{ klovercloud_image_pulling_secret }}
       volumes: []
   volumeClaimTemplates:
   - metadata:
       name: data
-      namespace:  {{ klovercloud_namespace }}
+      namespace: {{ klovercloud_namespace }}
       labels:
         app: {{ klovercloud_mongdb_app_label }}
     spec:
