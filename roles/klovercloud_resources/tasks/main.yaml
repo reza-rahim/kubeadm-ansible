@@ -35,10 +35,10 @@
   ignore_errors: yes
 
 # reset facts values
-- name: Check if secret exists
-  stat:
-    path: /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.0.1.secrets.yaml
-  register: stat_result
+# - name: Check if secret exists
+#   stat:
+#     path: /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.0.1.secrets.yaml
+#   register: stat_result
 
 
 - name: reset variables
@@ -50,21 +50,21 @@
     klovercloud_rook_ceph_object_storage_secret_key: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
     klovercloud_mongodb_root_password: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
     klovercloud_super_admin_password: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
-  when: >
-    not stat_result.stat.exists
+  # when: >
+  #   not stat_result.stat.exists
 
-- name: get klovercloud_mongodb_root_password
-  shell: kubectl get secret {{ klovercloud_mongodb_secret }} -n {{ klovercloud_namespace }} -o json | jq -r '.data."MONGO_PASSWORD"'
-  register: password
-  when: >
-    stat_result.stat.exists
+# - name: get klovercloud_mongodb_root_password
+#   shell: kubectl get secret {{ klovercloud_mongodb_secret }} -n {{ klovercloud_namespace }} -o json | jq -r '.data."MONGO_PASSWORD"'
+#   register: password
+#   when: >
+#     stat_result.stat.exists
 
-- name: reset klovercloud_mongodb_root_password
-  set_fact:
-    klovercloud_mongodb_root_password: "{{ password.stdout  | b64decode }}"
-  when: >
-    stat_result.stat.exists
-  ignore_errors: yes
+# - name: reset klovercloud_mongodb_root_password
+#   set_fact:
+#     klovercloud_mongodb_root_password: "{{ password.stdout  | b64decode }}"
+#   when: >
+#     stat_result.stat.exists
+#   ignore_errors: yes
 
 
 - name: Creates /etc/kubernetes/kubeadm directory
@@ -114,7 +114,7 @@
   ignore_errors: yes 
 
 - name: Creates secrets if not present
-  shell: kubectl get secret {{ klovercloud_super_admin_secret }} -n {{ klovercloud_namespace }} -o json || kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.0.1.secrets.yaml;
+  shell: kubectl get secret {{ klovercloud_mongodb_secret }} -n {{ klovercloud_ci_namespace }} -o json || kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.0.1.secrets.yaml;
   when: >
     groups['kube_master'].index(inventory_hostname) == 0   
   ignore_errors: yes
