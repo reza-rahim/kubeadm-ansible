@@ -1,0 +1,74 @@
+---
+# ------------------- CI Service Account ------------------- #
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    k8s-app: {{ klovercloud_cluster_cleanup_app_label }}
+  name: {{ klovercloud_cluster_cleanup_app_label }}
+  namespace: {{ {{ klovercloud_namespace }} }}
+
+
+---
+# ------------------- Role Binding ------------------- #
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ klovercloud_cluster_cleanup_app_label }}-rolebinding
+  namespace: {{ {{ klovercloud_namespace }} }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: {{ klovercloud_cluster_cleanup_app_label }}
+    namespace: {{ {{ klovercloud_namespace }} }}
+
+
+---
+# ------------------- Deployment ------------------- #
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ klovercloud_cluster_cleanup_app_label }}
+  namespace: {{ klovercloud_namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ klovercloud_cluster_cleanup_app_label }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0
+  minReadySeconds: 25
+  template:
+    metadata:
+      labels:
+        app: {{ klovercloud_cluster_cleanup_app_label }}
+    spec:
+      terminationGracePeriodSeconds: 15
+      containers:
+      - name: app
+        imagePullPolicy: Always
+        image: {{ klovercloud_cluster_cleanup_image }}
+{% if profile  == "prod" %}
+        resources:
+          requests:
+            cpu: {{ klovercloud_cluster_cleanup_cpu_request }}
+            memory: {{ klovercloud_cluster_cleanup_memory_request }}
+          limits:
+            cpu: {{ klovercloud_cluster_cleanup_cpu_limit }}
+            memory: {{ klovercloud_cluster_cleanup_memory_limit }}
+{% endif %}
+        envFrom:
+        - configMapRef:
+            name: {{ klovercloud_cluster_cleanup_envar_configmap_name }}
+      serviceAccount: {{ klovercloud_cluster_cleanup_app_label }}
+      imagePullSecrets:
+        - name: {{ klovercloud_image_pulling_secret }}
