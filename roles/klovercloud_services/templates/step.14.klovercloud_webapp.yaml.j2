@@ -66,9 +66,9 @@ spec:
       labels:
         app: {{ klovercloud_webapp_app_label }}
     spec:
-      terminationGracePeriodSeconds: 30
+      terminationGracePeriodSeconds: 15
       containers:
-      - name: klovercloud-webapp
+      - name: app
         imagePullPolicy: Always
         image: {{ klovercloud_webapp_image }}
 {% if profile  == "prod" %}

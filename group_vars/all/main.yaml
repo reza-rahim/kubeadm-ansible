@@ -774,7 +774,7 @@ mywebsql_node_port_service_node_port: 32218
 
 
 
-###### klovercloud-webapp-envar-config ######
+###### klovercloud-webapp ######
 
 klovercloud_webapp_envar_configmap_name: klovercloud-webapp-envar-config
 klovercloud_webapp_endpoint: https://webapp.klovercloud.io
@@ -806,3 +806,18 @@ sl_bitbucket_application_id: f12c33aca136cbb434c00a9d8fdadeb724a028f707f418cb554
 sl_gitlab_state: 7ac66c0f148de9519b8bd264312c4d64
 sl_gitlab_application_secret: 4adc180e8450df99f2db1ce721b477348f0fb5b076cfdb07f566689fcb90679e
 
+
+
+###### klovercloud-cluster-cleanup ######
+
+klovercloud_cluster_cleanup_app_label: klovercloud-cluster-cleanup
+klovercloud_cluster_cleanup_envar_configmap_name: klovercloud-cluster-cleanup-envar-config
+klovercloud_cluster_cleanup_interval: 60
+klovercloud_cluster_cleanup_pod_expiry_threshold: 180
+klovercloud_cluster_cleanup_whitelisted_namespaces: kube-public,kube-system,kube-node-lease,klovercloud,rook-ceph,monitoring,cortex,loki,cassandra,harbor,nexus,tekton,tekton-pipelines,cert-manager
+klovercloud_cluster_cleanup_image: klovercloud/service:cluster-cleanup-v0.1.0
+
+klovercloud_cluster_cleanup_cpu_request: 100m
+klovercloud_cluster_cleanup_memory_request: 128Mi
+klovercloud_cluster_cleanup_cpu_limit: 200m
+klovercloud_cluster_cleanup_memory_limit: 256Mi

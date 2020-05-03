@@ -242,3 +242,15 @@ data:
   KLOVERCLOUD_CONTAINER_REGISTRY_ENDPOINT: "{{ klovercloud_container_registry_endpoint }}"
 
 
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ klovercloud_cluster_cleanup_envar_configmap_name }}
+  namespace: {{ klovercloud_namespace }}
+data:
+  RUN_MODE: "K8"
+  CLEANUP_INTERVAL: "{{ klovercloud_cluster_cleanup_interval }}"
+  POD_EXPIRY_THRESHOLD: "{{ klovercloud_cluster_cleanup_pod_expiry_threshold }}"
+  WHITELISTED_NAMESPACES: "{{ klovercloud_cluster_cleanup_whitelisted_namespaces }}"
