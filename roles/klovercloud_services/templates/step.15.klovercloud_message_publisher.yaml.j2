@@ -25,6 +25,7 @@ spec:
       - name: app
         imagePullPolicy: Always
         image: {{ klovercloud_message_publisher_image }}
+{% if profile  == "prod" %}
         resources:
           requests:
             cpu: {{ klovercloud_message_publisher_cpu_request }}
@@ -32,6 +33,7 @@ spec:
           limits:
             cpu: {{ klovercloud_message_publisher_cpu_limit }}
             memory: {{ klovercloud_message_publisher_memory_limit }}
+{% endif %}
         envFrom:
         - configMapRef:
             name: {{ klovercloud_message_publisher_envar_configmap_name }}
