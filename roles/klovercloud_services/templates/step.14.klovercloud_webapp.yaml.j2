@@ -13,7 +13,7 @@ spec:
   - name: http-rest
     port: {{ klovercloud_webapp_service_port }}
     protocol: TCP
-    targetPort: {{ klovercloud_webapp_service_target_port }}
+    targetPort: {{ klovercloud_webapp_container_port }}
   selector:
     app: {{ klovercloud_webapp_app_label }}
 
@@ -48,7 +48,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ klovercloud_webapp_deployment_name }}
+  name: {{ klovercloud_webapp_app_label }}
   namespace: {{ klovercloud_namespace }}
 spec:
   replicas: {{ klovercloud_webapp_replica }}
@@ -86,6 +86,6 @@ spec:
         - configMapRef:
             name: {{ klovercloud_webapp_envar_configmap_name }}
         ports:
-        - containerPort: {{ klovercloud_webapp_service_target_port }}
+        - containerPort: {{ klovercloud_webapp_container_port }}
       imagePullSecrets:
       - name: {{ klovercloud_image_pulling_secret }}

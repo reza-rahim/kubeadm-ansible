@@ -16,7 +16,7 @@ data:
   KAFKA_SERVER: "{{ klovercloud_kafka_service_name }}"
   KAFKA_PORT: "{{ klovercloud_kafka_service_port }}"
   CI_TECHNOLOGY: "{{ klovercloud_ci_tecknology }}"
-  DEFAULT_INGRESS_DOMAIN: "{{ klovercloud_default_ingress_domain }}"
+  DEFAULT_INGRESS_DOMAIN: "{{ cluster_base_domain }}"
   KLOVERCLOUD_FACADE_SERVICE_DOMAIN: "{{ klovercloud_facade_host }}"
   KLOVERCLOUD_FACADE_SERVICE_NAME: "{{ klovercloud_facade_service_name }}"
   CONNECT_TO_KLOVERCLOUD_FACADE_WEB_SOCKET: "true"
