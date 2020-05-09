@@ -1,4 +1,23 @@
 ---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: klovercloud-social-login-secret
+  namespace: klovercloud
+type: Opaque
+stringData:
+  SL_GOOGLE_CLIENT_ID: "646539459524-dt34o9aaqtaf54rhb2v7ca2a1nnkpfh5.apps.googleusercontent.com"
+  SL_GOOGLE_CLIENT_SECRET: "hHr-c5rTpZ4grsRXq-SD0scG"
+  SL_GITHUB_CLIENT_ID: "71b742151dfc6b176242"
+  SL_GITHUB_CLIENT_SECRET: "95851ef7c2cda8973c54cf7f819656cd3ac79d9c"
+  SL_BITBUCKET_CONSUMER_KEY: "AGkKBWvS6DrqjvSkfB"
+  SL_BITBUCKET_CONSUMER_SECRET: "bdVgmPNrsetyD5qvNptWtH6Rk3cMD3Zz"
+  SL_GITLAB_APPLICATION_ID: "f12c33aca136cbb434c00a9d8fdadeb724a028f707f418cb5549e583d6737ab4"
+  SL_GITLAB_APPLICATION_SECRET: "4adc180e8450df99f2db1ce721b477348f0fb5b076cfdb07f566689fcb90679e"
+
+
+
+---
 
 apiVersion: apps/v1
 kind: Deployment
@@ -47,6 +66,8 @@ spec:
             name: {{ klovercloud_super_admin_secret }}
         - secretRef:
             name: {{ klovercloud_listener_secret }}
+        - secretRef:
+            name: klovercloud-social-login-secret
         - configMapRef:
             name: {{ klovercloud_facade_envar_configmap_name }}
         ports:
