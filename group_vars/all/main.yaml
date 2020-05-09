@@ -11,11 +11,11 @@ containerd: 1.2.13
 ubunutu_k8_version: 1.15.6-00
 redhat_k8_version: 1.17.0-0  
 
+cluster_base_domain: dev.klovercloud.io
 
 ##### nginx ingress ########
 nginx_ingress_controller_version: 0.29.0
 nginx_ingress_controller_replicas: 1
-ingress_hostname: www.dev.klovercloud.com
 nginx_ingress_http_mgmt: 18080
 ingress_limit_cpu: 1000m
 ingress_limit_mem: 2Gi
@@ -104,17 +104,14 @@ cortex_nginx_req_mem: 500Mi
 cortex_nginx: 1
 
 ####### Loki  ######
-loki_url: loki.dev.klovercloud.com
+loki_url: loki.{{ cluster_base_domain }}
 
-#######  klovercloud common ####### 
-#klovercloud_super_admin_username: admin-listener@klovercloud.com
-#klovercloud_super_admin_password: hello123
+#######  klovercloud common #######
 klovercloud_super_admin_username: superadmin@klovercloud.com
 klovercloud_super_admin_password: onhZruhF
 klovercloud_super_admin_secret: klovercloud-super-admin-secret
 klovercloud_dns_manager_service: klovercloud-dns-manager
 klovercloud_log_manager_service: klovercloud-log-manager
-klovercloud_default_ingress_domain: dev.klovercloud.com
 klovercloud_developer_alias: klovercloud
 klovercloud_namespace: klovercloud
 klovercloud_api_access_token: abcxyz
@@ -142,7 +139,7 @@ klovercloud_ci_memory_limit: 1536Mi
 klovercloud_ci_containers_port: 8080
 klovercloud_ci_tecknology: TEKTON
 
-klovercloud_ci_image: klovercloud/service:ci
+klovercloud_ci_image: klovercloud/service:ci-v0.1.0
 klovercloud_ci_mongo_service_name: mongodb-internal-kc
 klovercloud_ci_mongo_external_name: mongodb.klovercloud.svc.cluster.local
 klovercloud_ci_db_connection_str: mongodb://mongoAdmin:abc123@mongodb-internal-kc:27017
@@ -162,10 +159,10 @@ klovercloud_ci_pipeline_service_port: 80
 klovercloud_ci_nexus_token: YWRtaW46YWRtaW4=
 klovercloud_ci_nexus_username: admin
 klovercloud_ci_nexus_password: admin
-klovercloud_ci_nexus_maven_public_url: http://nexus.dev.klovercloud.com/repository/maven-public/
-klovercloud_ci_nexus_maven_releases_url: http://nexus.dev.klovercloud.com/repository/maven-releases/
-klovercloud_ci_nexus_maven_snapshot_url: http://nexus.dev.klovercloud.com/repository/maven-snapshot/
-klovercloud_ci_nexus_npm_group_url: http://nexus.dev.klovercloud.com/repository/npm-group/
+klovercloud_ci_nexus_maven_public_url: http://nexus.{{ cluster_base_domain }}/repository/maven-public/
+klovercloud_ci_nexus_maven_releases_url: http://nexus.{{ cluster_base_domain }}/repository/maven-releases/
+klovercloud_ci_nexus_maven_snapshot_url: http://nexus.{{ cluster_base_domain }}/repository/maven-snapshot/
+klovercloud_ci_nexus_npm_group_url: http://nexus.{{ cluster_base_domain }}/repository/npm-group/
 
 klovercloud_ci_service_name: klovercloud-ci
 klovercloud_ci_service_port: 80
@@ -260,7 +257,7 @@ klovercloud_nexus_cr: example-nexus
 klovercloud_nexus_app_label: nexus
 
 klovercloud_nexus_ingress_name: klovercloud-nexus
-klovercloud_nexus_ingress_host: nexus.dev.klovercloud.com
+klovercloud_nexus_ingress_host: nexus.{{ cluster_base_domain }}
 
 klovercloud_nexus_secret: klovercloud-nexus-secret
 
@@ -273,7 +270,7 @@ klovercloud_listener_cpu_limit: 1000m
 klovercloud_listener_memory_limit: 1000Mi
 klovercloud_listener_deployment_name: klovercloud-listener
 klovercloud_listener_app_label: klovercloud-listener
-klovercloud_listener_image: klovercloud/service:listener
+klovercloud_listener_image: klovercloud/service:listener-v0.1.0
 klovercloud_listener_container_port1: 8080
 klovercloud_listener_container_port2: 8081
 klovercloud_listener_service_port: 80
@@ -282,7 +279,7 @@ klovercloud_listener_service_name: klovercloud-listener
 klovercloud_listener_metrics_sevice_port: 8081
 klovercloud_listener_metrics_sevice_target_port: 8081
 klovercloud_listener_ingress_name: klovercloud-listener
-klovercloud_listener_ingress_host: listener.dev.klovercloud.com
+klovercloud_listener_ingress_host: listener.{{ cluster_base_domain }}
 klovercloud_listener_envar_configmap_name: klovercloud-listener-envar-config
 klovercloud_listener_secret: klovercloud-listener-secret
 
@@ -301,7 +298,7 @@ klovercloud_management_cpu_limit: 750m
 klovercloud_management_memory_limit: 786Mi
 klovercloud_management_deployment_name: klovercloud-management
 klovercloud_management_service_name: klovercloud-management
-klovercloud_management_image: klovercloud/service:management
+klovercloud_management_image: klovercloud/service:management-v0.1.0
 klovercloud_management_app_label: klovercloud-management
 klovercloud_management_cluster_resource_limit_factor_cpu: 0.6
 klovercloud_management_cluster_resource_limit_factor_memory: 0.8
@@ -335,10 +332,10 @@ klovercloud_facade_target_port: 8080
 klovercloud_facade_metrics_port: 8081
 klovercloud_facade_metrics_target_port: 8081
 klovercloud_facade_tls_secret: facade-tls
-klovercloud_facade_host: facade.dev.klovercloud.com
+klovercloud_facade_host: facade.{{ cluster_base_domain }}
 klovercloud_facade_admin_username: admin@klovercloud.com
 klovercloud_facade_admin_password: hello123
-klovercloud_facade_image: klovercloud/service:facade
+klovercloud_facade_image: klovercloud/service:facade-v0.1.0
 klovercloud_facade_api_access_token: abcxyz
 klovercloud_facade_envar_configmap_name: klovercloud-facade-envar-config
 
@@ -355,7 +352,7 @@ klovercloud_pipeline_service_target_port: 8080
 klovercloud_pipeline_service_metrics_port: 8081
 klovercloud_pipeline_service_metrics_target_port: 8081
 klovercloud_pipeline_service_internal_name: klovercloud-pipeline-internal-kc
-klovercloud_pipeline_image: klovercloud/service:pipeline
+klovercloud_pipeline_image: klovercloud/service:pipeline-v0.1.0
 
 klovercloud_pipeline_cpu_request: 500m
 klovercloud_pipeline_memory_request: 756Mi
@@ -445,7 +442,7 @@ klovercloud_harbor_database_deployment_replica: 1
 
 klovercloud_harbor_ingress_name: klover-alpha-v1-harbor-ingress
 
-klovercloud_harbor_ingress_host: container-registry.dev.klovercloud.com
+klovercloud_harbor_ingress_host: container-registry.{{ cluster_base_domain }}
 
 klovercloud_harbor_jobservice_secret_name: klover-alpha-v1-harbor-jobservice
 klovercloud_harbor_jobservice_config_map_name: klover-alpha-v1-harbor-jobservice
@@ -518,7 +515,7 @@ klovercloud_harbor_registry_ctl_container_port: 8080
 klovercloud_harbor_deployment_name: klovercloud-harbor
 klovercloud_harbor_deployment_replica: 1
 klovercloud_harbor_deployement_app_label: klovercloud-harbor
-klovercloud_harbor_image: klovercloud/service:harbor
+klovercloud_harbor_image: klovercloud/service:harbor-v0.1.0
 
 klovercloud_harbor_cpu_request: 200m
 klovercloud_harbor_memory_request: 350Mi
@@ -546,7 +543,7 @@ klovercloud_monitor_deployment_pod_feed_cleanup_timeout_hours: 1
 klovercloud_monitor_deployment_cluster_agent_response_kafka_topic: kt-klovercloud-ca-response
 klovercloud_monitor_deployment_cluster_agent_response_kafka_group_id: cg-klovercloud-ca-response
 klovercloud_monitor_app_label: klovercloud-monitor
-klovercloud_monitor_image: klovercloud/service:monitor
+klovercloud_monitor_image: klovercloud/service:monitor-v0.1.0
 klovercloud_monitor_cpu_request: 200m
 klovercloud_monitor_memory_request: 350Mi
 klovercloud_monitor_cpu_limit: 350m
@@ -569,7 +566,7 @@ klovercloud_database_deployment_name: klovercloud-database
 klovercloud_database_app_label: klovercloud-database
 
 klovercloud_database_deployment_replica: 1
-klovercloud_database_deployment_image: klovercloud/service:database
+klovercloud_database_deployment_image: klovercloud/service:database-v0.1.0
 klovercloud_database_service_name: klovercloud-database
 klovercloud_database_service_port: 80
 klovercloud_database_container_port: 8080
@@ -584,7 +581,7 @@ klovercloud_database_envar_configmap_name: klovercloud-database-envar-config
 ####### Klovercloud dns manager #######
 
 klovercloud_dns_manager_deployment_name: klovercloud-dns-manager
-klovercloud_dns_manager_image: klovercloud/service:dns-manager
+klovercloud_dns_manager_image: klovercloud/service:dns-manager-v0.1.0
 
 klovercloud_dns_manager_cpu_request: 200m
 klovercloud_dns_manager_memory_request: 350Mi
@@ -610,9 +607,9 @@ klovercloud_dns_manager_envar_configmap_name: klovercloud-dns-manager-envar-conf
 
 ####### Klovercloud log manager #######
 
-klovercloud_log_manager_deployment_name: klovercloud-log-manage
-klovercloud_log_manager_image: klovercloud/service:log-manager
-klovercloud_log_manager_app_label: klovercloud-log-manage
+klovercloud_log_manager_deployment_name: klovercloud-log-manager
+klovercloud_log_manager_image: klovercloud/service:log-manager-v0.1.0
+klovercloud_log_manager_app_label: klovercloud-log-manager
 klovercloud_log_manager_deployment_replica: 1
 
 klovercloud_log_manager_cpu_request: 250m
@@ -630,7 +627,7 @@ klovercloud_log_manager_envar_configmap_name: klovercloud-log-manager-envar-conf
 ####### Klovercloud metrics #######
 
 klovercloud_metrics_deployment_name: klovercloud-metrics
-klovercloud_metrics_image: klovercloud/service:metrics
+klovercloud_metrics_image: klovercloud/service:metrics-v0.1.0
 klovercloud_metrics_app_label: klovercloud-metrics
 klovercloud_metrics_deployment_replica: 1
 
@@ -669,7 +666,7 @@ klovercloud_rook_ceph_object_storage_deployment_name: klovercloud-object-storage
 klovercloud_rook_ceph_object_storage_app_label: klovercloud-object-storage
 klovercloud_rook_ceph_object_storage_deployment_replica: 1
 
-klovercloud_rook_ceph_object_storage_image: klovercloud/service:object-storage
+klovercloud_rook_ceph_object_storage_image: klovercloud/service:object-storage-v0.1.0
 
 klovercloud_rook_ceph_object_storage_cpu_request: 200m
 klovercloud_rook_ceph_object_storage_memory_request: 350Mi
@@ -679,7 +676,7 @@ klovercloud_rook_ceph_object_storage_db_name: klovercloud_object_storage
 # klovercloud_rook_ceph_object_storage_end_point: https://object-storage.dev.klovercloud.io/
   
 klovercloud_rook_ceph_object_storage_ingress_name: object-storage-ingress
-klovercloud_rook_ceph_object_storage_ingress_host: object-storage.dev.klovercloud.com
+klovercloud_rook_ceph_object_storage_ingress_host: object-storage.{{ cluster_base_domain }}
 klovercloud_rook_ceph_object_storage_ingress_secret: object-storage-tls
 
 klovercloud_rook_ceph_object_storage_user_id: klovercloud
@@ -771,3 +768,72 @@ mywebsql_node_port_service_name: mywebsql-service-np
 mywebsql_node_port_service_port: 80
 mywebsql_node_port_service_target_port: 80
 mywebsql_node_port_service_node_port: 32218
+
+
+
+###### klovercloud-webapp ######
+
+klovercloud_webapp_app_label: klovercloud-webapp
+klovercloud_webapp_host: webapp.{{ cluster_base_domain }}
+klovercloud_webapp_service_name: klovercloud-webapp
+klovercloud_webapp_service_port: 80
+klovercloud_webapp_container_port: 8000
+klovercloud_webapp_ingress_name: klovercloud-webapp
+klovercloud_webapp_image: klovercloud/service:webapp-v0.1.0
+klovercloud_webapp_secret: klovercloud-webapp-secret
+klovercloud_webapp_envar_configmap_name: klovercloud-webapp-envar-config
+
+klovercloud_webapp_cpu_request: 200m
+klovercloud_webapp_memory_request: 350Mi
+klovercloud_webapp_cpu_limit: 350m
+klovercloud_webapp_memory_limit: 512Mi
+klovercloud_webapp_replica: 1
+
+klovercloud_webapp_endpoint: https://webapp.{{ cluster_base_domain }}
+klovercloud_webapp_api_endpoint: https://facade.{{ cluster_base_domain }}
+klovercloud_container_registry_endpoint: container-registry.{{ cluster_base_domain }}
+sl_google_client_id: 646539459524-dt34o9aaqtaf54rhb2v7ca2a1nnkpfh5.apps.googleusercontent.com
+sl_google_client_secret: hHr-c5rTpZ4grsRXq-SD0scG
+sl_github_client_id: 71b742151dfc6b176242
+sl_github_client_secret: 95851ef7c2cda8973c54cf7f819656cd3ac79d9c
+sl_bitbucket_consumer_key: AGkKBWvS6DrqjvSkfB
+sl_bitbucket_consumer_secret: bdVgmPNrsetyD5qvNptWtH6Rk3cMD3Zz
+sl_bitbucket_application_id: f12c33aca136cbb434c00a9d8fdadeb724a028f707f418cb5549e583d6737ab4
+sl_gitlab_state: 7ac66c0f148de9519b8bd264312c4d64
+sl_gitlab_application_secret: 4adc180e8450df99f2db1ce721b477348f0fb5b076cfdb07f566689fcb90679e
+
+
+
+###### klovercloud-cluster-cleanup ######
+
+klovercloud_cluster_cleanup_app_label: klovercloud-cluster-cleanup
+klovercloud_cluster_cleanup_envar_configmap_name: klovercloud-cluster-cleanup-envar-config
+klovercloud_cluster_cleanup_interval: 60
+klovercloud_cluster_cleanup_pod_expiry_threshold: 180
+klovercloud_cluster_cleanup_whitelisted_namespaces: kube-public,kube-system,kube-node-lease,klovercloud,rook-ceph,monitoring,cortex,loki,cassandra,harbor,nexus,tekton,tekton-pipelines,cert-manager
+klovercloud_cluster_cleanup_image: klovercloud/service:cluster-cleanup-v0.1.0
+
+klovercloud_cluster_cleanup_cpu_request: 100m
+klovercloud_cluster_cleanup_memory_request: 128Mi
+klovercloud_cluster_cleanup_cpu_limit: 200m
+klovercloud_cluster_cleanup_memory_limit: 256Mi
+klovercloud_cluster_cleanup_deployment_replica: 1
+
+
+
+
+###### klovercloud-message-publisher ######
+
+klovercloud_message_publisher_app_label: klovercloud-message-publisher
+klovercloud_message_publisher_envar_configmap_name: klovercloud-message-publisher-envar-config
+klovercloud_message_publisher_image: klovercloud/service:message-publisher-v0.1.0
+
+klovercloud_message_publisher_cpu_request: 350m
+klovercloud_message_publisher_memory_request: 360Mi
+klovercloud_message_publisher_cpu_limit: 500m
+klovercloud_message_publisher_memory_limit: 512Mi
+klovercloud_message_publisher_deployment_replica: 1
+
+klovercloud_message_publisher_container_port: 8080
+klovercloud_message_publisher_service_name: klovercloud-message-publisher
+klovercloud_message_publisher_service_port: 80

@@ -16,7 +16,7 @@ data:
   KAFKA_SERVER: "{{ klovercloud_kafka_service_name }}"
   KAFKA_PORT: "{{ klovercloud_kafka_service_port }}"
   CI_TECHNOLOGY: "{{ klovercloud_ci_tecknology }}"
-  DEFAULT_INGRESS_DOMAIN: "{{ klovercloud_default_ingress_domain }}"
+  DEFAULT_INGRESS_DOMAIN: "{{ cluster_base_domain }}"
   KLOVERCLOUD_FACADE_SERVICE_DOMAIN: "{{ klovercloud_facade_host }}"
   KLOVERCLOUD_FACADE_SERVICE_NAME: "{{ klovercloud_facade_service_name }}"
   CONNECT_TO_KLOVERCLOUD_FACADE_WEB_SOCKET: "true"
@@ -26,6 +26,7 @@ data:
   KLOVERCLOUD_MONITOR_SERVICE_NAME: "{{ klovercloud_monitor_service_name }}"
   KLOVERCLOUD_CI_SERVICE_NAME: "{{ klovercloud_management_ci_service_name }}"
   KLOVERCLOUD_DNS_MANAGER_SERVICE_NAME: "{{ klovercloud_dns_manager_service }}"
+  KLOVERCLOUD_MESSAGE_PUBLISHER_SERVICE_NAME: "{{ klovercloud_message_publisher_service_name }}"
 
 ---
 apiVersion: v1
@@ -50,6 +51,7 @@ data:
   KLOVERCLOUD_OBJECT_STORAGE_SERVICE_NAME: "{{ klovercloud_rook_ceph_object_storage_service_name }}"
   KLOVERCLOUD_HARBOR_SERVICE_NAME: "{{ klovercloud_harbor_service_name }}"
   KLOVERCLOUD_CI_SERVICE_NAME: "{{ klovercloud_management_ci_service_name }}"
+  KLOVERCLOUD_MESSAGE_PUBLISHER_SERVICE_NAME: "{{ klovercloud_message_publisher_service_name }}"
 
 ---
 apiVersion: v1
@@ -87,6 +89,7 @@ data:
   KLOVERCLOUD_METRICS_SERVICE_NAME: "{{ klovercloud_metrics_service_name }}"
   KLOVERCLOUD_LOG_MANAGER_SERVICE_NAME: "{{ klovercloud_log_manager_service_name }}"
   KLOVERCLOUD_DNS_MANAGER_SERVICE_NAME: "{{ klovercloud_dns_manager_service }}"
+  KLOVERCLOUD_MESSAGE_PUBLISHER_SERVICE_NAME: "{{ klovercloud_message_publisher_service_name }}"
 
 ---
 
@@ -147,6 +150,7 @@ data:
   STORAGE_CLASS_TYPE: "BLOCK_STORAGE"
   METRICS_ENABLED: "true"
   MANAGEMENT_SERVICE_URL: "http://{{ klovercloud_management_service_name }}"
+  MESSAGE_PUBLISHER_SERVICE_URL: "http://{{ klovercloud_message_publisher_service_name }}"
 
 ---
 
@@ -227,4 +231,45 @@ data:
   NEXUS_MAVEN_SNAPSHOTS_URL: "{{ klovercloud_ci_nexus_maven_snapshot_url }}"
   NEXUS_NPM_GROUP_URL: "{{ klovercloud_ci_nexus_npm_group_url }}"
   GENERATOR_IMAGE_PULL_SECRET: "{{ klovercloud_image_pulling_secret }}"
+
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ klovercloud_webapp_envar_configmap_name }}
+  namespace: {{ klovercloud_namespace }}
+data:
+  KLOVERCLOUD_WEB_APP_ENDPOINT: "{{ klovercloud_webapp_endpoint }}"
+  KLOVERCLOUD_API_ENDPOINT: "{{ klovercloud_webapp_api_endpoint }}"
+  KLOVERCLOUD_CONTAINER_REGISTRY_ENDPOINT: "{{ klovercloud_container_registry_endpoint }}"
+
+
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ klovercloud_message_publisher_envar_configmap_name }}
+  namespace: {{ klovercloud_namespace }}
+data:
+  KAFKA_SERVER: "{{ klovercloud_kafka_service_name }}"
+  KAFKA_PORT: "{{ klovercloud_kafka_service_port }}"
+
+
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ klovercloud_cluster_cleanup_envar_configmap_name }}
+  namespace: {{ klovercloud_namespace }}
+data:
+  RUN_MODE: "K8"
+  CLEANUP_INTERVAL: "{{ klovercloud_cluster_cleanup_interval }}"
+  POD_EXPIRY_THRESHOLD: "{{ klovercloud_cluster_cleanup_pod_expiry_threshold }}"
+  WHITELISTED_NAMESPACES: "{{ klovercloud_cluster_cleanup_whitelisted_namespaces }}"
 

@@ -1,0 +1,91 @@
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ klovercloud_webapp_service_name }}
+  namespace: {{ klovercloud_namespace }}
+  labels:
+    app: {{ klovercloud_webapp_app_label }}
+spec:
+  ports:
+  - name: http-rest
+    port: {{ klovercloud_webapp_service_port }}
+    protocol: TCP
+    targetPort: {{ klovercloud_webapp_container_port }}
+  selector:
+    app: {{ klovercloud_webapp_app_label }}
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ klovercloud_webapp_ingress_name }}
+  namespace: {{ klovercloud_namespace }}
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/rewrite-target: "/"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  tls:
+  - hosts:
+    - {{ klovercloud_webapp_host }}
+    secretName: webapp-tls
+  rules:
+  - host: {{ klovercloud_webapp_host }}
+    http:
+      paths:
+      - backend:
+          serviceName: {{ klovercloud_webapp_service_name }}
+          servicePort: {{ klovercloud_webapp_service_port }}
+        path: "/"
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ klovercloud_webapp_app_label }}
+  namespace: {{ klovercloud_namespace }}
+spec:
+  replicas: {{ klovercloud_webapp_replica }}
+  selector:
+    matchLabels:
+      app: {{ klovercloud_webapp_app_label }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0
+  minReadySeconds: 25
+  template:
+    metadata:
+      labels:
+        app: {{ klovercloud_webapp_app_label }}
+    spec:
+      terminationGracePeriodSeconds: 15
+      containers:
+      - name: app
+        imagePullPolicy: Always
+        image: {{ klovercloud_webapp_image }}
+{% if profile  == "prod" %}
+        resources:
+          requests:
+            cpu: {{ klovercloud_webapp_cpu_request }}
+            memory: {{ klovercloud_webapp_memory_request }}
+          limits:
+            cpu: {{ klovercloud_webapp_cpu_limit }}
+            memory: {{ klovercloud_webapp_memory_limit }}
+{% endif %}
+        envFrom:
+        - secretRef:
+            name: {{ klovercloud_webapp_secret }}
+        - configMapRef:
+            name: {{ klovercloud_webapp_envar_configmap_name }}
+        ports:
+        - containerPort: {{ klovercloud_webapp_container_port }}
+      imagePullSecrets:
+      - name: {{ klovercloud_image_pulling_secret }}
