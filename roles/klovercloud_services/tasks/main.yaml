@@ -30,7 +30,7 @@
     groups['kube_master'].index(inventory_hostname) == 0   
 
 
-- name: KloverCloud Harbor: Waiting for pods to come up
+- name: KloverCloud Harbor - Waiting for pods to come up
   shell: kubectl get pods -l app={{ klovercloud_harbor_deployement_app_label }} -n {{ klovercloud_namespace }} -o json
   register: kubectl_get_pods
   until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
@@ -40,13 +40,13 @@
   wait_for:
     timeout: 10
 
-- name: KloverCloud Harbor: Waiting for pods to come up
+- name: KloverCloud Harbor - Waiting for pods to come up
   shell: kubectl get pods -l app={{ klovercloud_harbor_deployement_app_label }} -n {{ klovercloud_namespace }} -o json
   register: kubectl_get_pods
   until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
   ignore_errors: yes
 
-- name: KloverCloud Harbor: Waiting for pods to come up
+- name: KloverCloud Harbor - Waiting for pods to come up
   shell: while [[ $(kubectl get pods -l app={{ klovercloud_harbor_deployement_app_label }} -n {{ klovercloud_namespace }} -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for pod" && sleep 1; done
   # shell: kubectl wait --for=condition=ready -l "app={{ klovercloud_harbor_deployement_app_label }}" -n {{ klovercloud_namespace }}
   register: kubectl_get_pods
@@ -63,7 +63,7 @@
     groups['kube_master'].index(inventory_hostname) == 0 
 
 
-- name: KloverCloud Listener: Waiting for pods to come up
+- name: KloverCloud Listener - Waiting for pods to come up
   shell: kubectl get pods -l app={{ klovercloud_listener_app_label }} -n {{ klovercloud_namespace }} -o json
   register: kubectl_get_pods
   until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
@@ -73,13 +73,13 @@
   wait_for:
     timeout: 30
 
-- name: KloverCloud Listener: Waiting for pods to come up
+- name: KloverCloud Listener - Waiting for pods to come up
   shell: kubectl get pods -l app={{ klovercloud_listener_app_label }} -n {{ klovercloud_namespace }} -o json
   register: kubectl_get_pods
   until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
   ignore_errors: yes
 
-- name: KloverCloud Listener: Waiting for pods to get ready
+- name: KloverCloud Listener - Waiting for pods to get ready
   shell: while [[ $(kubectl get pods -l app={{ klovercloud_listener_app_label }} -n {{ klovercloud_namespace }} -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for pod" && sleep 1; done
   register: kubectl_get_pods
 
@@ -141,7 +141,7 @@
   when: >
     groups['kube_master'].index(inventory_hostname) == 0
 
-- name: KloverCloud Management: Waiting for pods to come up
+- name: KloverCloud Management - Waiting for pods to come up
   shell: kubectl get pods -n {{ klovercloud_namespace }} -o json
   register: kubectl_get_pods
   until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
@@ -150,7 +150,7 @@
   wait_for:
     timeout: 60
 
-- name: KloverCloud Management: Waiting for pods to get ready
+- name: KloverCloud Management - Waiting for pods to get ready
   shell: while [[ $(kubectl get pods -l app={{ klovercloud_management_app_label }} -n {{ klovercloud_namespace }} -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for pod" && sleep 1; done
   register: kubectl_get_pods
 
@@ -178,7 +178,7 @@
     groups['kube_master'].index(inventory_hostname) == 0
 
 
-- name: KloverCloud Facade: Waiting for pods to come up
+- name: KloverCloud Facade - Waiting for pods to come up
   shell: kubectl get pods -l app={{ klovercloud_facade_app_label }} -n {{ klovercloud_namespace }} -o json
   register: kubectl_get_pods
   until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
@@ -188,13 +188,13 @@
   wait_for:
     timeout: 120
 
-- name: KloverCloud Facade: Waiting for pods to come up
+- name: KloverCloud Facade - Waiting for pods to come up
   shell: kubectl get pods -l app={{ klovercloud_facade_app_label }} -n {{ klovercloud_namespace }} -o json
   register: kubectl_get_pods
   until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
   ignore_errors: yes
 
-- name: KloverCloud Facade: Waiting for pods to get ready
+- name: KloverCloud Facade - Waiting for pods to get ready
   shell: while [[ $(kubectl get pods -l app={{ klovercloud_facade_app_label }} -n {{ klovercloud_namespace }} -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for pod" && sleep 1; done
   register: kubectl_get_pods
  
