@@ -26,7 +26,6 @@ spec:
         - name: {{ klovercloud_metrics_deployment_name }}
           imagePullPolicy: Always
           image: {{ klovercloud_metrics_image }}
-{% if profile  == "prod" %}
           resources:
             requests:
               cpu: {{ klovercloud_metrics_cpu_request }}
@@ -34,7 +33,6 @@ spec:
             limits:
               cpu: {{ klovercloud_metrics_cpu_limit }}
               memory: {{ klovercloud_metrics_memory_limit }}
-{% endif %}
           envFrom:
           - configMapRef:
               name: {{ klovercloud_metrics_envar_configmap_name }}

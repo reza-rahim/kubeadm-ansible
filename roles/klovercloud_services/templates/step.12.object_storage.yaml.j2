@@ -26,7 +26,6 @@ spec:
         - name: {{ klovercloud_rook_ceph_object_storage_deployment_name }}
           imagePullPolicy: Always
           image: {{ klovercloud_rook_ceph_object_storage_image }}
-{% if profile  == "prod" %}
           resources:
             requests:
               cpu: {{ klovercloud_rook_ceph_object_storage_cpu_request }}
@@ -34,7 +33,6 @@ spec:
             limits:
               cpu: {{ klovercloud_rook_ceph_object_storage_cpu_limit }}
               memory: {{ klovercloud_rook_ceph_object_storage_memory_limit }}
-{% endif %}
           envFrom:
           - secretRef:
               name: {{ klovercloud_mongodb_secret }}
