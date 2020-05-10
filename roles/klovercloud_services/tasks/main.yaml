@@ -311,8 +311,8 @@
      groups['kube_master'].index(inventory_hostname) == 0
 
 - name:
- wait_for:
-   timeout: 20
+  wait_for:
+    timeout: 20
 
 # deploy klovercloud-database 
 
@@ -322,8 +322,8 @@
      groups['kube_master'].index(inventory_hostname) == 0 
 
 - name:
- wait_for:
-   timeout: 20
+  wait_for:
+    timeout: 20
 
 
 # deploy dns_manager 
@@ -334,8 +334,8 @@
      groups['kube_master'].index(inventory_hostname) == 0
 
 - name:
- wait_for:
-   timeout: 20
+  wait_for:
+    timeout: 20
 
 
 # deploy log_manager
@@ -347,8 +347,8 @@
 
 
 - name:
- wait_for:
-   timeout: 20
+  wait_for:
+    timeout: 20
 
 # deploy metrics
 
@@ -358,8 +358,8 @@
      groups['kube_master'].index(inventory_hostname) == 0
 
 - name:
- wait_for:
-   timeout: 20
+  wait_for:
+    timeout: 20
 
 # Create my_store service and ingress 
 
@@ -382,8 +382,8 @@
      groups['kube_master'].index(inventory_hostname) == 0
 
 - name:
- wait_for:
-   timeout: 20
+  wait_for:
+    timeout: 20
 
 # deploy klovercloud-ci
 
@@ -395,8 +395,8 @@
 
 
 - name:
- wait_for:
-   timeout: 20
+  wait_for:
+    timeout: 20
 
 
 # deploy klovercloud-webapp
