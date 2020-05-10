@@ -26,7 +26,6 @@ spec:
         - name: {{ klovercloud_database_deployment_name }}
           imagePullPolicy: Always
           image: {{ klovercloud_database_deployment_image }}
-{% if profile  == "prod" %}
           resources:
             requests:
               cpu: {{ klovercloud_database_cpu_request }}
@@ -34,7 +33,6 @@ spec:
             limits:
               cpu: {{ klovercloud_database_cpu_limit }}
               memory: {{ klovercloud_database_memory_limit }}
-{% endif %}
           envFrom:
           - secretRef:
               name: {{ klovercloud_mongodb_secret }}

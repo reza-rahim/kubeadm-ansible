@@ -26,7 +26,6 @@ spec:
       - name: {{ klovercloud_monitor_deployment_name }}
         imagePullPolicy: Always
         image: {{ klovercloud_monitor_image }}
-{% if profile  == "prod" %}
         resources:
           requests:
             cpu: {{ klovercloud_monitor_cpu_request }}
@@ -34,10 +33,11 @@ spec:
           limits:
             cpu: {{ klovercloud_monitor_cpu_limit }}
             memory: {{ klovercloud_monitor_memory_limit }}
-{% endif %}
         envFrom:
         - secretRef:
             name: {{ klovercloud_mongodb_secret }}
+        - secretRef:
+            name: {{ klovercloud_facade_secret }}
         - configMapRef:
             name: {{ klovercloud_monitor_envar_configmap_name }}
         ports:
