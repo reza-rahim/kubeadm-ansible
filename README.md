@@ -38,6 +38,12 @@ kubectl proxy
 http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
 
 ```
+
+```bash
+#prometheus
+kubectl port-forward -n monitoring  $( kubectl get pod -n monitoring -l port-forward=prometheus -o jsonpath={.items..metadata.name} ) 9090:9090 &
+```
+
 ```bash
 ##grafana
 kubectl port-forward -n monitoring  $(kubectl get pod -n monitoring  -l app.kubernetes.io/name=grafana   -o jsonpath={.items..metadata.name} ) 3000:3000
