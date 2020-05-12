@@ -53,8 +53,10 @@ https://grafana.com/grafana/dashboards/1860
 https://grafana.com/grafana/dashboards/11455
 ##K8 dashboard
 https://grafana.com/grafana/dashboards/315
+
 #nginx controller
-https://grafana.com/grafana/dashboards/10187
+https://grafana.com/grafana/dashboards/9614
+
 #cortex
 https://grafana.com/grafana/dashboards/9820
 
