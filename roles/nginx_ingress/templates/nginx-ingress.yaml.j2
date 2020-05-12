@@ -279,6 +279,9 @@ spec:
   minReadySeconds: 0
   template:
     metadata:
+      annotations:
+        prometheus.io/port: "10254"
+        prometheus.io/scrape: "true"
       labels:
         app: nginx-ingress
         release: release
@@ -302,7 +305,7 @@ spec:
                 - ingress
       containers:
         - name: nginx-ingress-controller
-          image: "quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.30.0"
+          image: "quay.io/kubernetes-ingress-controller/nginx-ingress-controller:{{ nginx_ingress_controller_version }}"
           imagePullPolicy: "IfNotPresent"
           args:
             - /nginx-ingress-controller
