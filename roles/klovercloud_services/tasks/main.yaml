@@ -1,8 +1,8 @@
 ---
   
-# copy decriptors
+#  Create directory and cp descriptors
 
-- name: Creates /etc/kubernetes/kubeadm directory
+- name: Creates /etc/kubernetes/kubeadm/klovercloud/klovercloud_services directory
   file: path=/etc/kubernetes/kubeadm/klovercloud/klovercloud_services  recurse=yes state=directory
   when: >
     groups['kube_master'].index(inventory_hostname) == 0  
@@ -11,6 +11,8 @@
 - name: Copy descriptors
   template: src="{{ item.src }}" dest="{{ item.dest }}"
   with_items:
+     - { src: 'step.0.1.mongodb.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.0.1.mongodb.yaml'  } 
+     - { src: 'step.0.2.kafka.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.0.2.kafka.yaml'  }  
      - { src: 'step.1.klovercloud-harbor.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.1.klovercloud-harbor.yaml'  } 
      - { src: 'step.2.listener.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.2.listener.yaml'  } 
      - { src: 'step.3.management.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.3.management.yaml'  } 
@@ -19,6 +21,49 @@
   register: result
 
   
+# deploy mongo db 
+
+- name: deploy mongo db  
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.0.1.mongodb.yaml;
+  when: >
+    groups['kube_master'].index(inventory_hostname) == 0   
+  ignore_errors: yes
+
+- name: 
+  wait_for:
+    timeout: 10
+
+- name: wait for pods to come up
+  shell: kubectl get pods -l app={{ klovercloud_mongdb_app_label }} -n {{ klovercloud_namespace }} -o json
+  register: kubectl_get_pods
+  until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
+  ignore_errors: yes
+
+- name: wait for pods to get ready
+  shell: while [[ $(kubectl get pods -l app={{ klovercloud_mongdb_app_label }} -n {{ klovercloud_namespace }} -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for pod" && sleep 1; done
+  register: kubectl_get_pods
+
+
+# deploy Kafka
+
+- name: deploy Kafka
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_services/step.0.2.kafka.yaml;
+  when: >
+    groups['kube_master'].index(inventory_hostname) == 0   
+
+- name: wait for pods to come up
+  shell: kubectl get pods -l app={{ klovercloud_kafka_app_label }} -n {{ klovercloud_namespace }} -o json
+  register: kubectl_get_pods
+  until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
+  ignore_errors: yes
+
+- name: sleep 20 seconds
+  wait_for:
+    timeout: 20
+
+- name: wait for pods to get ready
+  shell: while [[ $(kubectl get pods -l app={{ klovercloud_kafka_app_label }} -n {{ klovercloud_namespace }} -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for pod" && sleep 1; done
+  register: kubectl_get_pods
 
 
 # deploy klovercloud harbor
@@ -233,10 +278,6 @@
   shell: kubectl -n {{ klovercloud_namespace }} exec -it $(kubectl -n {{ klovercloud_namespace }} get pod -l "app={{ klovercloud_facade_app_label }}" -o jsonpath='{.items[0].metadata.name}') -- bin/sh -c "curl -X POST 'http://localhost:{{ klovercloud_facade_container_port1 }}/api/api-access-token'  -H 'Content-Type:application/json' -H 'x-auth-token:{{ facade_login_result.token }}' -d '{\"userId\":\"{{ service_user.data }}\"}'"
   register: facade_api_access_token
   ignore_errors: yes
-# - name: Request to create a facade Service access token
-#   shell: kubectl -n {{ klovercloud_namespace }} exec -it $(kubectl -n {{ klovercloud_namespace }} get pod -l "app={{ klovercloud_facade_app_label }}" -o jsonpath='{.items[0].metadata.name}') -- bin/sh -c "curl -X POST 'http://localhost:{{ klovercloud_facade_container_port1 }}/api/api-access-token'  -H 'Content-Type:application/json' -H 'x-auth-token:{{ facade_login_result.token }}' -d '{\"userId\":\"5e9db43374d93c00012b87e0\"}'"
-#   register: facade_api_access_token
-
   
 
 - name: Print facade_api_access_token

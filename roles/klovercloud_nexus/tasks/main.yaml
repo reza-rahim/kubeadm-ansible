@@ -1,0 +1,88 @@
+---
+
+# Create namespaces
+
+- name: Create namespace for nexus 
+  shell: kubectl create ns {{ klovercloud_nexus_namespace }};
+  when: >
+    groups['kube_master'].index(inventory_hostname) == 0 
+  ignore_errors: yes
+
+#  Create directory and cp descriptors
+
+- name: Creates /etc/kubernetes/kubeadm/klovercloud/klovercloud_nexus directory
+  file: path=/etc/kubernetes/kubeadm/klovercloud/klovercloud_nexus  recurse=yes state=directory
+  when: >
+    groups['kube_master'].index(inventory_hostname) == 0  
+
+- name: Copy descriptors
+  template: src="{{ item.src }}" dest="{{ item.dest }}"
+  with_items:  
+     - { src: 'step.1.0.nexus_operator.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_nexus/step.1.0.nexus_operator.yaml'  } 
+     - { src: 'step.1.1.nexus.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_nexus/step.1.1.nexus.yaml'  } 
+  when: >
+    groups['kube_master'].index(inventory_hostname) == 0  
+
+# deploy nexus 
+
+- name:  deploy nexus operator deployment descriptor
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_nexus/step.1.0.nexus_operator.yaml;
+  when: >
+    groups['kube_master'].index(inventory_hostname) == 0   
+
+
+- name: wait for pods to come up
+  shell: kubectl get pods -n {{ klovercloud_nexus_namespace }} -o json
+  register: kubectl_get_pods
+  until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
+  ignore_errors: yes
+
+- name: 
+  wait_for:
+    timeout: 60
+
+- name: wait for pods to get ready
+  shell: while [[ $(kubectl get pods -l name={{ klovercloud_nexus_operator_name }} -n {{ klovercloud_nexus_namespace }} -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for pod" && sleep 1; done
+  register: kubectl_get_pods
+  ignore_errors: yes
+
+- name:  deploy nexus
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_nexus/step.1.1.nexus.yaml;
+  when: >
+    groups['kube_master'].index(inventory_hostname) == 0
+  ignore_errors: yes
+
+- name: wait for pods to come up
+  shell: kubectl get pods -n {{ klovercloud_nexus_namespace }} -o json
+  register: kubectl_get_pods
+  until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
+  ignore_errors: yes
+
+- name: 
+  wait_for:
+    timeout: 30
+
+- name: wait for pods to come up
+  shell: kubectl get pods -n {{ klovercloud_nexus_namespace }} -o json
+  register: kubectl_get_pods
+  until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
+  ignore_errors: yes
+
+- name: wait for pods to get ready
+  shell: while [[ $(kubectl get pods -l app={{ klovercloud_nexus_app_label }} -n {{ klovercloud_nexus_namespace }} -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for pod" && sleep 1; done
+  register: kubectl_get_pods
+  ignore_errors: yes
+
+- name: copy admin.password file from pod
+  shell: kubectl cp {{klovercloud_nexus_cr}}-0:/nexus-data/admin.password /etc/kubernetes/kubeadm/klovercloud/klovercloud_nexus/admin.password -n nexus
+  ignore_errors: yes
+
+- name: 
+  set_fact:
+    klovercloud_nexus_default_super_admin_password: "{{ lookup('file', '/etc/kubernetes/kubeadm/klovercloud/klovercloud_nexus/admin.password') }}"
+  ignore_errors: yes
+
+- name: Request to reset admin pass of nexus
+  shell: kubectl -n {{ klovercloud_nexus_namespace }} exec -it $(kubectl -n {{ klovercloud_nexus_namespace }} get pod -l "app={{ klovercloud_nexus_app_label }}" -o jsonpath='{.items[0].metadata.name}') -- bash -c "curl -u admin:{{ klovercloud_nexus_default_super_admin_password }} -X PUT 'http://localhost:{{ klovercloud_nexus_operator_service_port }}/service/rest/beta/security/users/admin/change-password' -H 'Content-Type:text/plain'  --data-raw {{ klovercloud_nexus_super_admin_password }}"
+  ignore_errors: yes
+
