@@ -9,7 +9,6 @@ metadata:
   name: {{ klovercloud_cluster_cleanup_app_label }}
   namespace: {{ {{ klovercloud_namespace }} }}
 
-
 ---
 # ------------------- Role Binding ------------------- #
 
@@ -57,7 +56,6 @@ spec:
       - name: app
         imagePullPolicy: Always
         image: {{ klovercloud_cluster_cleanup_image }}
-{% if profile  == "prod" %}
         resources:
           requests:
             cpu: {{ klovercloud_cluster_cleanup_cpu_request }}
@@ -65,7 +63,6 @@ spec:
           limits:
             cpu: {{ klovercloud_cluster_cleanup_cpu_limit }}
             memory: {{ klovercloud_cluster_cleanup_memory_limit }}
-{% endif %}
         envFrom:
         - configMapRef:
             name: {{ klovercloud_cluster_cleanup_envar_configmap_name }}

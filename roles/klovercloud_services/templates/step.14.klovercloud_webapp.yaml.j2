@@ -13,7 +13,7 @@ spec:
   - name: http-rest
     port: {{ klovercloud_webapp_service_port }}
     protocol: TCP
-    targetPort: {{ klovercloud_webapp_service_target_port }}
+    targetPort: {{ klovercloud_webapp_container_port }}
   selector:
     app: {{ klovercloud_webapp_app_label }}
 
@@ -48,7 +48,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ klovercloud_webapp_deployment_name }}
+  name: {{ klovercloud_webapp_app_label }}
   namespace: {{ klovercloud_namespace }}
 spec:
   replicas: {{ klovercloud_webapp_replica }}
@@ -71,7 +71,6 @@ spec:
       - name: app
         imagePullPolicy: Always
         image: {{ klovercloud_webapp_image }}
-{% if profile  == "prod" %}
         resources:
           requests:
             cpu: {{ klovercloud_webapp_cpu_request }}
@@ -79,13 +78,12 @@ spec:
           limits:
             cpu: {{ klovercloud_webapp_cpu_limit }}
             memory: {{ klovercloud_webapp_memory_limit }}
-{% endif %}
         envFrom:
         - secretRef:
             name: {{ klovercloud_webapp_secret }}
         - configMapRef:
             name: {{ klovercloud_webapp_envar_configmap_name }}
         ports:
-        - containerPort: {{ klovercloud_webapp_service_target_port }}
+        - containerPort: {{ klovercloud_webapp_container_port }}
       imagePullSecrets:
       - name: {{ klovercloud_image_pulling_secret }}

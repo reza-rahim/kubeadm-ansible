@@ -1,5 +1,4 @@
 ---
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -30,8 +29,6 @@ spec:
       - name: {{ klovercloud_facade_deployment_name }}
         imagePullPolicy: Always
         image: {{ klovercloud_facade_image }}
-
-{% if profile  == "prod" %}
         resources:
           requests:
             cpu: {{ klovercloud_facade_cpu_request }}
@@ -39,7 +36,6 @@ spec:
           limits:
             cpu: {{ klovercloud_facade_cpu_limit }}
             memory: {{ klovercloud_facade_memory_limit }}
-{% endif %}
         envFrom:
         - secretRef:
             name: {{ klovercloud_mongodb_secret }}
@@ -47,6 +43,8 @@ spec:
             name: {{ klovercloud_super_admin_secret }}
         - secretRef:
             name: {{ klovercloud_listener_secret }}
+        - secretRef:
+            name: klovercloud-social-login-secret
         - configMapRef:
             name: {{ klovercloud_facade_envar_configmap_name }}
         ports:

@@ -25,3 +25,8 @@ kubectl port-forward -n rook-ceph $(kubectl get pod -n rook-ceph   -l app=rook-c
 
 # get dashboard password for User "admin"
 kubectl -n rook-ceph get secret rook-ceph-dashboard-password -o jsonpath="{['data']['password']}" | base64 --decode && echo
+
+
+ ##autoscale pg
+https://tracker.ceph.com/issues/41735
+https://docs.ceph.com/docs/master/rados/operations/placement-groups/#set-the-number-of-placement-groups

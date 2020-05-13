@@ -16,7 +16,7 @@ data:
   KAFKA_SERVER: "{{ klovercloud_kafka_service_name }}"
   KAFKA_PORT: "{{ klovercloud_kafka_service_port }}"
   CI_TECHNOLOGY: "{{ klovercloud_ci_tecknology }}"
-  DEFAULT_INGRESS_DOMAIN: "{{ klovercloud_default_ingress_domain }}"
+  DEFAULT_INGRESS_DOMAIN: "{{ cluster_base_domain }}"
   KLOVERCLOUD_FACADE_SERVICE_DOMAIN: "{{ klovercloud_facade_host }}"
   KLOVERCLOUD_FACADE_SERVICE_NAME: "{{ klovercloud_facade_service_name }}"
   CONNECT_TO_KLOVERCLOUD_FACADE_WEB_SOCKET: "true"
@@ -26,6 +26,8 @@ data:
   KLOVERCLOUD_MONITOR_SERVICE_NAME: "{{ klovercloud_monitor_service_name }}"
   KLOVERCLOUD_CI_SERVICE_NAME: "{{ klovercloud_management_ci_service_name }}"
   KLOVERCLOUD_DNS_MANAGER_SERVICE_NAME: "{{ klovercloud_dns_manager_service }}"
+  KLOVERCLOUD_MESSAGE_PUBLISHER_SERVICE_NAME: "{{ klovercloud_message_publisher_service_name }}"
+  KLOVERCLOUD_OBJECT_STORAGE_SERVICE_NAME: "{{ klovercloud_rook_ceph_object_storage_service_name }}"
 
 ---
 apiVersion: v1
@@ -50,6 +52,7 @@ data:
   KLOVERCLOUD_OBJECT_STORAGE_SERVICE_NAME: "{{ klovercloud_rook_ceph_object_storage_service_name }}"
   KLOVERCLOUD_HARBOR_SERVICE_NAME: "{{ klovercloud_harbor_service_name }}"
   KLOVERCLOUD_CI_SERVICE_NAME: "{{ klovercloud_management_ci_service_name }}"
+  KLOVERCLOUD_MESSAGE_PUBLISHER_SERVICE_NAME: "{{ klovercloud_message_publisher_service_name }}"
 
 ---
 apiVersion: v1
@@ -87,6 +90,8 @@ data:
   KLOVERCLOUD_METRICS_SERVICE_NAME: "{{ klovercloud_metrics_service_name }}"
   KLOVERCLOUD_LOG_MANAGER_SERVICE_NAME: "{{ klovercloud_log_manager_service_name }}"
   KLOVERCLOUD_DNS_MANAGER_SERVICE_NAME: "{{ klovercloud_dns_manager_service }}"
+  KLOVERCLOUD_MESSAGE_PUBLISHER_SERVICE_NAME: "{{ klovercloud_message_publisher_service_name }}"
+  KLOVERCLOUD_WEB_APP_DOMAIN: "{{ klovercloud_webapp_host }}"
 
 ---
 
@@ -121,12 +126,15 @@ data:
   MANAGEMENT_SERVICE_URL: "http://{{ klovercloud_management_service_name }}"
   PIPELINE_SERVICE_URL: "http://{{ klovercloud_pipeline_service_name }}"
   DATABASE_SERVICE_URL: "http://{{ klovercloud_database_service_name }}"
+  FACADE_SERVICE_WEBSOCKET_URL: "{{ klovercloud_facade_service_name }}/web-socket-ns"
   KAFKA_BROKER: "{{ klovercloud_kafka_service_name }}:{{ klovercloud_kafka_service_port }}"
   DEPLOYMENT_POD_FEED_KAFKA_TOPIC: "{{ klovercloud_monitor_deployment_pod_feed_kafka_topic }}"
   DEPLOYMENT_POD_FEED_KAFKA_GROUP_ID: "{{ klovercloud_monitor_deployment_pod_feed_kafka_group_id }}"
   DEPLOYMENT_POD_FEED_CLEANUP_TIMEOUT_HOURS: "{{ klovercloud_monitor_deployment_pod_feed_cleanup_timeout_hours }}"
   CLUSTER_AGENT_RESPONSE_KAFKA_TOPIC: "{{ klovercloud_monitor_deployment_cluster_agent_response_kafka_topic }}"
   CLUSTER_AGENT_RESPONSE_KAFKA_GROUP_ID: "{{ klovercloud_monitor_deployment_cluster_agent_response_kafka_group_id }}"
+  AGENT_LIVE_LOG_KAFKA_TOPIC: "{{ klovercloud_monitor_agent_live_log_kafka_topic }}"
+  AGENT_LIVE_LOG_KAFKA_GROUP_ID: "{{ klovercloud_monitor_agent_live_log_kafka_group_id }}"
 
 ---
 
@@ -147,6 +155,7 @@ data:
   STORAGE_CLASS_TYPE: "BLOCK_STORAGE"
   METRICS_ENABLED: "true"
   MANAGEMENT_SERVICE_URL: "http://{{ klovercloud_management_service_name }}"
+  MESSAGE_PUBLISHER_SERVICE_URL: "http://{{ klovercloud_message_publisher_service_name }}"
 
 ---
 
@@ -241,6 +250,16 @@ data:
   KLOVERCLOUD_API_ENDPOINT: "{{ klovercloud_webapp_api_endpoint }}"
   KLOVERCLOUD_CONTAINER_REGISTRY_ENDPOINT: "{{ klovercloud_container_registry_endpoint }}"
 
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ klovercloud_message_publisher_envar_configmap_name }}
+  namespace: {{ klovercloud_namespace }}
+data:
+  KAFKA_SERVER: "{{ klovercloud_kafka_service_name }}"
+  KAFKA_PORT: "{{ klovercloud_kafka_service_port }}"
 
 ---
 
@@ -254,16 +273,3 @@ data:
   CLEANUP_INTERVAL: "{{ klovercloud_cluster_cleanup_interval }}"
   POD_EXPIRY_THRESHOLD: "{{ klovercloud_cluster_cleanup_pod_expiry_threshold }}"
   WHITELISTED_NAMESPACES: "{{ klovercloud_cluster_cleanup_whitelisted_namespaces }}"
-
-
-
----
-
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ klovercloud_message_publisher_envar_configmap_name }}
-  namespace: {{ klovercloud_namespace }}
-data:
-  KAFKA_SERVER: "{{ klovercloud_kafka_service_name }}"
-  KAFKA_PORT: "{{ klovercloud_kafka_service_port }}"
