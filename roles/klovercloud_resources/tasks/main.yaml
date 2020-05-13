@@ -27,52 +27,27 @@
     groups['kube_master'].index(inventory_hostname) == 0 
   ignore_errors: yes
 
-
 - name: Create namespace for rook ceph
   shell: kubectl create ns {{ klovercloud_rook_ceph_namespace }};
   when: >
     groups['kube_master'].index(inventory_hostname) == 0 
   ignore_errors: yes
 
-# reset facts values
-# - name: Check if secret exists
-#   stat:
-#     path: /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.0.1.secrets.yaml
-#   register: stat_result
-
-
 - name: reset variables
   set_fact:
     klovercloud_harbor_admin_password: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
-    # klovercloud_harbor_postgresql_password: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
-    # klovercloud_harbor_clair_db_password: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
     klovercloud_rook_ceph_object_storage_access_key: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
     klovercloud_rook_ceph_object_storage_secret_key: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
     klovercloud_mongodb_root_password: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
     klovercloud_super_admin_password: "{{ lookup('password', '/dev/null length=8 chars=ascii_letters') }}"
-  # when: >
-  #   not stat_result.stat.exists
 
-# - name: get klovercloud_mongodb_root_password
-#   shell: kubectl get secret {{ klovercloud_mongodb_secret }} -n {{ klovercloud_namespace }} -o json | jq -r '.data."MONGO_PASSWORD"'
-#   register: password
-#   when: >
-#     stat_result.stat.exists
+#  Create directory and cp descriptors
 
-# - name: reset klovercloud_mongodb_root_password
-#   set_fact:
-#     klovercloud_mongodb_root_password: "{{ password.stdout  | b64decode }}"
-#   when: >
-#     stat_result.stat.exists
-#   ignore_errors: yes
-
-
-- name: Creates /etc/kubernetes/kubeadm directory
+- name: Creates /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources directory
   file: path=/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources  recurse=yes state=directory
   when: >
     groups['kube_master'].index(inventory_hostname) == 0  
 
-# temp=$(kubectl get secret regcred-dh -n tekton -o json | jq -r '.data.".dockerconfigjson"' )
 
 - name: Copy descriptors
   template: src="{{ item.src }}" dest="{{ item.dest }}"
@@ -80,13 +55,9 @@
      - { src: 'step.0.1.secrets.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.0.1.secrets.yaml'  }  
      - { src: 'step.0.2.cert_issuer.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.0.2.cert_issuer.yaml'  }
      - { src: 'step.0.3.config_map.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.0.3.config_map.yaml'  }
-     - { src: 'step.1.harbor_installation.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.1.harbor_installation.yaml'  } 
-     - { src: 'step.2.mongodb.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.2.mongodb.yaml'  }  
-     - { src: 'step.3.0.nexus_operator.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.3.0.nexus_operator.yaml'  } 
-     - { src: 'step.3.1.nexus.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.3.1.nexus.yaml'  } 
-     - { src: 'step.4.kafka.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.4.kafka.yaml'  } 
-     - { src: 'step.5.radosgw_exporter.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.5.radosgw_exporter.yaml'  } 
-     - { src: 'step.6.mywebsql.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.6.mywebsql.yaml'  } 
+     - { src: 'step.1.harbor_installation.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.1.harbor_installation.yaml'  }  
+     - { src: 'step.2.radosgw_exporter.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.2.radosgw_exporter.yaml'  } 
+     - { src: 'step.3.mywebsql.yaml.j2', dest: '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.3.mywebsql.yaml'  } 
   when: >
     groups['kube_master'].index(inventory_hostname) == 0  
 
@@ -162,117 +133,18 @@
   wait_for:
     timeout: 20
 
-# deploy mongo db 
-
-- name: deploy mongo db  
-  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.2.mongodb.yaml;
-  when: >
-    groups['kube_master'].index(inventory_hostname) == 0   
-  ignore_errors: yes
-
-- name: 
-  wait_for:
-    timeout: 10
-
-# deploy nexus 
-
-
-- name:  deploy nexus operator deployment descriptor
-  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.3.0.nexus_operator.yaml;
-  when: >
-    groups['kube_master'].index(inventory_hostname) == 0   
-
-
-
-- name: wait for pods to come up
-  shell: kubectl get pods -n {{ klovercloud_nexus_namespace }} -o json
-  register: kubectl_get_pods
-  until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
-  ignore_errors: yes
-
-- name: 
-  wait_for:
-    timeout: 60
-
-- name: wait for pods to get ready
-  shell: while [[ $(kubectl get pods -l name={{ klovercloud_nexus_operator_name }} -n {{ klovercloud_nexus_namespace }} -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for pod" && sleep 1; done
-  register: kubectl_get_pods
-  ignore_errors: yes
-
-- name:  deploy nexus
-  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.3.1.nexus.yaml;
-  when: >
-    groups['kube_master'].index(inventory_hostname) == 0
-  ignore_errors: yes
-
-- name: wait for pods to come up
-  shell: kubectl get pods -n {{ klovercloud_nexus_namespace }} -o json
-  register: kubectl_get_pods
-  until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
-  ignore_errors: yes
-
-- name: 
-  wait_for:
-    timeout: 30
-
-- name: wait for pods to come up
-  shell: kubectl get pods -n {{ klovercloud_nexus_namespace }} -o json
-  register: kubectl_get_pods
-  until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
-  ignore_errors: yes
-
-- name: wait for pods to get ready
-  shell: while [[ $(kubectl get pods -l app={{ klovercloud_nexus_app_label }} -n {{ klovercloud_nexus_namespace }} -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for pod" && sleep 1; done
-  register: kubectl_get_pods
-  ignore_errors: yes
-
-- name: copy admin.password file from pod
-  shell: kubectl cp {{klovercloud_nexus_cr}}-0:/nexus-data/admin.password /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/admin.password -n nexus
-  ignore_errors: yes
-
-- name: 
-  set_fact:
-    klovercloud_nexus_default_super_admin_password: "{{ lookup('file', '/etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/admin.password') }}"
-  ignore_errors: yes
-
-- name: Request to reset admin pass of nexus
-  shell: kubectl -n {{ klovercloud_nexus_namespace }} exec -it $(kubectl -n {{ klovercloud_nexus_namespace }} get pod -l "app={{ klovercloud_nexus_app_label }}" -o jsonpath='{.items[0].metadata.name}') -- bash -c "curl -u admin:{{ klovercloud_nexus_default_super_admin_password }} -X PUT 'http://localhost:{{ klovercloud_nexus_operator_service_port }}/service/rest/beta/security/users/admin/change-password' -H 'Content-Type:text/plain'  --data-raw {{ klovercloud_nexus_super_admin_password }}"
-  ignore_errors: yes
-  
-
-# deploy Kafka
-
-- name: deploy Kafka
-  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.4.kafka.yaml;
-  when: >
-    groups['kube_master'].index(inventory_hostname) == 0   
-
-- name: wait for pods to come up
-  shell: kubectl get pods -l app={{ klovercloud_kafka_app_label }} -n {{ klovercloud_namespace }} -o json
-  register: kubectl_get_pods
-  until: kubectl_get_pods.stdout|from_json|json_query('items[*].status.phase')|unique == ["Running"]
-  ignore_errors: yes
-
-- name: sleep 20 seconds
-  wait_for:
-    timeout: 20
-
-- name: wait for pods to get ready
-  shell: while [[ $(kubectl get pods -l app={{ klovercloud_kafka_app_label }} -n {{ klovercloud_namespace }} -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for pod" && sleep 1; done
-  register: kubectl_get_pods
-
 # deploy radosgw exporter
 
  
 - name: deploy radosgw exporter
-  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.5.radosgw_exporter.yaml;
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.2.radosgw_exporter.yaml;
   when: >
     groups['kube_master'].index(inventory_hostname) == 0   
 
 # deploy mywebsql
  
 - name: deploy mywebsql
-  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.6.mywebsql.yaml;
+  shell: kubectl apply -f /etc/kubernetes/kubeadm/klovercloud/klovercloud_resources/step.3.mywebsql.yaml;
   when: >
     groups['kube_master'].index(inventory_hostname) == 0   
 
