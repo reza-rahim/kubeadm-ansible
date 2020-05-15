@@ -12,6 +12,7 @@ https://github.com/maricaantonacci/ceph-tutorial/wiki/OSD-Encryption
 
 ##perforamce
 http://accelazh.github.io/ceph/Ceph-Performance-Tuning-Checklist
+https://ceph.io/planet/ceph-block-performance-monitoring/
 
 ##PG auto scaler
 https://ceph.io/rados/new-in-nautilus-pg-merging-and-autotuning/
