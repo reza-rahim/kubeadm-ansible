@@ -18,6 +18,9 @@ https://ceph.io/planet/ceph-block-performance-monitoring/
 https://ceph.io/rados/new-in-nautilus-pg-merging-and-autotuning/
 https://medium.com/@AvengerMoJo/ceph-placement-groups-autoscale-9981aeccbc21
 
+##PG
+https://stackoverflow.com/questions/39589696/ceph-too-many-pgs-per-osd-all-you-need-to-know
+
 
 ssh kube-master-0 "mkdir -p ~/ceph"
 scp  common.yaml kube-master-0:~/ceph 
