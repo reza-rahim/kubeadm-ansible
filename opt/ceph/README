@@ -21,6 +21,9 @@ https://medium.com/@AvengerMoJo/ceph-placement-groups-autoscale-9981aeccbc21
 ##PG
 https://stackoverflow.com/questions/39589696/ceph-too-many-pgs-per-osd-all-you-need-to-know
 
+##backup
+
+https://blog.kubernauts.io/backup-and-restore-of-kubernetes-applications-using-heptios-velero-with-restic-and-rook-ceph-as-2e8df15b1487
 
 ssh kube-master-0 "mkdir -p ~/ceph"
 scp  common.yaml kube-master-0:~/ceph 
