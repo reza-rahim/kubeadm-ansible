@@ -13,6 +13,9 @@ https://github.com/maricaantonacci/ceph-tutorial/wiki/OSD-Encryption
 ##perforamce
 http://accelazh.github.io/ceph/Ceph-Performance-Tuning-Checklist
 
+##PG auto scaler
+https://ceph.io/rados/new-in-nautilus-pg-merging-and-autotuning/
+
 ssh kube-master-0 "mkdir -p ~/ceph"
 scp  common.yaml kube-master-0:~/ceph 
 scp  operator.yaml kube-master-0:~/ceph 
