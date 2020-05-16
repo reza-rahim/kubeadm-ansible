@@ -38,6 +38,12 @@ kubectl proxy
 http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
 
 ```
+
+```bash
+#prometheus
+kubectl port-forward -n monitoring  $( kubectl get pod -n monitoring -l port-forward=prometheus -o jsonpath={.items..metadata.name} ) 9090:9090 &
+```
+
 ```bash
 ##grafana
 kubectl port-forward -n monitoring  $(kubectl get pod -n monitoring  -l app.kubernetes.io/name=grafana   -o jsonpath={.items..metadata.name} ) 3000:3000
@@ -47,8 +53,10 @@ https://grafana.com/grafana/dashboards/1860
 https://grafana.com/grafana/dashboards/11455
 ##K8 dashboard
 https://grafana.com/grafana/dashboards/315
+
 #nginx controller
-https://grafana.com/grafana/dashboards/10187
+https://grafana.com/grafana/dashboards/9614
+
 #cortex
 https://grafana.com/grafana/dashboards/9820
 

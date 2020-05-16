@@ -7,6 +7,24 @@ https://medium.com/cloudops/the-ultimate-rook-and-ceph-survival-guide-eff198a576
 
 https://www.virtualtothecore.com/adventures-with-ceph-storage-part-5-install-ceph-in-the-lab/
 
+##Encryption
+https://github.com/maricaantonacci/ceph-tutorial/wiki/OSD-Encryption
+
+##perforamce
+http://accelazh.github.io/ceph/Ceph-Performance-Tuning-Checklist
+https://ceph.io/planet/ceph-block-performance-monitoring/
+
+##PG auto scaler
+https://ceph.io/rados/new-in-nautilus-pg-merging-and-autotuning/
+https://medium.com/@AvengerMoJo/ceph-placement-groups-autoscale-9981aeccbc21
+
+##PG
+https://stackoverflow.com/questions/39589696/ceph-too-many-pgs-per-osd-all-you-need-to-know
+
+##backup
+
+https://blog.kubernauts.io/backup-and-restore-of-kubernetes-applications-using-heptios-velero-with-restic-and-rook-ceph-as-2e8df15b1487
+
 ssh kube-master-0 "mkdir -p ~/ceph"
 scp  common.yaml kube-master-0:~/ceph 
 scp  operator.yaml kube-master-0:~/ceph 
@@ -30,3 +48,6 @@ kubectl -n rook-ceph get secret rook-ceph-dashboard-password -o jsonpath="{['dat
  ##autoscale pg
 https://tracker.ceph.com/issues/41735
 https://docs.ceph.com/docs/master/rados/operations/placement-groups/#set-the-number-of-placement-groups
+
+## backup and operation 
+https://s3-website.cern.ch/cephdocs/user/backup.html
