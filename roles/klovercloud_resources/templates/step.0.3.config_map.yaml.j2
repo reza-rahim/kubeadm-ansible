@@ -27,6 +27,7 @@ data:
   KLOVERCLOUD_CI_SERVICE_NAME: "{{ klovercloud_management_ci_service_name }}"
   KLOVERCLOUD_DNS_MANAGER_SERVICE_NAME: "{{ klovercloud_dns_manager_service }}"
   KLOVERCLOUD_MESSAGE_PUBLISHER_SERVICE_NAME: "{{ klovercloud_message_publisher_service_name }}"
+  KLOVERCLOUD_OBJECT_STORAGE_SERVICE_NAME: "{{ klovercloud_rook_ceph_object_storage_service_name }}"
 
 ---
 apiVersion: v1
@@ -90,6 +91,7 @@ data:
   KLOVERCLOUD_LOG_MANAGER_SERVICE_NAME: "{{ klovercloud_log_manager_service_name }}"
   KLOVERCLOUD_DNS_MANAGER_SERVICE_NAME: "{{ klovercloud_dns_manager_service }}"
   KLOVERCLOUD_MESSAGE_PUBLISHER_SERVICE_NAME: "{{ klovercloud_message_publisher_service_name }}"
+  KLOVERCLOUD_WEB_APP_DOMAIN: "{{ klovercloud_webapp_host }}"
 
 ---
 
@@ -124,12 +126,15 @@ data:
   MANAGEMENT_SERVICE_URL: "http://{{ klovercloud_management_service_name }}"
   PIPELINE_SERVICE_URL: "http://{{ klovercloud_pipeline_service_name }}"
   DATABASE_SERVICE_URL: "http://{{ klovercloud_database_service_name }}"
+  FACADE_SERVICE_WEBSOCKET_URL: "{{ klovercloud_facade_service_name }}/web-socket-ns"
   KAFKA_BROKER: "{{ klovercloud_kafka_service_name }}:{{ klovercloud_kafka_service_port }}"
   DEPLOYMENT_POD_FEED_KAFKA_TOPIC: "{{ klovercloud_monitor_deployment_pod_feed_kafka_topic }}"
   DEPLOYMENT_POD_FEED_KAFKA_GROUP_ID: "{{ klovercloud_monitor_deployment_pod_feed_kafka_group_id }}"
   DEPLOYMENT_POD_FEED_CLEANUP_TIMEOUT_HOURS: "{{ klovercloud_monitor_deployment_pod_feed_cleanup_timeout_hours }}"
   CLUSTER_AGENT_RESPONSE_KAFKA_TOPIC: "{{ klovercloud_monitor_deployment_cluster_agent_response_kafka_topic }}"
   CLUSTER_AGENT_RESPONSE_KAFKA_GROUP_ID: "{{ klovercloud_monitor_deployment_cluster_agent_response_kafka_group_id }}"
+  AGENT_LIVE_LOG_KAFKA_TOPIC: "{{ klovercloud_monitor_agent_live_log_kafka_topic }}"
+  AGENT_LIVE_LOG_KAFKA_GROUP_ID: "{{ klovercloud_monitor_agent_live_log_kafka_group_id }}"
 
 ---
 

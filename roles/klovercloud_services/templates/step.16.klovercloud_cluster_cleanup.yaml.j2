@@ -7,7 +7,7 @@ metadata:
   labels:
     k8s-app: {{ klovercloud_cluster_cleanup_app_label }}
   name: {{ klovercloud_cluster_cleanup_app_label }}
-  namespace: {{ {{ klovercloud_namespace }} }}
+  namespace: {{ klovercloud_namespace }}
 
 
 ---
@@ -17,7 +17,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: {{ klovercloud_cluster_cleanup_app_label }}-rolebinding
-  namespace: {{ {{ klovercloud_namespace }} }}
+  namespace: {{ klovercloud_namespace }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -25,7 +25,7 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: {{ klovercloud_cluster_cleanup_app_label }}
-    namespace: {{ {{ klovercloud_namespace }} }}
+    namespace: {{ klovercloud_namespace }}
 
 
 ---
@@ -57,7 +57,6 @@ spec:
       - name: app
         imagePullPolicy: Always
         image: {{ klovercloud_cluster_cleanup_image }}
-{% if profile  == "prod" %}
         resources:
           requests:
             cpu: {{ klovercloud_cluster_cleanup_cpu_request }}
@@ -65,7 +64,6 @@ spec:
           limits:
             cpu: {{ klovercloud_cluster_cleanup_cpu_limit }}
             memory: {{ klovercloud_cluster_cleanup_memory_limit }}
-{% endif %}
         envFrom:
         - configMapRef:
             name: {{ klovercloud_cluster_cleanup_envar_configmap_name }}
