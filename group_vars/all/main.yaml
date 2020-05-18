@@ -1,7 +1,7 @@
-profile: dev
+profile: prod
 run_mode: PRODUCTION
 
-kube_master_lb: 10.20.0.10
+kube_master_lb: 10.20.0.7
 
 docker_ce_ubuntu: 18.06.2~ce~3-0~ubuntu
 
@@ -36,11 +36,14 @@ monitoring_pushgateway: v1.0.1
 
 ####### Ceph ######
 
+rook_ceph: v1.1.0
 ceph_mon: 3
-osdsPerDevice: 2 # number of OSD per device 
+osdsPerDevice: 1 # number of OSD per device 
 ceph_version: v14.2.7
-rbdMirroring: 3
+rbdMirroring: 0
 storage_taint: storage
+ceph_ec_dataChunks: 2
+ceph_ec_codingChunks: 1
 
 ###### cassandra #######
 cassandra_endpoint:  cassandra.cassandra.svc.cluster.local

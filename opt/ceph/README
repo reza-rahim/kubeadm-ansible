@@ -28,12 +28,8 @@ https://stackoverflow.com/questions/39589696/ceph-too-many-pgs-per-osd-all-you-n
 
 https://blog.kubernauts.io/backup-and-restore-of-kubernetes-applications-using-heptios-velero-with-restic-and-rook-ceph-as-2e8df15b1487
 
-ssh kube-master-0 "mkdir -p ~/ceph"
-scp  common.yaml kube-master-0:~/ceph 
-scp  operator.yaml kube-master-0:~/ceph 
-scp  cluster.yaml kube-master-0:~/ceph 
-scp  StorageClass.yaml kube-master-0:~/ceph 
-scp  StorageClassEC.yaml kube-master-0:~/ceph 
+ssh skube-master-0 "mkdir -p ~/ceph"
+scp  *.yaml skube-master-0:~/ceph 
 ssh kube-master-0 "kubectl apply -f ~/ceph/common.yaml"
 ssh kube-master-0 "kubectl apply -f ~/ceph/operator.yaml"
 ssh kube-master-0 "kubectl apply -f ~/ceph/cluster.yaml"

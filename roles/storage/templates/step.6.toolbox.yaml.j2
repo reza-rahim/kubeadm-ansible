@@ -43,7 +43,16 @@ spec:
         - name: ceph-config
           emptyDir: {}
       tolerations:
-        - key: "node.kubernetes.io/unreachable"
-          operator: "Exists"
-          effect: "NoExecute"
-          tolerationSeconds: 5
+        - effect: NoSchedule
+          key: dedicated
+          operator: Equal
+          value: storage
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: dedicated
+                operator: In
+                values:
+                - storage

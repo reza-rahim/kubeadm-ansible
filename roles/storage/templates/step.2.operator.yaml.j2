@@ -64,8 +64,6 @@ spec:
         app: rook-ceph-operator
     spec:
       serviceAccountName: rook-ceph-system
-{% if storage_taint is defined and profile  == "prod" %}
-
       tolerations:
         - effect: NoSchedule
           key: dedicated
@@ -80,11 +78,9 @@ spec:
                 operator: In
                 values:
                 - storage
-{% endif %}
-
       containers:
       - name: rook-ceph-operator
-        image: rook/ceph:master
+        image: rook/ceph:{{ rook_ceph }}
         args: ["ceph", "operator"]
         volumeMounts:
         - mountPath: /var/lib/rook
@@ -307,12 +303,7 @@ spec:
         #   value: "role=storage-node; storage=rook, ceph"
         # (Optional) CEPH CSI plugin tolerations list. Put here list of taints you want to tolerate in YAML format.
         # CSI plugins need to be started on all the nodes where the clients need to mount the storage.
-        - name: CSI_PLUGIN_TOLERATIONS
-          value: |
-             - effect: NoSchedule
-               key: dedicated
-               operator: Equal
-               value: storage
+        # - name: CSI_PLUGIN_TOLERATIONS
         #     - effect: NoExecute
         #   value: |
         #     - effect: NoSchedule
