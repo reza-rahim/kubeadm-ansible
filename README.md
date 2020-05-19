@@ -27,6 +27,10 @@ yum --showduplicates list kubeadm
 ```
 
 ```bash
+kubectl run -i --tty --rm debug --image=busybox --restart=Never -- sh
+```
+
+```bash
 ###dashboard
 ssh -L
 -L 9090:localhost:9090  -L 3000:localhost:3000  -L 8080:localhost:8080 -L 8001:localhost:8001

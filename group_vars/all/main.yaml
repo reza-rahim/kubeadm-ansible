@@ -1,7 +1,7 @@
-profile: prod
+profile: dev
 run_mode: PRODUCTION
 
-kube_master_lb: 10.20.0.7
+kube_master_lb: 10.2.0.10
 
 docker_ce_ubuntu: 18.06.2~ce~3-0~ubuntu
 
