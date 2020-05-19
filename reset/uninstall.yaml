@@ -1,0 +1,11 @@
+ssh skube-master-0 yum remove -y kubelet kubeadm kubectl 
+ssh skube-master-1 yum remove -y kubelet kubeadm kubectl 
+ssh skube-master-2 yum remove -y kubelet kubeadm kubectl 
+ssh skube-worker-0 yum remove -y kubelet kubeadm kubectl 
+ssh skube-worker-1 yum remove -y kubelet kubeadm kubectl 
+ssh skube-worker-2 yum remove -y kubelet kubeadm kubectl 
+ssh skube-storage-0 yum remove -y kubelet kubeadm kubectl 
+ssh skube-storage-1 yum remove -y kubelet kubeadm kubectl 
+ssh skube-storage-2 yum remove -y kubelet kubeadm kubectl 
+ssh skube-ingress-0 yum remove -y kubelet kubeadm kubectl 
+

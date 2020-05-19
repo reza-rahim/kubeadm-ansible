@@ -1,7 +1,25 @@
 ---
 
-- name: disable filewalld
-  shell: systemctl stop firewalld; systemctl disable firewalld;
+- name: stop service yum-cron, if running
+  systemd:
+    name: yum-cron
+    state: stopped
+
+- name: disable service yum-cron, if running
+  systemd:
+    name: yum-cron
+    enabled: false
+
+
+- name: stop service firewalld, if running
+  systemd:
+    name: firewalld
+    state: stopped
+
+- name: disable service firewalld, if running
+  systemd:
+    name: firewalld
+    enabled: false
 
 - name: install yum-utils device-mapper-persistent-data lvm2
   yum:
