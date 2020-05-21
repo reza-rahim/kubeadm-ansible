@@ -28,5 +28,7 @@ spec:
         - name: sec-ctx-vol
           mountPath: /data/demo
         securityContext:
-          allowPrivilegeEscalation: false
           readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: false
+          seLinuxOptions:
+            level: "s0:c123,c456"
