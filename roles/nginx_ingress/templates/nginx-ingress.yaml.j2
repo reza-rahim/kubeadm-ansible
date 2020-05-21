@@ -10,6 +10,37 @@ metadata:
     release: release
   name: release-nginx-ingress
 ---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: ingress-nginx-psp
+  namespace: nginx-ingress
+rules:
+- apiGroups:
+  - policy
+  resourceNames:
+  - privileged
+  resources:
+  - podsecuritypolicies
+  verbs:
+  - use
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: ingress-nginx-psp
+  namespace: nginx-ingress
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: ingress-nginx-psp
+subjects:
+- kind: ServiceAccount
+  name: release-nginx-ingress
+---
+
 # Source: nginx-ingress/templates/default-backend-serviceaccount.yaml
 apiVersion: v1
 kind: ServiceAccount
@@ -397,6 +428,9 @@ spec:
         release: release
         app.kubernetes.io/component: default-backend
     spec:
+      securityContext:
+        runAsUser: 1000
+        fsGroup: 2000
       tolerations:
         - effect: NoSchedule
           key: dedicated
