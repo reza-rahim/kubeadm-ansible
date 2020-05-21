@@ -28,6 +28,9 @@ yum --showduplicates list kubeadm
 
 ```bash
 kubectl run -i --tty --rm debug --image=busybox --restart=Never -- sh
+
+kubectl run -i --tty --rm debug-1  --image=amouat/network-utils  --restart=Never -- sh
+
 ```
 
 ```bash
