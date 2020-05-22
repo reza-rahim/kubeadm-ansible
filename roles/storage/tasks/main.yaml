@@ -1,6 +1,6 @@
 ---
 
-- name: Creates /etc/kubernetes/kubeadm directory
+- name: Creates /var/tmp/k8/storage directory
   file: path=/var/tmp/k8/storage  recurse=yes state=directory
   when: >
     groups['kube_master'].index(inventory_hostname) == 0    
@@ -9,6 +9,7 @@
   with_items:
      - { src: 'step.1.common.yaml.j2', dest: '/var/tmp/k8/storage/step.1.common.yaml'  }  
      - { src: 'step.2.operator.yaml.j2', dest: '/var/tmp/k8/storage/step.2.operator.yaml'  }  
+     - { src: 'step.2.psp.yaml.j2', dest: '/var/tmp/k8/storage/step.2.psp.yaml'  }  
      - { src: 'step.3.cluster.yaml.j2', dest: '/var/tmp/k8/storage/step.3.cluster.yaml'  }  
      - { src: 'step.4.object.yaml.j2', dest: '/var/tmp/k8/storage/step.4.object.yaml'  }  
      - { src: 'step.5.object-user.yaml.j2', dest: '/var/tmp/k8/storage/step.5.object-user.yaml'  }  
@@ -21,7 +22,7 @@
   register: result
 
 - name:  label and storage ingress box
-  shell: sh /var/tmp/k8/taint.sh;
+  shell: sh /var/tmp/k8/storage/taint.sh;
   when: >
     groups['kube_master'].index(inventory_hostname) == 0    
   ignore_errors: yes
@@ -29,6 +30,7 @@
 - name: creating ceph cluster ... 
   shell: kubectl apply -f /var/tmp/k8/storage/step.1.common.yaml; sleep 15; \
          kubectl apply -f /var/tmp/k8/storage/step.2.operator.yaml; sleep 15; \ 
+         kubectl apply -f /var/tmp/k8/storage/step.2.psp.yaml; sleep 15; \ 
          kubectl apply -f /var/tmp/k8/storage/step.3.cluster.yaml; sleep 15;  \
          kubectl apply -f /var/tmp/k8/storage/step.6.toolbox.yaml; sleep 5;  
   when: >
@@ -37,6 +39,6 @@
 
 - name: creating storage class ...
   shell: kubectl apply -f /var/tmp/k8/storage/step.7.StorageClass.yaml; \
-         kubectl apply -f /var/tmp/k8/storage/step.4.object.yaml; sleep 5; 
-         kubectl apply -f /var/tmp/k8/storage/step.5.object-user.yaml; sleep 5; 
-         kubectl apply -f /var/tmp/k8/step.8.StorageClassEC.yaml; 
+         kubectl apply -f /var/tmp/k8/storage/step.4.object.yaml; sleep 5; \
+         kubectl apply -f /var/tmp/k8/storage/step.5.object-user.yaml; sleep 5; \ 
+         kubectl apply -f /var/tmp/k8/storage/step.8.StorageClassEC.yaml; 

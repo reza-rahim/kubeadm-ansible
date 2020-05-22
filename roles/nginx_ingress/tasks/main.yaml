@@ -1,7 +1,7 @@
 ---
 
-- name: Creates /var/tmp/nginx-ingress directory
-  file: path=/var/tmp/nginx-ingress  recurse=yes state=directory
+- name: Creates /var/tmp/k8/nginx-ingress directory
+  file: path=/var/tmp/k8/nginx-ingress  recurse=yes state=directory
   when: >
     groups['kube_master'].index(inventory_hostname) == 0
 
@@ -9,16 +9,16 @@
 - name: Copy ingress config file
   template: src="{{ item.src }}" dest="{{ item.dest }}"
   with_items:
-     - { src: 'nginx-ingress.yaml.j2', dest: '/var/tmp/nginx-ingress/nginx-ingress.yaml'  }  
-     - { src: 'taint.sh.j2', dest: '/var/tmp/nginx-ingress/taint.sh'  }  
-     - { src: 'nginx-psp.yaml.j2', dest: '/var/tmp/nginx-ingress/nginx-psp.yaml'  }  
-     - { src: 'deploy.sh.j2', dest: '/var/tmp/nginx-ingress/deploy.sh'  }  
+     - { src: 'nginx-ingress.yaml.j2', dest: '/var/tmp/k8/nginx-ingress/nginx-ingress.yaml'  }  
+     - { src: 'taint.sh.j2', dest: '/var/tmp/k8/nginx-ingress/taint.sh'  }  
+     - { src: 'nginx-psp.yaml.j2', dest: '/var/tmp/k8/nginx-ingress/nginx-psp.yaml'  }  
+     - { src: 'deploy.sh.j2', dest: '/var/tmp/k8/nginx-ingress/deploy.sh'  }  
   when: >
     groups['kube_master'].index(inventory_hostname) == 0
   register: result
 
 - name:  label and taint ingress box
-  shell: sh /var/tmp//nginx-ingress/taint.sh;
+  shell: sh /var/tmp/k8/nginx-ingress/taint.sh;
   when: >
     groups['kube_master'].index(inventory_hostname) == 0
   ignore_errors: yes
@@ -30,8 +30,8 @@
   ignore_errors: yes
 
 - name:  deploy ingress
-  shell: kubectl apply -n nginx-ingress -f /var/tmp/nginx-ingress/nginx-psp.yaml; \
-         kubectl apply -n nginx-ingress -f /var/tmp/nginx-ingress/nginx-ingress.yaml ;
+  shell: kubectl apply -n nginx-ingress -f /var/tmp/k8/nginx-ingress/nginx-psp.yaml; \
+         kubectl apply -n nginx-ingress -f /var/tmp/k8/nginx-ingress/nginx-ingress.yaml ;
   when: >
     groups['kube_master'].index(inventory_hostname) == 0
   ignore_errors: yes
