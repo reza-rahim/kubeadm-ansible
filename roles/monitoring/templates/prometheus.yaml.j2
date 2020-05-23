@@ -1055,7 +1055,7 @@ spec:
         chart: prometheus-11.0.2
         heritage: Helm
     spec:
-      #serviceAccountName: monitoring-prometheus-alertmanager
+      serviceAccountName: monitoring-prometheus-alertmanager
       containers:
         - name: prometheus-alertmanager
           image: "prom/alertmanager:{{ monitoring_alertmanager }}"
@@ -1194,7 +1194,7 @@ spec:
         port-forward: prometheus
         heritage: Helm
     spec:
-      #serviceAccountName: monitoring-prometheus-server
+      serviceAccountName: monitoring-prometheus-server
       containers:
         - name: prometheus-server-configmap-reload
           image: "jimmidyson/configmap-reload:v0.3.0"
