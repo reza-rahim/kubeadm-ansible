@@ -37,6 +37,38 @@ metadata:
     heritage: Helm
   name: monitoring-prometheus-node-exporter
 ---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: monitoring-psp
+  namespace: monitoring
+rules:
+- apiGroups:
+  - policy
+  resourceNames:
+  - privileged
+  resources:
+  - podsecuritypolicies
+  verbs:
+  - use
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: monitoring-psp
+  namespace: monitoring
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: monitoring-psp
+subjects:
+- kind: ServiceAccount
+  name: monitoring-prometheus-node-exporter
+
+---
 # Source: prometheus/templates/pushgateway-serviceaccount.yaml
 apiVersion: v1
 kind: ServiceAccount
@@ -1023,7 +1055,7 @@ spec:
         chart: prometheus-11.0.2
         heritage: Helm
     spec:
-      serviceAccountName: monitoring-prometheus-alertmanager
+      #serviceAccountName: monitoring-prometheus-alertmanager
       containers:
         - name: prometheus-alertmanager
           image: "prom/alertmanager:{{ monitoring_alertmanager }}"
@@ -1162,7 +1194,7 @@ spec:
         port-forward: prometheus
         heritage: Helm
     spec:
-      serviceAccountName: monitoring-prometheus-server
+      #serviceAccountName: monitoring-prometheus-server
       containers:
         - name: prometheus-server-configmap-reload
           image: "jimmidyson/configmap-reload:v0.3.0"

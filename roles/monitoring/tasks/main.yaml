@@ -1,14 +1,14 @@
 ---
 
-- name: Creates /etc/kubernetes/kubeadm/monitoring  directory
-  file: path=/etc/kubernetes/kubeadm/monitoring  recurse=yes state=directory
+- name: Creates /var/tmp/k8/monitoring  directory
+  file: path=/var/tmp/k8/monitoring  recurse=yes state=directory
   when: >
     groups['kube_master'].index(inventory_hostname) == 0 
 
 - name: Copy monitoring config files
   template: src="{{ item.src }}" dest="{{ item.dest }}"
   with_items:
-     - { src: 'prometheus.yaml.j2', dest: '/etc/kubernetes/kubeadm/monitoring/prometheus.yaml'  }  
+     - { src: 'prometheus.yaml.j2', dest: '/var/tmp/k8/monitoring/prometheus.yaml'  }  
   when: >
     groups['kube_master'].index(inventory_hostname) == 0 
   register: result
@@ -21,7 +21,7 @@
 
 
 - name: create monitoring 
-  shell: kubectl apply -n monitoring -f /etc/kubernetes/kubeadm/monitoring/;
+  shell: kubectl apply -n monitoring -f /var/tmp/k8/monitoring/;
   when: >
     groups['kube_master'].index(inventory_hostname) == 0 
   ignore_errors: yes

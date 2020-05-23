@@ -1,15 +1,15 @@
 ---
 
-- name: Creates /etc/kubernetes/kubeadm directory
-  file: path=/etc/kubernetes/kubeadm/dashboard  recurse=yes state=directory
+- name: Creates /var/tmp/k8/dashboard directory
+  file: path=/var/tmp/k8/dashboard  recurse=yes state=directory
   when: >
     groups['kube_master'].index(inventory_hostname) == 0 
 
 - name: Copy kube config files
   template: src="{{ item.src }}" dest="{{ item.dest }}"
   with_items:
-     - { src: 'dashboard.yaml.j2', dest: '/etc/kubernetes/kubeadm/dashboard/dashboard.yaml'  }  
-     - { src: 'user.yaml', dest: '/etc/kubernetes/kubeadm/dashboard/user.yaml'  }  
+     - { src: 'dashboard.yaml.j2', dest: '/var/tmp/k8/dashboard/dashboard.yaml'  }  
+     - { src: 'user.yaml', dest: '/var/tmp/k8/dashboard/user.yaml'  }  
   when: >
     groups['kube_master'].index(inventory_hostname) == 0 
   register: result
@@ -21,8 +21,8 @@
   ignore_errors: yes
 
 - name: create kubernetes-dashboard 
-  shell: kubectl apply -n kubernetes-dashboard -f /etc/kubernetes/kubeadm/dashboard/user.yaml; \
-         kubectl apply -n kubernetes-dashboard -f /etc/kubernetes/kubeadm/dashboard/dashboard.yaml; 
+  shell: kubectl apply -n kubernetes-dashboard -f /var/tmp/k8/dashboard/user.yaml; \
+         kubectl apply -n kubernetes-dashboard -f /var/tmp/k8/dashboard/dashboard.yaml; 
   when: >
     groups['kube_master'].index(inventory_hostname) == 0 
   ignore_errors: yes

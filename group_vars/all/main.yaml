@@ -37,7 +37,7 @@ monitoring_pushgateway: v1.0.1
 
 ####### Ceph ######
 
-rook_ceph: v1.1.0
+rook_ceph: v1.1.9
 ceph_mon: 3
 osdsPerDevice: 1 # number of OSD per device 
 ceph_version: v14.2.7

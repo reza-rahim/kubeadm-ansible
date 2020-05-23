@@ -1,7 +1,11 @@
 #echo -n "password" | base64
 #
-ssh kube-master-0 "mkdir -p ~/mysql"
-scp secret.yaml kube-master-0:~/mysql
+ssh skube-master-0 "mkdir -p ~/mysql"
+scp secret.yaml skube-master-0:~/mysql
+
+scp *  skube-master-0:~/mysql 
+
+
 scp  persistentVolumeClaim.yml kube-master-0:~/mysql 
 scp  persistentVolumeClaim.yml kube-master-0:~/mysql 
 scp  deployment.yml  kube-master-0:~/mysql 
