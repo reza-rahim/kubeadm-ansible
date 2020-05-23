@@ -1,7 +1,7 @@
 https://cert-manager.io/docs/tutorials/acme/ingress/
 
-ssh kube-master-0 "mkdir -p ~/cert"
-scp  *.yaml kube-master-0:~/cert/ 
+ssh skube-master-0 "mkdir -p ~/cert"
+scp  *.yaml skube-master-0:~/cert/ 
 ssh kube-master-0 "kubectl apply -f ~/cert/"
 
 

@@ -1,7 +1,7 @@
 ---
 
-- name: Creates /etc/kubernetes/kubeadm/cert-manager directory
-  file: path=/etc/kubernetes/kubeadm/cert-manager  recurse=yes state=directory
+- name: Creates /var/tmp/k8/cert-manager/cert-manager directory
+  file: path=/var/tmp/k8/cert-manager/  recurse=yes state=directory
   when: >
     groups['kube_master'].index(inventory_hostname) == 0
 
@@ -9,14 +9,17 @@
 - name: Copy cert-manager config file
   template: src="{{ item.src }}" dest="{{ item.dest }}"
   with_items:
-     - { src: 'cert-manager.yaml.j2', dest: '/etc/kubernetes/kubeadm/cert-manager/cert-manager.yaml'  }  
+     - { src: 'cert-manager.yaml.j2', dest: '/var/tmp/k8/cert-manager/cert-manager.yaml'  }  
+     - { src: 'cert-manager-psp.yaml.j2', dest: '/var/tmp/k8/cert-manager/cert-manager-psp.yaml'  }  
+
   when: >
     groups['kube_master'].index(inventory_hostname) == 0
   register: result
 
 
 - name:  deploy cert-manager
-  shell: kubectl apply  -f /etc/kubernetes/kubeadm/cert-manager/cert-manager.yaml ;
+  shell: kubectl apply  -f /var/tmp/k8/cert-manager/cert-manager-psp.yaml ; \
+         kubectl apply  -f /var/tmp/k8/cert-manager/cert-manager.yaml ;
   when: >
     groups['kube_master'].index(inventory_hostname) == 0
   ignore_errors: yes

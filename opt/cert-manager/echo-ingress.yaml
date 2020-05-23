@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: echo
+  annotations:
+    kubernetes.io/ingress.class: "nginx"    
+    cert-manager.io/issuer: "letsencrypt-prod"
+
+spec:
+  tls:
+  - hosts:
+    - www.klovercloud.com
+    secretName: echo-service-tls
+  rules:
+  - host: www.klovercloud.com
+    http:
+      paths:
+      - path: /api/echo/?(.*)
+        backend:
+          serviceName: echo-service
+          servicePort: 80
