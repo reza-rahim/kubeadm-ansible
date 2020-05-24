@@ -1,15 +1,15 @@
 ---
 
-- name: Creates /etc/kubernetes/kubeadm/grafana  directory
-  file: path=/etc/kubernetes/kubeadm/grafana  recurse=yes state=directory
+- name: Creates /var/tmp/k8/grafana  directory
+  file: path=/var/tmp/k8/grafana  recurse=yes state=directory
   when: >
     groups['kube_master'].index(inventory_hostname) == 0 
 
 - name: Copy monitoring config files
   template: src="{{ item.src }}" dest="{{ item.dest }}"
   with_items:
-     - { src: 'metrics-connection.yaml.j2', dest: '/etc/kubernetes/kubeadm/grafana/metrics-connection.yaml'  }  
-     - { src: 'grafana.yaml.j2', dest: '/etc/kubernetes/kubeadm/grafana/grafana.yaml'  }  
+     - { src: 'metrics-connection.yaml.j2', dest: '/var/tmp/k8/grafana/metrics-connection.yaml'  }  
+     - { src: 'grafana.yaml.j2', dest: '/var/tmp/k8/grafana/grafana.yaml'  }  
   when: >
     groups['kube_master'].index(inventory_hostname) == 0 
   register: result
@@ -22,8 +22,8 @@
 
 
 - name: create monitoring 
-  shell: kubectl apply -n monitoring -f /etc/kubernetes/kubeadm/grafana/metrics-connection.yaml; \
-         kubectl apply -n monitoring -f /etc/kubernetes/kubeadm/grafana/grafana.yaml ;
+  shell: kubectl apply -n monitoring -f /var/tmp/k8/grafana/metrics-connection.yaml; \
+         kubectl apply -n monitoring -f /var/tmp/k8/grafana/grafana.yaml ;
   when: >
     groups['kube_master'].index(inventory_hostname) == 0 
   ignore_errors: yes

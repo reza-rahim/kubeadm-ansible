@@ -25,6 +25,7 @@ ingress_request_mem: 2Gi
 
 
 ### monitoring ####
+
 cortex_endpoint: http://cortex-nginx.cortex.svc.cluster.local:80/api/prom/push
 prometheus_retention_time: 2d
 prometheus_image: v2.16.0
@@ -34,6 +35,8 @@ monitoring_alertmanager_pvc: 2Gi
 monitoring_node_exporter: v0.18.1
 monitoring_kube_state_metrics: v1.9.5
 monitoring_pushgateway: v1.0.1
+
+grafana_image: 7.0.0
 
 ####### Ceph ######
 

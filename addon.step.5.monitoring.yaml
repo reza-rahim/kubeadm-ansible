@@ -3,4 +3,5 @@
   become: yes
   roles:
      - monitoring
+     - monitoring_grafana
 
