@@ -28,3 +28,9 @@ helm  template -name release --namespace nginx-ingress nginx-ingress > nginx-ing
 
 ```
 
+cipher test
+
+nmap -script ssl-enum-ciphers www.klovercloud.com 
+
+
+

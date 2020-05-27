@@ -16,7 +16,7 @@ cluster_base_domain: dev.klovercloud.io
 
 ##### nginx ingress ########
 nginx_ingress_controller_version: 0.29.0
-nginx_ingress_controller_replicas: 1
+nginx_ingress_controller_replicas: 2
 nginx_ingress_http_mgmt: 18080
 ingress_limit_cpu: 1000m
 ingress_limit_mem: 2Gi

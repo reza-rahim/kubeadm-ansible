@@ -30,8 +30,7 @@
   ignore_errors: yes
 
 - name:  deploy ingress
-  shell: kubectl apply -n nginx-ingress -f /var/tmp/k8/nginx-ingress/nginx-psp.yaml; \
-         kubectl apply -n nginx-ingress -f /var/tmp/k8/nginx-ingress/nginx-ingress.yaml ;
+  shell: kubectl apply -n nginx-ingress -f /var/tmp/k8/nginx-ingress/nginx-ingress.yaml ;
   when: >
     groups['kube_master'].index(inventory_hostname) == 0
   ignore_errors: yes
