@@ -42,6 +42,10 @@ data:
           "type": "portmap",
           "snat": true,
           "capabilities": {"portMappings": true}
+        },
+        {
+          "type": "bandwidth",
+          "capabilities": {"bandwidth": true}
         }
       ]
     }
@@ -640,6 +644,10 @@ spec:
             # Disable IPv6 on Kubernetes.
             - name: FELIX_IPV6SUPPORT
               value: "false"
+            - name: FELIX_PROMETHEUSGOMETRICSENABLED
+              value: "false"
+            - name: FELIX_PROMETHEUSMETRICSENABLED
+              value: "true"
             # Set Felix logging to "info"
             - name: FELIX_LOGSEVERITYSCREEN
               value: "info"
