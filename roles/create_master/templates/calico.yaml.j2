@@ -504,6 +504,8 @@ spec:
         # priority scheduling and that its resources are reserved
         # if it ever gets evicted.
         scheduler.alpha.kubernetes.io/critical-pod: ''
+        prometheus.io/port: "9091"
+        prometheus.io/scrape: "true"
     spec:
       nodeSelector:
         beta.kubernetes.io/os: linux
