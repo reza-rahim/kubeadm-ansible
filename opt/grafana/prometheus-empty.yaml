@@ -37,6 +37,38 @@ metadata:
     heritage: Helm
   name: monitoring-prometheus-node-exporter
 ---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: monitoring-psp
+  namespace: monitoring
+rules:
+- apiGroups:
+  - policy
+  resourceNames:
+  - privileged
+  resources:
+  - podsecuritypolicies
+  verbs:
+  - use
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: monitoring-psp
+  namespace: monitoring
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: monitoring-psp
+subjects:
+- kind: ServiceAccount
+  name: monitoring-prometheus-node-exporter
+
+---
 # Source: prometheus/templates/pushgateway-serviceaccount.yaml
 apiVersion: v1
 kind: ServiceAccount
@@ -107,7 +139,7 @@ data:
       scrape_interval: 1m
       scrape_timeout: 10s
     remote_write:
-    - url: {{ cortex_endpoint }}
+    - url: http://cortex-nginx.cortex.svc.cluster.local:80/api/prom/push
     rule_files:
     - /etc/config/recording_rules.yml
     - /etc/config/alerting_rules.yml
@@ -392,7 +424,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: "2Gi"
+      storage: 2Gi
 ---
 # Source: prometheus/templates/server-pvc.yaml
 apiVersion: v1
@@ -410,7 +442,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: "8Gi"
+      storage: 10Gi
 ---
 # Source: prometheus/charts/kube-state-metrics/templates/clusterrole.yaml
 apiVersion: rbac.authorization.k8s.io/v1beta1
@@ -839,6 +871,10 @@ spec:
         heritage: Helm
     spec:
       serviceAccountName: monitoring-prometheus-node-exporter
+      tolerations:
+        # Make sure node-exporter gets scheduled on all nodes.
+        - effect: NoSchedule
+          operator: Exists
       containers:
         - name: prometheus-node-exporter
           image: "prom/node-exporter:v0.18.1"
@@ -1074,8 +1110,7 @@ spec:
           configMap:
             name: monitoring-prometheus-alertmanager
         - name: storage-volume
-          persistentVolumeClaim:
-            claimName: monitoring-prometheus-alertmanager
+          emptyDir: {}
 ---
 # Source: prometheus/templates/pushgateway-deployment.yaml
 apiVersion: apps/v1
@@ -1155,6 +1190,7 @@ spec:
         app: prometheus
         release: monitoring
         chart: prometheus-11.0.2
+        port-forward: prometheus
         heritage: Helm
     spec:
       serviceAccountName: monitoring-prometheus-server
@@ -1176,7 +1212,7 @@ spec:
           image: "prom/prometheus:v2.16.0"
           imagePullPolicy: "IfNotPresent"
           args:
-            - --storage.tsdb.retention.time=15d
+            - --storage.tsdb.retention.time=2d
             - --config.file=/etc/config/prometheus.yml
             - --storage.tsdb.path=/data
             - --web.console.libraries=/etc/prometheus/console_libraries
@@ -1219,5 +1255,4 @@ spec:
           configMap:
             name: monitoring-prometheus-server
         - name: storage-volume
-          persistentVolumeClaim:
-            claimName: monitoring-prometheus-server
+          emptyDir: {}
