@@ -28,6 +28,7 @@
     sysctl_set: yes
     state: present
     reload: yes
+  ignore_errors: yes
 
 - name: ip_forward
   sysctl:
@@ -36,6 +37,7 @@
     sysctl_set: yes
     state: present
     reload: yes
+  ignore_errors: yes
 
 - name: install yum-utils device-mapper-persistent-data lvm2
   yum:
