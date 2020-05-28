@@ -37,6 +37,8 @@ monitoring_kube_state_metrics: v1.9.5
 monitoring_pushgateway: v1.0.1
 
 grafana_image: 7.0.0
+grafana_plugin:  grafana-clock-panel,btplc-status-dot-panel
+grafana_conn_endpoint: monitoring-prometheus-server
 
 ####### Ceph ######
 

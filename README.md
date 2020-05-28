@@ -57,9 +57,11 @@ kubectl port-forward -n monitoring  $(kubectl get pod -n monitoring  -l app.kube
 
 ### Node Exporter Full dashboard
 https://grafana.com/grafana/dashboards/1860
-https://grafana.com/grafana/dashboards/11455
+
 ##K8 dashboard
 https://grafana.com/grafana/dashboards/315
+##PVC
+https://grafana.com/grafana/dashboards/11455
 
 #nginx controller
 https://grafana.com/grafana/dashboards/9614

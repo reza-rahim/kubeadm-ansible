@@ -113,6 +113,7 @@ metadata:
     app.kubernetes.io/version: "6.7.1"
     app.kubernetes.io/managed-by: Helm
 data:
+  plugins: {{ grafana_plugin }}
   grafana.ini: |
     [analytics]
     check_for_updates = true

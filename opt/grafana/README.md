@@ -29,3 +29,16 @@ scp  *.yaml kube-master-0:~/grafana
 ssh kube-master-0 "kubectl apply -f ~/grafana/ "
 
 ```
+
+
+```bash
+
+kubectl exec -it -n monitoring monitoring-grafana-58c6d6dfb8-55txr -c grafana sh 
+
+grafana-cli plugins install btplc-status-dot-panel
+
+
+mount "/var/lib/grafana/plugins/" with pv
+
+
+```

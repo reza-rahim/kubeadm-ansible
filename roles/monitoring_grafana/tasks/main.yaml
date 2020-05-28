@@ -28,9 +28,9 @@
     - roles/monitoring_grafana/templates/dashboard/dash*.yaml
 
 - name: create monitoring 
-  shell:  kubectl apply -n monitoring -f /var/tmp/k8/grafana/dash
-         # kubectl apply -n monitoring -f /var/tmp/k8/grafana/metrics-connection.yaml; \
-         #kubectl apply -n monitoring -f /var/tmp/k8/grafana/grafana.yaml ;
+  shell:  kubectl apply -n monitoring -f /var/tmp/k8/grafana/dash; \ 
+          kubectl apply -n monitoring -f /var/tmp/k8/grafana/metrics-connection.yaml; \
+         kubectl apply -n monitoring -f /var/tmp/k8/grafana/grafana.yaml ;
   when: >
     groups['kube_master'].index(inventory_hostname) == 0 
   ignore_errors: yes
