@@ -504,7 +504,7 @@ spec:
         # priority scheduling and that its resources are reserved
         # if it ever gets evicted.
         scheduler.alpha.kubernetes.io/critical-pod: ''
-        prometheus.io/port: "9091"
+        prometheus.io/port: "9092"
         prometheus.io/scrape: "true"
     spec:
       nodeSelector:
@@ -650,6 +650,8 @@ spec:
               value: "false"
             - name: FELIX_PROMETHEUSMETRICSENABLED
               value: "true"
+            - name: FELIX_PROMETHEUSMETRICSPORT
+              value: "9092"
             # Set Felix logging to "info"
             - name: FELIX_LOGSEVERITYSCREEN
               value: "info"

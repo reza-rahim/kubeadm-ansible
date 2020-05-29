@@ -2,6 +2,6 @@
 - hosts: kube_master
   become: yes
   roles:
-     #- monitoring
+     - monitoring
      - monitoring_grafana
 

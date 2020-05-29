@@ -1,7 +1,7 @@
 ---
 
 - name: Creates /var/tmp/k8/grafana  directory
-  file: path=/var/tmp/k8/grafanai/dash  recurse=yes state=directory
+  file: path=/var/tmp/k8/grafana/dash  recurse=yes state=directory
   when: >
     groups['kube_master'].index(inventory_hostname) == 0 
 
