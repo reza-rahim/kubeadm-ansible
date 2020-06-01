@@ -9,4 +9,7 @@ sudo yum -y install openssl-devel git
 git clone https://github.com/wg/wrk.git
 cd wrk
 
+
+./wrk -t32 -c200 -d120s  --latency  -H 'Connection: Close'   https://www.klovercloud.com/
+
 ```
