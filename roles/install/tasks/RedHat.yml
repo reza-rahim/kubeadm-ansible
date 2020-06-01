@@ -4,12 +4,13 @@
   systemd:
     name: yum-cron
     state: stopped
+  ignore_errors: yes 
 
 - name: disable service yum-cron, if running
   systemd:
     name: yum-cron
     enabled: false
-
+  ignore_errors: yes 
 
 - name: stop service firewalld, if running
   systemd:
