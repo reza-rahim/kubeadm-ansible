@@ -59,13 +59,16 @@ rbd create --size 50200 k8/bar
 
 rbd create --size 1024 k8/foo --object-size 8M
 
-## insert data int did image
+## insert data into the image
 
 rbd -p k8 bench bar --io-type write --io-size 8192 --io-threads 256 --io-total 50G --io-pattern seq
 
+## insert data into the image 
+
 rbd -p k8 bench bar --io-type read --io-size 8192 --io-threads 256 --io-total 50G --io-pattern seq
 
-##snapshot
+## snapshot
+
 rbd snap create k8/foo@snapname
 
 rbd snap ls k8/foo
