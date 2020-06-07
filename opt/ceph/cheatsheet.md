@@ -1,4 +1,5 @@
 
+###Basic
 ```bash
 
 ceph quorum_status --format json-pretty
@@ -28,8 +29,13 @@ ceph osd df
 #List the cluster authentication keys:
 ceph auth list
 
+``` Crush map
+### 
+```bash
+
 ```
 
+###Create pool and 
 ```bash
 ## delete a pool create a pool 
 
