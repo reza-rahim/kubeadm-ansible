@@ -1,6 +1,8 @@
 
 https://docs.ceph.com/docs/giant/man/8/radosgw-admin/
 
+https://access.redhat.com/documentation/en-us/red_hat_ceph_storage/2/html/object_gateway_guide_for_ubuntu/administration_cli
+
 https://computingforgeeks.com/configure-aws-s3-cli-for-ceph-object-gateway-storage/
 
 ```bash 
