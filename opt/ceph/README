@@ -49,6 +49,8 @@ kubectl port-forward -n rook-ceph $(kubectl get pod -n rook-ceph   -l app=rook-c
 # get dashboard password for User "admin"
 kubectl -n rook-ceph get secret rook-ceph-dashboard-password -o jsonpath="{['data']['password']}" | base64 --decode && echo
 
+# Restart fsplugin
+ kubectl delete -n rook-ceph  pod -l app=csi-cephfsplugin-provisioner --grace-period=0 --force 
 
  ##autoscale pg
 https://tracker.ceph.com/issues/41735
