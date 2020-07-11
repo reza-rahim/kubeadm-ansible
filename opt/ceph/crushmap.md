@@ -62,6 +62,8 @@ ID  CLASS WEIGHT  TYPE NAME
 
 ``` 
 
+##### chaning the device class for the OSD
+
 ```bash
 # we would create change the default device class for the OSD
 # remove the existing class from osd 0 and 1
