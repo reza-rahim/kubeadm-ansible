@@ -96,3 +96,18 @@ ceph osd crush rule create-replicated hot_rule  default rack  hot_cls
 ```
 
 ##### Ceph pool. [command reference](https://docs.ceph.com/docs/jewel/rados/operations/pools/)
+
+```bash
+#ceph osd pool create {pool-name} {pg-num} [{pgp-num}] [replicated] [crush-ruleset-name] 
+
+# Create cole pool with cold_rule
+ceph osd pool create cold_pool 10 10 replicated cold_rule
+
+# Create cole pool with cold_rule
+ceph osd pool create hot_pool 10 10 replicated hot_rule
+
+# set the replica to 1 for both cold_pool and hot_pool pool
+ceph osd pool set cold_pool  size 1
+ceph osd pool set hot_pool   size 1
+
+```
