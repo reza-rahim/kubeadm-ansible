@@ -14,7 +14,7 @@
 
 
 
-##### A failure domain dictates the block placement. For example,if the failure domain is set rack level, ceph would make sure that the replicated blocks are placed in a different racks.<br>
+##### A failure domain dictates the object placement. For example,if the failure domain is set rack level, ceph would make sure that the replicated blocks are placed in a different racks. This ensure data survival in the event of whole rach failure.<br>
 
 
 ```bash
