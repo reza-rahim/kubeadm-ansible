@@ -4,6 +4,9 @@
 ##### The CRUSH map for your storage cluster describes your device locations within CRUSH hierarchies and a rule for each hierarchy that determines how Ceph stores data.
 <br>
 
+##### The CRUSH map contains at least one hierarchy of nodes and leaves. The nodes of a hierarchy, called "buckets" in Ceph, are any aggregation of storage locations as defined by their type. For example, rows, racks, chassis, hosts, and devices. E
+<br>
+
 ![ceph bucket](Ceph_Bucket.png)
 
 <br>
