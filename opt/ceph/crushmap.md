@@ -42,10 +42,11 @@ ceph osd crush add-bucket ssd-root root
 # ceph osd crush add-bucket < rack name > rack 
 ceph osd crush add-bucket  rack1  rack
 
-# move the rack1 to defautl root
+# move the rack1 under defautl root
 ceph osd crush move rack1  root=default
 
-
+# move the host (k8-2) under rack1
+ceph osd crush move k8-2  rack=rack1 
 
 
 ```
