@@ -6,6 +6,7 @@
 ##### The CRUSH map contains at least one hierarchy of nodes and leaves. The nodes of a hierarchy, called "buckets" in Ceph, are any aggregation of storage locations as defined by their type. For example, rows, racks, chassis, hosts, and devices. 
 
 ##### OSD is considered as leaf where the objects live. 
+##### A disk can be mapped to one or more OSD.
 
 
 ![ceph bucket](Ceph_Bucket.png)
