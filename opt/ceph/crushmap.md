@@ -60,5 +60,12 @@ ID  CLASS WEIGHT  TYPE NAME
   0 hdd   0.48729             osd.0 
   1 ssd   0.09669             osd.1 
 
-```
+``` 
 
+```bash
+# we would create change the default device class for the OSD
+# remove the existing class from osd 0 and 1
+# ceph osd crush rm-device-class < osd id >
+ceph osd crush rm-device-class 0
+ceph osd crush rm-device-class 1
+```
