@@ -94,3 +94,5 @@ ceph osd crush rule create-replicated cold_rule  default rack cold_cls
 ceph osd crush rule create-replicated hot_rule  default rack  hot_cls
 
 ```
+
+##### Ceph pool. [command reference](https://docs.ceph.com/docs/jewel/rados/operations/pools/)
