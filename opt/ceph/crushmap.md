@@ -22,9 +22,9 @@
 ceph osd crush tree
 
 
-1       0.58398 root default  ## there is default root
--4       0.58398     host k8-2  ## the 
- 0 hdd 0.48729         osd.0   
+1       0.58398 root default  ## there is the default hierarchy. Each hierarchy starts with root bucket.  
+-4       0.58398     host k8-2  ## host is always added as default bucket       
+ 0 hdd 0.48729         osd.0    ## osd are listed under the host and ceph gives a device-class based on the storage type, such as hdd, ssd or nvme
  1 ssd 0.09669         osd.1 
 
 
