@@ -124,4 +124,11 @@ ceph osd pool application enable hot_pool rbd
 
 ##### BLOCK DEVICE [COMMANDS](https://docs.ceph.com/docs/jewel/rbd/rados-rbd-cmds/)
 
+```bash
+# rbd create --size {megabytes} {pool-name}/{image-name}
+
+rbd create --size 5000 cold_pool/bar
+
+```
+
 
