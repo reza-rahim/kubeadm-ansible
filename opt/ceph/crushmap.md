@@ -31,9 +31,22 @@ ceph osd crush tree
 
 
 ```bash
-#Create a new crush hierarchy with root bucket
+# Create a new crush hierarchy with root bucket
 
 ceph osd crush add-bucket ssd-root root
 
+```
+
+```bash
+# Create rack bucket
+# ceph osd crush add-bucket < rack name > rack 
+ceph osd crush add-bucket  rack1  rack
+
+# move the rack1 to defautl root
+ceph osd crush move rack1  root=default
+
+
+
 
 ```
+
