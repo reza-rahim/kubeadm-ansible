@@ -111,6 +111,5 @@ ceph osd pool set cold_pool  size 1
 ceph osd pool set hot_pool   size 1
 
 ```
-
-##### osd pool application enable <pool> <app> [--yes-i-really-mean-it]        
-#####      enable use of an application <app> [cephfs,rbd,rgw] on pool <poolname>
+     
+#####  Enable use of an application <app> [cephfs,rbd,rgw] on pool <poolname>
