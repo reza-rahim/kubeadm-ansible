@@ -84,3 +84,13 @@ ID  CLASS    WEIGHT  TYPE NAME
   1  hot_cls 0.09669             osd.1 
 
 ```
+
+#### define crush rule to introduce the failure domain.
+```bash 
+#crush rule
+# ceph osd crush rule create-replicated <rule-name> <root> <failure-domain-type> <device-class>:
+
+ceph osd crush rule create-replicated cold_rule  default rack cold_cls
+ceph osd crush rule create-replicated hot_rule  default rack  hot_cls
+
+```
