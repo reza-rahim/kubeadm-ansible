@@ -3,13 +3,16 @@
 
 ##### The CRUSH map for your storage cluster describes your device locations within CRUSH hierarchies and a rule for each hierarchy that determines how Ceph stores data.
 
-##### The CRUSH map contains at least one hierarchy of nodes and leaves. The nodes of a hierarchy, called "buckets" in Ceph, are any aggregation of storage locations as defined by their type. For example, rows, racks, chassis, hosts, and devices. E
+##### The CRUSH map contains at least one hierarchy of nodes and leaves. The nodes of a hierarchy, called "buckets" in Ceph, are any aggregation of storage locations as defined by their type. For example, rows, racks, chassis, hosts, and devices. 
+
+##### OSD is considered as leaf where blocks is live. 
+
 
 ![ceph bucket](Ceph_Bucket.png)
 
 <br>
 
-##### OSD is considered as leaf where blocks is live. A bucket is hi 
+
 
 ##### A failure domain dictates the block placement. For example,if the failure domain is set rack level, ceph would make sure that the replicated blocks are placed in a different racks.<br>
 
