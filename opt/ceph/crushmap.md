@@ -120,6 +120,8 @@ ceph osd pool set hot_pool   size 1
 
 ceph osd pool application enable cold_pool rbd
 ceph osd pool application enable hot_pool rbd
+```
 
+##### [BLOCK DEVICE COMMANDS](https://docs.ceph.com/docs/jewel/rbd/rados-rbd-cmds/)
 
 
