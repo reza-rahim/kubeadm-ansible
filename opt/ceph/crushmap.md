@@ -50,5 +50,15 @@ ceph osd crush move rack1  root=default
 ceph osd crush move k8-2  rack=rack1 
 
 
+# the new hierarchy
+
+ID  CLASS WEIGHT  TYPE NAME         
+    
+ -1       0.58398 root default      
+-10       0.58398     rack rack1    
+ -4       0.58398         host k8-2 
+  0 hdd-1 0.48729             osd.0 
+  1 ssd-1 0.09669             osd.1 
+
 ```
 
