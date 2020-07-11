@@ -71,7 +71,8 @@ ID  CLASS WEIGHT  TYPE NAME
 ceph osd crush rm-device-class 0
 ceph osd crush rm-device-class 1
 
-#assign some new device class to OSD
+# assign some new device class to OSD
+# set hdd devices as cold_cls and ssd devices as hot_cls
 ceph osd crush set-device-class cold_cls osd.0
 ceph osd crush set-device-class hot_cls osd.1
 
