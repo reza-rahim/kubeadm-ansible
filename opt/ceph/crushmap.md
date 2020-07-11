@@ -27,6 +27,13 @@ ceph osd crush tree
  0 hdd 0.48729         osd.0    ## osd are listed under the host and ceph gives a device-class based on the storage
  1 ssd 0.09669         osd.1    ## type, such as hdd, ssd or nvme
 
+```
+
+
+```bash
+#Create a new crush hierarchy with root bucket
+
+ceph osd crush add-bucket ssd-root root
 
 
 ```
