@@ -62,7 +62,7 @@ ID  CLASS WEIGHT  TYPE NAME
 
 ``` 
 
-##### chaning the device class for the OSD
+##### Chaning the device class for the OSD
 
 ```bash
 # we would create change the default device class for the OSD
@@ -70,4 +70,17 @@ ID  CLASS WEIGHT  TYPE NAME
 # ceph osd crush rm-device-class < osd id >
 ceph osd crush rm-device-class 0
 ceph osd crush rm-device-class 1
+
+#assign some new device class to OSD
+ceph osd crush set-device-class cold_cls osd.0
+ceph osd crush set-device-class hot_cls osd.1
+
+ID  CLASS    WEIGHT  TYPE NAME         
+ -7                0 host k8-1-ssd     
+ -1          0.58398 root default      
+-10          0.58398     rack rack1    
+ -4          0.58398         host k8-2 
+  0 cold_cls 0.48729             osd.0 
+  1  hot_cls 0.09669             osd.1 
+
 ```
