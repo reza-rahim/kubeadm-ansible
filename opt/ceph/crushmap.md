@@ -75,8 +75,7 @@ ceph osd crush rm-device-class 1
 ceph osd crush set-device-class cold_cls osd.0
 ceph osd crush set-device-class hot_cls osd.1
 
-ID  CLASS    WEIGHT  TYPE NAME         
- -7                0 host k8-1-ssd     
+ID  CLASS    WEIGHT  TYPE NAME           
  -1          0.58398 root default      
 -10          0.58398     rack rack1    
  -4          0.58398         host k8-2 
