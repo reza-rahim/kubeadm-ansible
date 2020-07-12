@@ -122,6 +122,15 @@ ceph osd pool application enable cold_pool rbd
 ceph osd pool application enable hot_pool rbd
 ```
 
+##### Rados performance
+```bash
+rados bench -p cold_pool  10 write --no-cleanup
+rados bench -p hot_pool  10 write --no-cleanup
+
+rados -p cold_pool cleanup
+rados -p hot_pool cleanup
+```
+
 ##### BLOCK DEVICE [COMMANDS](https://docs.ceph.com/docs/jewel/rbd/rados-rbd-cmds/)
 
 ```bash
@@ -145,5 +154,6 @@ rbd rm cold_pool/cold_rbd
 rbd rm hot_pool/hot_rbd 
 
 ```
+
 
 
