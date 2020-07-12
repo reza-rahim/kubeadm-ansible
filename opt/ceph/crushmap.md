@@ -110,6 +110,10 @@ ceph osd pool create hot_pool 10 10 replicated hot_rule
 ceph osd pool set cold_pool  size 1
 ceph osd pool set hot_pool   size 1
 
+#delete pool
+ceph osd pool rm hot_pool hot_pool --yes-i-really-really-mean-it 
+ceph osd pool rm cold_pool cold_pool --yes-i-really-really-mean-it
+
 ```
      
 #####  Enable use of an application <app> [cephfs,rbd,rgw] on pool <poolname>
