@@ -127,7 +127,19 @@ ceph osd pool application enable hot_pool rbd
 ```bash
 # rbd create --size {megabytes} {pool-name}/{image-name}
 
-rbd create --size 5000 cold_pool/bar
+rbd create --size 5000 cold_pool/cold_rbd
+rbd create --size 5000 hot_pool/hot_rbd
+
+# perforamce
+rbd bench-write cold_rbd --pool=cold_pool
+rbd bench-write hot_rbd --pool=hot_pool
+
+#write data
+rbd -p cold_pool bench cold_rbd --io-type write --io-size 8192 --io-threads 256 --io-total 4G --io-pattern seq
+rbd -p hot_pool bench hot_rbd --io-type write --io-size 8192 --io-threads 256 --io-total 4G --io-pattern seq
+
+
+
 
 ```
 
