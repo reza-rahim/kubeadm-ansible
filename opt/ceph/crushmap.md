@@ -139,7 +139,10 @@ rbd -p cold_pool bench cold_rbd --io-type write --io-size 8192 --io-threads 256 
 rbd -p hot_pool bench hot_rbd --io-type write --io-size 8192 --io-threads 256 --io-total 4G --io-pattern seq
 
 
+#cleanup
 
+rbd rm cold_pool/cold_rbd 
+rbd rm hot_pool/hot_rbd 
 
 ```
 
