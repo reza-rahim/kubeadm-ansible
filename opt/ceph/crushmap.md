@@ -155,5 +155,9 @@ rbd rm hot_pool/hot_rbd
 
 ```
 
+##### [cache-tiering](https://docs.ceph.com/docs/mimic/rados/operations/cache-tiering/)
+```bash
+
+```
 
 
