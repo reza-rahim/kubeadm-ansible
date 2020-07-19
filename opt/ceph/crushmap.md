@@ -168,6 +168,17 @@ ceph osd tier add  cold_pool hot_pool
 ceph osd tier cache-mode hot_pool  writeback
 ceph osd tier set-overlay cold_pool hot_pool
 
+
+ceph osd pool set hot_pool  hit_set_type bloom
+
+## RELATIVE SIZING
+
+ceph osd pool set hot_pool  cache_target_dirty_ratio 0.4
+ceph osd pool set hot_pool  cache_target_dirty_high_ratio 0.6 
+ceph osd pool set hot_pool  cache_target_full_ratio 0.8   
+
+
+
 ```
 
 
