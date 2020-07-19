@@ -161,7 +161,12 @@ rbd rm hot_pool/hot_rbd
 
 ##### [cache-tiering](https://docs.ceph.com/docs/mimic/rados/operations/cache-tiering/)
 ##### [suse cache-tiering](https://documentation.suse.com/ses/5.5/html/ses-all/cha-ceph-tiered.html)
+
 ```bash
+
+ceph osd tier add  cold_pool hot_pool
+ceph osd tier cache-mode hot_pool  writeback
+ceph osd tier set-overlay cold_pool hot_pool
 
 ```
 
