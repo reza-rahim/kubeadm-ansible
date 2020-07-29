@@ -29,3 +29,7 @@ radosgw-admin  user list
 #get user info
 radosgw-admin user  info  --uid  computingforgeeks
 ```
+
+```bash
+kubectl run test --rm --restart=Never -it --image=mikesir87/aws-cli -- bash
+```
