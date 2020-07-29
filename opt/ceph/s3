@@ -9,6 +9,7 @@ https://computingforgeeks.com/configure-aws-s3-cli-for-ceph-object-gateway-stora
 ## log into the ceph tool box
 sudo radosgw-admin user create --uid="computingforgeeks" --display-name="Computingforgeeks S3User"
 
+
 ```
 ```bash
 
@@ -20,4 +21,11 @@ sudo radosgw-admin user create --uid="computingforgeeks" --display-name="Computi
         }
     ],
     
+```
+```bash
+#list user
+radosgw-admin  user list
+
+#get user info
+radosgw-admin user  info  --uid  computingforgeeks
 ```
