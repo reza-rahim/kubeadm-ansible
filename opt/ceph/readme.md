@@ -1,1 +1,69 @@
+#
+# 
 
+## ceph alert
+
+https://github.com/rook/rook/blob/master/Documentation/ceph-monitoring.md
+
+
+Doc
+https://www.bookstack.cn/read/ceph-en/288f7dc9097d5262.md
+
+#
+https://blogs.oracle.com/cloud-infrastructure/running-ceph-clusters-with-rook-in-oracle-container-engine-for-kubernetes
+
+https://medium.com/cloudops/the-ultimate-rook-and-ceph-survival-guide-eff198a5764a
+
+https://www.virtualtothecore.com/adventures-with-ceph-storage-part-5-install-ceph-in-the-lab/
+
+##Encryption
+https://github.com/maricaantonacci/ceph-tutorial/wiki/OSD-Encryption
+
+##perforamce
+http://accelazh.github.io/ceph/Ceph-Performance-Tuning-Checklist
+https://ceph.io/planet/ceph-block-performance-monitoring/
+
+##PG auto scaler
+https://ceph.io/rados/new-in-nautilus-pg-merging-and-autotuning/
+https://medium.com/@AvengerMoJo/ceph-placement-groups-autoscale-9981aeccbc21
+
+##PG
+https://stackoverflow.com/questions/39589696/ceph-too-many-pgs-per-osd-all-you-need-to-know
+
+##backup
+
+https://blog.kubernauts.io/backup-and-restore-of-kubernetes-applications-using-heptios-velero-with-restic-and-rook-ceph-as-2e8df15b1487
+
+ssh skube-master-0 "mkdir -p ~/ceph"
+scp  *.yaml skube-master-0:~/ceph 
+ssh kube-master-0 "kubectl apply -f ~/ceph/common.yaml"
+ssh kube-master-0 "kubectl apply -f ~/ceph/operator.yaml"
+ssh kube-master-0 "kubectl apply -f ~/ceph/cluster.yaml"
+ssh kube-master-0 "kubectl apply -f ~/ceph/StorageClass.yaml"
+ssh kube-master-0 "kubectl apply -f ~/ceph/StorageClassEC.yaml"
+
+
+#PORT forwarding
+kubectl port-forward -n rook-ceph $(kubectl get pod -n rook-ceph   -l app=rook-ceph-mgr   -o jsonpath={.items..metadata.name} ) 8443:8443
+
+# get dashboard password for User "admin"
+kubectl -n rook-ceph get secret rook-ceph-dashboard-password -o jsonpath="{['data']['password']}" | base64 --decode && echo
+
+# Restart fsplugin
+ kubectl delete -n rook-ceph  pod -l app=csi-cephfsplugin-provisioner --grace-period=0 --force 
+
+#log into toolbox
+kubectl -n rook-ceph exec -it $(kubectl -n rook-ceph get pod -l "app=rook-ceph-tools" -o jsonpath='{.items[0].metadata.name}') bash
+ 
+
+ ##autoscale pg
+https://tracker.ceph.com/issues/41735
+https://docs.ceph.com/docs/master/rados/operations/placement-groups/#set-the-number-of-placement-groups
+
+## backup and operation 
+https://s3-website.cern.ch/cephdocs/user/backup.html
+
+##
+```bash
+kubectl get namespace "rook-ceph" -o json   | tr -d "\n" | sed "s/\"finalizers\": \[[^]]\+\]/\"finalizers\": []/"  | kubectl replace --raw /api/v1/namespaces/rook-ceph/finalize -f -
+`
