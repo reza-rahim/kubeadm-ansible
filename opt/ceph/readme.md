@@ -16,21 +16,21 @@ https://medium.com/cloudops/the-ultimate-rook-and-ceph-survival-guide-eff198a576
 
 https://www.virtualtothecore.com/adventures-with-ceph-storage-part-5-install-ceph-in-the-lab/
 
-####Encryption
+#### Encryption
 https://github.com/maricaantonacci/ceph-tutorial/wiki/OSD-Encryption
 
-####perforamce
+#### perforamce
 http://accelazh.github.io/ceph/Ceph-Performance-Tuning-Checklist
 https://ceph.io/planet/ceph-block-performance-monitoring/
 
-##PG auto scaler
+## PG auto scaler
 https://ceph.io/rados/new-in-nautilus-pg-merging-and-autotuning/
 https://medium.com/@AvengerMoJo/ceph-placement-groups-autoscale-9981aeccbc21
 
-##PG
+## PG
 https://stackoverflow.com/questions/39589696/ceph-too-many-pgs-per-osd-all-you-need-to-know
 
-##backup
+## backup
 
 https://blog.kubernauts.io/backup-and-restore-of-kubernetes-applications-using-heptios-velero-with-restic-and-rook-ceph-as-2e8df15b1487
 
