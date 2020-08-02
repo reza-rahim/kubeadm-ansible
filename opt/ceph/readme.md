@@ -34,6 +34,7 @@ https://stackoverflow.com/questions/39589696/ceph-too-many-pgs-per-osd-all-you-n
 
 https://blog.kubernauts.io/backup-and-restore-of-kubernetes-applications-using-heptios-velero-with-restic-and-rook-ceph-as-2e8df15b1487
 
+```bash
 ssh skube-master-0 "mkdir -p ~/ceph"
 scp  *.yaml skube-master-0:~/ceph 
 ssh kube-master-0 "kubectl apply -f ~/ceph/common.yaml"
@@ -41,21 +42,26 @@ ssh kube-master-0 "kubectl apply -f ~/ceph/operator.yaml"
 ssh kube-master-0 "kubectl apply -f ~/ceph/cluster.yaml"
 ssh kube-master-0 "kubectl apply -f ~/ceph/StorageClass.yaml"
 ssh kube-master-0 "kubectl apply -f ~/ceph/StorageClassEC.yaml"
-
+```
 
 #### PORT forwarding
+```bash
 kubectl port-forward -n rook-ceph $(kubectl get pod -n rook-ceph   -l app=rook-ceph-mgr   -o jsonpath={.items..metadata.name} ) 8443:8443
+```
 
 #### get dashboard password for User "admin"
+```bash
 kubectl -n rook-ceph get secret rook-ceph-dashboard-password -o jsonpath="{['data']['password']}" | base64 --decode && echo
+```
 
 #### Restart fsplugin
- kubectl delete -n rook-ceph  pod -l app=csi-cephfsplugin-provisioner --grace-period=0 --force 
+```bash
+kubectl delete -n rook-ceph  pod -l app=csi-cephfsplugin-provisioner --grace-period=0 --force 
 
 #log into toolbox
 kubectl -n rook-ceph exec -it $(kubectl -n rook-ceph get pod -l "app=rook-ceph-tools" -o jsonpath='{.items[0].metadata.name}') bash
  
-
+```
 #### autoscale pg
 https://tracker.ceph.com/issues/41735
 https://docs.ceph.com/docs/master/rados/operations/placement-groups/#set-the-number-of-placement-groups
