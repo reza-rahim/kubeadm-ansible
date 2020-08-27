@@ -69,7 +69,7 @@ spec:
     rulesNamespace: rook-ceph
   network:
     # enable host networking
-    #provider: host
+    provider: host
     # EXPERIMENTAL: enable the Multus network provider
     #provider: multus
     #selectors:
