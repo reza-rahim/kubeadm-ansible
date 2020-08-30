@@ -34,4 +34,8 @@ rbd create testc1 --size 10 --pool data --image-feature exclusive-lock,journalin
 ## the other cluster
 rbd ls data
 
+## demote the backup pool
+rbd --cluster ceph mirror pool demote data  
+
+
 ```
