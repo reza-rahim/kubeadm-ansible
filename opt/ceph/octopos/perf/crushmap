@@ -1,0 +1,35 @@
+ceph osd crush add-bucket ssd-root root
+
+
+
+ceph osd crush add-bucket  ssd-host-1 host
+ceph osd crush add-bucket  ssd-host-2 host
+ceph osd crush add-bucket  ssd-host-3 host
+
+ceph osd crush move ssd-host-1  root=ssd-root 
+ceph osd crush move ssd-host-2  root=ssd-root 
+ceph osd crush move ssd-host-3  root=ssd-root 
+
+ceph osd crush move osd.6 host=ssd-host-1
+ceph osd crush move osd.5 host=ssd-host-2
+ceph osd crush move osd.4 host=ssd-host-3
+
+—
+
+ceph osd crush add-bucket ssd-nve root
+
+ceph osd crush add-bucket  nve-host-1 host
+ceph osd crush add-bucket  nve-host-2 host
+ceph osd crush add-bucket  nve-host-3 host
+
+ceph osd crush move nve-host-1  root=ssd-nve 
+ceph osd crush move nve-host-2  root=ssd-nve 
+ceph osd crush move nve-host-3  root=ssd-nve 
+
+ ceph osd crush move osd.0  host=nve-host-1
+ ceph osd crush move osd.0  host=nve-host-1
+ ceph osd crush move osd.0  host=nve-host-1
+
+ceph osd crush move osd.0  host=nve-host-1
+ceph osd crush move osd.2  host=nve-host-2
+ceph osd crush move osd.8  host=nve-host-3
