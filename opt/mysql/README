@@ -19,6 +19,7 @@ Perf
 https://severalnines.com/database-blog/how-benchmark-performance-mysql-mariadb-using-sysbench
 
 ```bash
-sysbench /usr/share/sysbench/oltp_read_only.lua --threads=4 --mysql-host=192.168.105.198 --mysql-user=sbtest --mysql-password=password --mysql-port=3306 --tables=10 --table-size=1000000 prepare
+CREATE DATABASE sbtest
+sysbench /usr/share/sysbench/oltp_read_only.lua --threads=4 --mysql-host=192.168.105.198 --mysql-user=root --mysql-password=password --mysql-port=3306 --tables=10 --table-size=1000000 prepare
 
 ```
