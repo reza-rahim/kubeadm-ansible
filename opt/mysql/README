@@ -12,3 +12,8 @@ scp  deployment.yml  kube-master-0:~/mysql
 ssh kube-master-0 "kubectl apply -f ~/mysql/secret.yaml"
 ssh kube-master-0 "kubectl apply -f ~/mysql/persistentVolumeClaim.yml"
 ssh kube-master-0 "kubectl apply -f ~/mysql/deployment.yml "
+
+Perf
+ yum install sysbench
+ 
+https://severalnines.com/database-blog/how-benchmark-performance-mysql-mariadb-using-sysbench
