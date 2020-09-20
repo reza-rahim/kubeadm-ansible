@@ -5,5 +5,8 @@
 https://www.redhat.com/en/blog/red-hat-openstack-platform-red-hat-ceph-storage-radosbench-baseline-performance-evaluation
 https://www.redhat.com/en/blog/red-hat-openstack-platform-red-hat-ceph-storage-mysql-database-performance-ceph-rbd
 
-ssh kube-master-0 "mkdir -p ~/ceph"
-scp  -rp ./ kube-master-0:~/ceph
+
+https://www.redhat.com/en/blog/red-hat-ceph-storage-33-bluestore-compression-performance
+
+https://www.redhat.com/en/blog/ceph-rgw-dynamic-bucket-sharding-performance-investigation-and-guidance
+
