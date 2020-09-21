@@ -17,6 +17,7 @@ mv /root/go/bin/jb /usr/local/bin
 ```bash
 helm repo add loki https://grafana.github.io/loki/charts
 helm  pull loki/promtail 
+helm  pull loki/loki
 ```
 
 ### Config
