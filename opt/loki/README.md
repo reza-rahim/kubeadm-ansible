@@ -18,6 +18,11 @@ mv /root/go/bin/jb /usr/local/bin
 helm repo add loki https://grafana.github.io/loki/charts
 helm  pull loki/promtail 
 helm  pull loki/loki
+
+tar xvf loki-0.31.1.tgz 
+
+helm  template -name loki --namespace=loki loki
+
 ```
 
 ### Config
