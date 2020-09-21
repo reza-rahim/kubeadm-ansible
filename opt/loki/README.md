@@ -4,8 +4,8 @@ curl -fSL -o "/usr/local/bin/tk" "https://github.com/grafana/tanka/releases/down
 
 chmod a+x "/usr/local/bin/tk"
 
-
-## https://github.com/grafana/loki/blob/master/docs/installation/tanka.md
+##tonka
+https://github.com/grafana/loki/blob/master/docs/installation/tanka.md
 
 ##install jb
 yum -y install go
@@ -13,4 +13,11 @@ go get -u github.com/jsonnet-bundler/jsonnet-bundler/cmd/jb
 mv /root/go/bin/jb /usr/local/bin
 
 
+## Config
+https://grafana.com/docs/loki/latest/configuration/examples/
+
+https://grafana.com/blog/2020/07/21/loki-tutorial-how-to-send-logs-from-eks-with-promtail-to-get-full-visibility-in-grafana/
+
 https://grafana.com/go/webinar/logging-with-loki-essential-configuration-settings/?pg=blog&plcmt=body-txt&cta=upcoming-webinars
+
+
