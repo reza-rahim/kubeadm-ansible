@@ -14,9 +14,10 @@ mv /root/go/bin/jb /usr/local/bin
 
 ### Helm
 
+```bash
 helm repo add loki https://grafana.github.io/loki/charts
 helm  pull loki/promtail 
-
+```
 
 ### Config
 https://grafana.com/docs/loki/latest/configuration/examples/
