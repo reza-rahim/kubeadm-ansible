@@ -8,9 +8,11 @@ chmod a+x "/usr/local/bin/tk"
 https://github.com/grafana/loki/blob/master/docs/installation/tanka.md
 
 ##install jb
+```bash
 yum -y install go
 go get -u github.com/jsonnet-bundler/jsonnet-bundler/cmd/jb
 mv /root/go/bin/jb /usr/local/bin
+```
 
 ### Helm
 
