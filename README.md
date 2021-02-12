@@ -22,6 +22,10 @@ EOF
 ```
 
 ```bash
+kubectl config set-context --current --namespace=rook-ceph
+```
+
+```bash
 #list kubeadm version
 yum --showduplicates list kubeadm 
 ```
