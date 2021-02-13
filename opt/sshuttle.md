@@ -1,7 +1,7 @@
 ### sshuttle 
 
 ```bash
-yum install -u sshuttle 
+yum install -y sshuttle 
 sshuttle --dns -r root@35.229.54.106 102.0.0/16
 
 sshuttle --dns -r root@35.229.54.106 102.0.0/16
