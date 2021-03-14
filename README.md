@@ -59,6 +59,10 @@ kubectl port-forward -n monitoring  $( kubectl get pod -n monitoring -l port-for
 ##grafana
 kubectl port-forward -n monitoring  $(kubectl get pod -n monitoring  -l app.kubernetes.io/name=grafana   -o jsonpath={.items..metadata.name} ) 3000:3000
 
+## grafana pasword
+kubectl -n monitoring get secrets monitoring-grafana -o jsonpath="{['data']['admin-password']}" | base64  -d && echo 
+
+
 ### Node Exporter Full dashboard
 https://grafana.com/grafana/dashboards/1860
 
