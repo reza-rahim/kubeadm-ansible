@@ -6,6 +6,8 @@ rbd mirror pool enable data pool
 
 #rbd mirror pool enable data image
 
+## start rbd-mirror 
+ceph orch apply rbd-mirror 
 
 ceph auth get-or-create client.rbd-mirror-peer mon 'profile rbd' osd 'profile rbd'
 [client.rbd-mirror-peer]
@@ -16,6 +18,7 @@ ceph auth get-or-create client.rbd-mirror-peer mon 'profile rbd' osd 'profile rb
 cat <<EOF > remote-key-file
 AQBm74xdZLi9MBAA9CYTtOgF5Roz+4p5jlJ7dQ==
 EOF
+
 
 
 ## On north cluster
