@@ -29,7 +29,7 @@ rbd --cluster ceph mirror pool peer add data client.rbd-mirror-peer@remote --rem
 rbd --cluster ceph mirror pool info data --all
 
 # create a image with journaling
-rbd create testc1 --size 10 --pool data --image-feature exclusive-lock,journaling
+rbd create bar --size 1024 --pool data --image-feature exclusive-lock,journaling
 
 ## the other cluster
 rbd ls data
