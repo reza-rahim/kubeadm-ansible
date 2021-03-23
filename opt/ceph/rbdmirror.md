@@ -1,5 +1,5 @@
 ```bash
-ceph osd pool create data 100 
+ceph osd pool create data 32 
 ceph osd pool application enable  data rbd
 
 rbd mirror pool enable data pool
