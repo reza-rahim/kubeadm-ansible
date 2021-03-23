@@ -37,5 +37,15 @@ rbd ls data
 ## demote the backup pool
 rbd --cluster ceph mirror pool demote data  
 
+##
+rbd map data/bar 
+
+mkfs.ext4 -m0 /dev/rbd0
+mkdir /var/tmp/mysql
+mount /dev/rbd0 /var/tmp/mysql
+
+umount /var/tmp/mysql
+rbd unmap /dev/rbd0
+
 
 ```
