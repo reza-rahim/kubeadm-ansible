@@ -57,8 +57,9 @@ yum install -y rbd-nbd
 rbd-nbd map data/bar 
 rbd-nbd list-mapped
 
- mkfs.xfs /dev/nbd0 
- mount /dev/nbd0  /var/tmp/mysql
+mkdir /var/tmp/mysql
+mkfs.xfs /dev/nbd0 
+mount /dev/nbd0  /var/tmp/mysql
 
 
 ```
