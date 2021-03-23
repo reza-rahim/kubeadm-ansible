@@ -48,4 +48,12 @@ umount /var/tmp/mysql
 rbd unmap /dev/rbd0
 
 
+##
+rbd-nbd map data/bar 
+rbd-nbd list-mapped
+
+ mkfs.xfs /dev/nbd0 
+ mount /dev/nbd0  /var/tmp/mysql
+
+
 ```
