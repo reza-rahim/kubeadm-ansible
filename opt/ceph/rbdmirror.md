@@ -1,3 +1,5 @@
+#### Source: https://access.redhat.com/documentation/en-us/red_hat_ceph_storage/2/html/block_device_guide/block_device_mirroring
+
 ```bash
 ceph osd pool create data 32 
 ceph osd pool application enable  data rbd
