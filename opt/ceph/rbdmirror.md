@@ -50,6 +50,8 @@ mount /dev/rbd0 /var/tmp/mysql
 umount /var/tmp/mysql
 rbd unmap /dev/rbd0
 
+##
+yum install -y rbd-nbd
 
 ##
 rbd-nbd map data/bar 
