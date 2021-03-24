@@ -69,8 +69,6 @@ rbd  mirror pool demote data
 ## remover mirror 
 rbd -p data mirror image disable --force 
 
-bar
-
 rbd  mirror pool status data --verbose
 
 rbd  ls -l -p data 
