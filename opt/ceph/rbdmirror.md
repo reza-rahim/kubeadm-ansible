@@ -40,8 +40,7 @@ rbd create bar --size 1024 --pool data layering, exclusive-lock, object-map, fas
 ## the other cluster
 rbd ls data
 
-## demote the backup pool
-rbd --cluster ceph mirror pool demote data  
+
 
 ##
 rbd map data/bar 
@@ -64,5 +63,10 @@ mkdir /var/tmp/mysql
 mkfs.xfs /dev/nbd0 
 mount /dev/nbd0  /var/tmp/mysql
 
+## demote the backup pool
+rbd  mirror pool demote data  
 
-```
+## remover mirror 
+rbd -p data mirror image disable --force 
+
+bar```
