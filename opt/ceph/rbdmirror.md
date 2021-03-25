@@ -72,4 +72,7 @@ rbd -p data mirror image disable --force
 rbd  mirror pool status data --verbose
 
 rbd  ls -l -p data 
+
+ rbd  mirror image demote  data/bar 
+ rbd  mirror image promote  data/bar 
 ```
