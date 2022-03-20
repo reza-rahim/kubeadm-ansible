@@ -1,3 +1,4 @@
+```bash
 https://cert-manager.io/docs/tutorials/acme/ingress/
 
 ssh skube-master-0 "mkdir -p ~/cert"
@@ -11,3 +12,23 @@ https://cert-manager.io/docs/installation/kubernetes/
 
  kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v1.7.0/cert-manager.yaml
 
+---
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ./ca.key -out ./ca.crt -subj "/CN=mariadb/O=kubedb"\n
+
+kubectl create secret tls md-ca \
+     --cert=ca.crt \
+     --key=ca.key \
+     --namespace=demo
+secret/md-ca created
+
+
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: md-issuer
+  namespace: demo
+spec:
+  ca:
+    secretName: md-ca
+    
+```
