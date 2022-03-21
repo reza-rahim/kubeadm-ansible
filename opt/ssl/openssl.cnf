@@ -1,0 +1,37 @@
+[ req ]
+distinguished_name = req_distinguished_name
+policy             = policy_match
+x509_extensions     = v3_ca
+
+# For the CA policy
+[ policy_match ]
+countryName             = US
+stateOrProvinceName     = IL
+organizationName        = org
+organizationalUnitName  = unit
+commonName              = mysql-demo.com,mariadb
+emailAddress            = test@test.com
+
+[ req_distinguished_name ]
+countryName                     = US
+countryName_default             = US
+countryName_min                 = 2
+countryName_max                 = 2
+stateOrProvinceName             = IL
+stateOrProvinceName_default     = IL
+localityName                    = Chicago
+localityName_default            = Chicago
+0.organizationName              = org
+0.organizationName_default      = GoLinuxCloud ## This is the default value
+organizationalUnitName          = Organizational Unit Name (eg, section) ## Print this message
+organizationalUnitName_default  = Admin ## This is the default value
+commonName                      = Common Name (eg, your name or your server hostname) ## Print this message
+commonName_max                  = 64
+emailAddress                    = test@org.com ## Print this message
+emailAddress_max                = 64
+
+[ v3_ca ]
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid:always,issuer
+basicConstraints = critical,CA:true
+nsComment = "OpenSSL Generated Certificate"
