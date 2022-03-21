@@ -1,4 +1,3 @@
-```bash
 apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
@@ -6,4 +5,4 @@ metadata:
 spec:
   ca:
     secretName: my-tls-secret
-```    
+    
