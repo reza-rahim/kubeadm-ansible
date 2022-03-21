@@ -9,4 +9,6 @@ openssl x509 -text -noout -in ca.crt
 
 kubectl create secret tls my-tls-secret --key ca.key --cert ca.crt
 
+kubectl apply -f issuer.yaml
+
 ```
